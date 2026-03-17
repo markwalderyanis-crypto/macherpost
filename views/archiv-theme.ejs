@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('partials/head') %>
+    <title><%= theme.name %> — Archiv — MacherPost</title>
+</head>
+<body>
+<%- include('partials/nav') %>
+
+<main class="content" style="max-width: var(--max-w);">
+    <a href="/archiv" style="font-size: 14px; color: var(--c-muted);">&larr; Zum Archiv</a>
+    <h1 style="margin-top: 16px;"><%= theme.name %></h1>
+
+    <% if (!hasAccess) { %>
+        <div class="alert" style="background: #FFF7ED; color: #EA580C; border: 1px solid #FED7AA; text-align: center; padding: 32px;">
+            <h2 style="margin: 0 0 12px;">Kein Zugriff</h2>
+            <p style="margin-bottom: 20px;">Du hast kein aktives Abo f&uuml;r dieses Thema.</p>
+            <a href="/warenkorb/add?slug=<%= theme.slug %>" class="btn btn-primary">Jetzt abonnieren — CHF <%= (theme.price_monthly / 100).toFixed(2) %>/Mt.</a>
+        </div>
+    <% } else if (pdfs.length === 0) { %>
+        <div class="card" style="text-align: center; padding: 48px;">
+            <p style="font-size: 48px; margin-bottom: 16px;">&#128196;</p>
+            <h2 style="margin: 0 0 8px;">Noch keine Beitr&auml;ge</h2>
+            <p style="color: var(--c-muted); margin: 0;">Neue Beitr&auml;ge werden bald ver&ouml;ffentlicht.</p>
+        </div>
+    <% } else { %>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
+            <% for (const pdf of pdfs) { %>
+                <a href="/artikel/<%= pdf.id %>" class="card" style="text-decoration: none; transition: all 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= pdf.title %></h3>
+                            <% if (pdf.description) { %>
+                                <p style="font-size: 14px; color: var(--c-muted); margin: 0; line-height: 1.5;"><%= pdf.description %></p>
+                            <% } %>
+                        </div>
+                        <span style="font-size: 13px; color: var(--c-muted); white-space: nowrap;"><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
+                    </div>
+                </a>
+            <% } %>
+        </div>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>
+</body>
+</html>

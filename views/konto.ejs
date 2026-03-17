@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('partials/head') %>
+    <title>Mein Konto — MacherPost</title>
+</head>
+<body>
+<%- include('partials/nav') %>
+
+<main class="content">
+    <h1>Mein Konto</h1>
+
+    <div class="card" style="margin-bottom: 32px;">
+        <h2 style="margin: 0 0 16px;">Profil</h2>
+        <p><strong>Name:</strong> <%= user.name || '–' %></p>
+        <p><strong>E-Mail:</strong> <%= user.email %></p>
+        <p style="margin: 0;"><strong>Rolle:</strong> <%= user.role === 'admin' ? 'Administrator' : 'Benutzer' %></p>
+    </div>
+
+    <h2>Meine Abonnements</h2>
+
+    <% if (subscriptions.length === 0) { %>
+        <div class="card" style="text-align: center; padding: 32px; margin-top: 16px;">
+            <p style="color: var(--c-muted); margin-bottom: 16px;">Du hast noch keine Abonnements.</p>
+            <a href="/pakete/komplett.html" class="btn btn-primary">Pakete entdecken</a>
+        </div>
+    <% } else { %>
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+            <% for (const sub of subscriptions) { %>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--c-dark);"><%= sub.product_name %></h3>
+                        <p style="font-size: 13px; color: var(--c-muted); margin: 4px 0 0;">
+                            <%= sub.product_type === 'package' ? 'Paket' : 'Einzelthema' %> &bull;
+                            <%= sub.billing_interval === 'yearly' ? 'J&auml;hrlich' : 'Monatlich' %>
+                        </p>
+                    </div>
+                    <span class="badge badge-<%= sub.status === 'active' ? 'active' : sub.status === 'canceled' ? 'canceled' : 'draft' %>">
+                        <%= sub.status === 'active' ? 'Aktiv' : sub.status === 'canceled' ? 'Gek&uuml;ndigt' : sub.status %>
+                    </span>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>
+</body>
+</html>

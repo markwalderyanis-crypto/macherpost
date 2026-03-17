@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokale Politik — MacherPost</title>
+    <meta name="description" content="Kommunalpolitik und regionale Entscheidungen, die dich direkt betreffen. Kompakt aufbereitet von MacherPost.">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --c-bg: #FAFAF9; --c-white: #FFFFFF; --c-dark: #1A1A1A; --c-text: #2D2D2D;
+            --c-muted: #6B6B6B; --c-accent: #E85D26; --c-accent-hover: #D04E1C;
+            --c-accent-light: #FFF3ED; --c-border: #E5E5E3; --c-card: #FFFFFF;
+            --c-section-alt: #F3F2EF; --c-green: #16A34A; --c-green-light: #F0FDF4;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --max-w: 1120px; --radius: 12px; --radius-sm: 8px;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+        /* Nav */
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,250,249,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--c-border); }
+        .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-dark); }
+        .nav-logo span { color: var(--c-accent); }
+        .nav-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--c-muted); transition: color 0.2s; }
+        .nav-back:hover { color: var(--c-accent); }
+        .nav-back svg { width: 18px; height: 18px; }
+
+        /* Hero */
+        .hero { padding: 140px 24px 80px; text-align: center; background: linear-gradient(180deg, var(--c-accent-light) 0%, var(--c-bg) 100%); }
+        .hero-icon { width: 48px; height: 48px; color: var(--c-accent); margin: 0 auto 24px; }
+        .hero-icon svg { width: 48px; height: 48px; }
+        .hero h1 { font-size: clamp(32px, 6vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; color: var(--c-dark); margin-bottom: 16px; }
+        .hero-desc { font-size: clamp(17px, 2.5vw, 20px); color: var(--c-muted); max-width: 580px; margin: 0 auto 28px; line-height: 1.5; }
+        .hero-price { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: 50px; font-size: 15px; font-weight: 600; color: var(--c-dark); margin-bottom: 28px; }
+        .hero-price .accent { color: var(--c-accent); font-weight: 700; }
+        .btn-cta { display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; font-family: var(--font); border-radius: 50px; border: none; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        .btn-cta:hover { background: var(--c-accent-hover); }
+        .btn-cta:active { transform: scale(0.98); }
+
+        /* Sections */
+        .section { padding: 96px 0; }
+        .section-alt { background: var(--c-section-alt); }
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-eyebrow { display: inline-block; padding: 6px 16px; background: var(--c-accent-light); color: var(--c-accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 50px; margin-bottom: 20px; }
+        .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; color: var(--c-dark); margin-bottom: 16px; }
+        .section-desc { font-size: 18px; color: var(--c-muted); max-width: 600px; margin: 0 auto; }
+
+        /* Content Cards */
+        .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 32px 24px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .card-icon { width: 44px; height: 44px; background: var(--c-accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .card-icon svg { width: 22px; height: 22px; stroke: var(--c-accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .card h3 { font-size: 17px; font-weight: 700; color: var(--c-dark); margin-bottom: 8px; }
+        .card p { font-size: 14px; color: var(--c-muted); line-height: 1.5; }
+
+        /* Headlines */
+        .headlines-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 800px; margin: 0 auto; }
+        .headline-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 24px 28px; display: flex; align-items: flex-start; gap: 16px; transition: transform 0.2s, box-shadow 0.2s; }
+        .headline-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .headline-num { width: 32px; height: 32px; background: var(--c-accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: var(--c-accent); flex-shrink: 0; }
+        .headline-card p { font-size: 15px; font-weight: 600; color: var(--c-dark); line-height: 1.45; }
+
+        /* Bundles */
+        .bundles-grid { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .bundle-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 28px 32px; text-align: center; min-width: 200px; transition: transform 0.2s, box-shadow 0.2s; }
+        .bundle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .bundle-card h3 { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 4px; }
+        .bundle-card .bundle-desc { font-size: 13px; color: var(--c-muted); margin-bottom: 12px; }
+        .bundle-card .bundle-price { font-size: 18px; font-weight: 800; color: var(--c-accent); }
+        .bundle-card .bundle-price small { font-size: 13px; font-weight: 500; color: var(--c-muted); }
+        .bundle-check { color: var(--c-green); font-size: 20px; margin-bottom: 8px; }
+
+        /* CTA Section */
+        .cta-section { padding: 96px 0; background: var(--c-dark); text-align: center; }
+        .cta-section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 16px; }
+        .cta-section .cta-desc { font-size: 18px; color: #999; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
+        .signup-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto 20px; }
+        .signup-form input { flex: 1; padding: 16px 20px; border: 2px solid #3A3A3A; border-radius: 50px; font-size: 16px; font-family: var(--font); background: #2A2A2A; color: white; outline: none; transition: border-color 0.2s; }
+        .signup-form input:focus { border-color: var(--c-accent); }
+        .signup-form input::placeholder { color: #777; }
+        .btn-signup { padding: 16px 32px; background: var(--c-accent); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+        .btn-signup:hover { background: var(--c-accent-hover); }
+        .btn-signup:active { transform: scale(0.98); }
+        .cta-trust { font-size: 14px; color: #777; }
+        .cta-trust strong { color: #CCC; }
+        .success-msg { display: none; text-align: center; padding: 24px; background: var(--c-green-light); border: 1px solid #BBF7D0; border-radius: var(--radius-sm); max-width: 480px; margin: 0 auto; }
+        .success-msg.show { display: block; }
+        .success-msg h3 { font-size: 20px; color: #166534; margin-bottom: 6px; }
+        .success-msg p { font-size: 15px; color: #15803D; }
+
+        /* Footer */
+        .footer { padding: 40px 0; border-top: 1px solid var(--c-border); text-align: center; }
+        .footer-brand { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 8px; }
+        .footer-brand span { color: var(--c-accent); }
+        .footer p { font-size: 14px; color: var(--c-muted); }
+        .footer-links { margin-top: 16px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .footer-links a { font-size: 14px; color: var(--c-muted); transition: color 0.2s; }
+        .footer-links a:hover { color: var(--c-accent); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .hero { padding: 120px 20px 60px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .headlines-grid { grid-template-columns: 1fr; }
+            .signup-form { flex-direction: column; }
+            .signup-form input, .btn-signup { width: 100%; text-align: center; }
+            .section { padding: 64px 0; }
+            .bundles-grid { flex-direction: column; align-items: center; }
+        }
+
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="../index.html" class="nav-logo">Macher<span>Post</span></a>
+        <a href="../index.html" class="nav-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Zur&uuml;ck zur &Uuml;bersicht
+        </a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-icon reveal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/><path d="M10 10h4"/><path d="M12 7v3"/></svg>
+        </div>
+        <h1 class="reveal">Lokale Politik</h1>
+        <p class="hero-desc reveal">Kommunalpolitik und regionale Entscheidungen, die dich direkt betreffen.</p>
+        <div class="hero-price reveal">
+            <span class="accent">CHF 2.50/Mt.</span> oder <span class="accent">CHF 25.&ndash;/Jahr</span>
+        </div>
+        <br>
+        <a href="../index.html#start" class="btn-cta reveal">Jetzt kostenlos starten</a>
+    </div>
+</section>
+
+<!-- WAS DU BEKOMMST -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Inhalte</div>
+            <h2 class="section-title">Was du bekommst</h2>
+            <p class="section-desc">Vier Schwerpunkte, die dich in deiner Region auf dem Laufenden halten.</p>
+        </div>
+        <div class="cards-grid">
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg>
+                </div>
+                <h3>Gemeindepolitik</h3>
+                <p>Entscheide deiner Gemeinde kompakt zusammengefasst &mdash; von Budgets bis Baureglemente.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </div>
+                <h3>Bauprojekte &amp; Raumplanung</h3>
+                <p>Neue Quartiere, Verkehrsprojekte und Zonenpl&auml;ne &mdash; was in deiner Region gebaut wird.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h3>Lokale Wirtschaft</h3>
+                <p>Gewerbe, Steuern, F&ouml;rderung &mdash; wirtschaftliche Entwicklungen in deiner Gemeinde.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <h3>Abstimmungen &amp; Wahlen</h3>
+                <p>Alle kommunalen Vorlagen und Wahlen erkl&auml;rt &mdash; neutral und verst&auml;ndlich.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BEISPIEL-THEMEN -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Beispiele</div>
+            <h2 class="section-title">Beispiel-Themen</h2>
+            <p class="section-desc">So k&ouml;nnten typische Headlines in deinem Briefing aussehen.</p>
+        </div>
+        <div class="headlines-grid">
+            <div class="headline-card reveal">
+                <div class="headline-num">1</div>
+                <p>Gewerbezonen unter Druck: Was Gemeinden planen</p>
+            </div>
+            <div class="headline-card reveal">
+                <div class="headline-num">2</div>
+                <p>Parkplatzdebatte: Wie Innenst&auml;dte sich ver&auml;ndern</p>
+            </div>
+            <div class="headline-card reveal">
+                <div class="headline-num">3</div>
+                <p>Gemeindesteuern im Vergleich: Wo es sich lohnt</p>
+            </div>
+            <div class="headline-card reveal">
+                <div class="headline-num">4</div>
+                <p>&Ouml;V-Ausbau 2026: Was dein Pendler-Alltag ver&auml;ndert</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ENTHALTEN IN PAKETEN -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Pakete</div>
+            <h2 class="section-title">Enthalten in diesen Paketen</h2>
+            <p class="section-desc">Lokale Politik ist Teil dieser B&uuml;ndel-Pakete &mdash; oder einzeln buchbar.</p>
+        </div>
+        <div class="bundles-grid">
+            <div class="bundle-card reveal">
+                <div class="bundle-check">&#10003;</div>
+                <h3>Kompass</h3>
+                <div class="bundle-desc">Politik &amp; Weltgeschehen</div>
+                <div class="bundle-price">CHF 5.&ndash; <small>/Mt.</small></div>
+            </div>
+            <div class="bundle-card reveal">
+                <div class="bundle-check">&#10003;</div>
+                <h3>Tagespuls</h3>
+                <div class="bundle-desc">Zeitungsbrief</div>
+                <div class="bundle-price">CHF 9.&ndash; <small>/Mt.</small></div>
+            </div>
+            <div class="bundle-card reveal">
+                <div class="bundle-check">&#10003;</div>
+                <h3>Komplett</h3>
+                <div class="bundle-desc">Alles. Ohne Kompromisse.</div>
+                <div class="bundle-price">CHF 15.&ndash; <small>/Mt.</small></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="reveal">Bereit, lokal besser informiert zu sein?</h2>
+        <p class="cta-desc reveal">Starte kostenlos mit 3 Themen deiner Wahl. Upgrade jederzeit.</p>
+        <form class="signup-form reveal" id="ctaForm" onsubmit="return handleSignup(event)">
+            <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
+            <button type="submit" class="btn-signup">Kostenlos starten</button>
+        </form>
+        <div class="success-msg" id="ctaSuccess"><h3>Du bist dabei!</h3><p>Wir melden uns, sobald es losgeht.</p></div>
+        <p class="cta-trust reveal"><strong>3 Themen gratis.</strong> Kein Spam. Jederzeit k&uuml;ndbar.</p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-brand">Macher<span>Post</span></div>
+        <p>&copy; 2026 MacherPost. Alle Rechte vorbehalten.</p>
+        <div class="footer-links">
+            <a href="../index.html#themen">Themen</a>
+            <a href="../index.html#preise">Preise</a>
+            <a href="../index.html#faq">FAQ</a>
+            <a href="../kontakt.html">Kontakt</a>
+            <a href="../datenschutz.html">Datenschutz</a>
+            <a href="../impressum.html">Impressum</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function handleSignup(e){e.preventDefault();const f=e.target,em=f.querySelector('input[type="email"]').value.trim();if(!em)return!1;f.style.display='none';document.getElementById('ctaSuccess').classList.add('show');return!1}
+    const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+<script src="/js/nav-auth.js"></script>
+</body>
+</html>

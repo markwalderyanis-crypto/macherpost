@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title>Admin — MacherPost</title>
+</head>
+<body>
+<%- include('../partials/nav') %>
+
+<main class="content" style="max-width: var(--max-w);">
+    <h1>Admin Dashboard</h1>
+
+    <div class="grid-4" style="margin-bottom: 40px;">
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 800; color: var(--c-accent);"><%= stats.users %></div>
+            <div style="font-size: 13px; color: var(--c-muted);">Benutzer</div>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 800; color: var(--c-green);"><%= stats.subscriptions %></div>
+            <div style="font-size: 13px; color: var(--c-muted);">Aktive Abos</div>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 800; color: var(--c-dark);"><%= stats.pdfs %></div>
+            <div style="font-size: 13px; color: var(--c-muted);">PDFs gesamt</div>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 32px; font-weight: 800; color: var(--c-muted);"><%= stats.comments %></div>
+            <div style="font-size: 13px; color: var(--c-muted);">Kommentare</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-bottom: 40px;">
+        <a href="/admin/pdfs" class="btn btn-primary">PDFs verwalten</a>
+        <a href="/admin/pdfs/new" class="btn btn-outline">Neues PDF hochladen</a>
+    </div>
+
+    <h2>PDF-Status</h2>
+    <div class="grid-3" style="margin-bottom: 40px;">
+        <div class="card">
+            <span class="badge badge-active">Ver&ouml;ffentlicht</span>
+            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.published %></div>
+        </div>
+        <div class="card">
+            <span class="badge badge-scheduled">Geplant</span>
+            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.scheduled %></div>
+        </div>
+        <div class="card">
+            <span class="badge badge-draft">Entwurf</span>
+            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.drafts %></div>
+        </div>
+    </div>
+
+    <% if (recentComments.length > 0) { %>
+        <h2>Letzte Kommentare</h2>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <% for (const c of recentComments) { %>
+                <div class="card" style="padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--c-muted); margin-bottom: 6px;">
+                        <strong><%= c.user_name %></strong>
+                        <span>zu &laquo;<%= c.pdf_title %>&raquo;</span>
+                    </div>
+                    <p style="font-size: 14px; margin: 0;"><%= c.content.substring(0, 150) %><%= c.content.length > 150 ? '...' : '' %></p>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

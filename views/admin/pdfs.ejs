@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title>PDFs verwalten — Admin — MacherPost</title>
+</head>
+<body>
+<%- include('../partials/nav') %>
+
+<main class="content" style="max-width: var(--max-w);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="margin: 0;">PDFs verwalten</h1>
+        <a href="/admin/pdfs/new" class="btn btn-primary">+ Neues PDF</a>
+    </div>
+
+    <% if (pdfs.length === 0) { %>
+        <div class="card" style="text-align: center; padding: 48px;">
+            <p style="color: var(--c-muted);">Noch keine PDFs vorhanden.</p>
+        </div>
+    <% } else { %>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Titel</th>
+                        <th>Thema</th>
+                        <th>Status</th>
+                        <th>Datum</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (const pdf of pdfs) { %>
+                        <tr>
+                            <td style="font-weight: 600;"><%= pdf.title %></td>
+                            <td><%= pdf.theme_slug %></td>
+                            <td>
+                                <span class="badge badge-<%= pdf.status === 'published' ? 'active' : pdf.status === 'scheduled' ? 'scheduled' : 'draft' %>">
+                                    <%= pdf.status === 'published' ? 'Live' : pdf.status === 'scheduled' ? 'Geplant' : 'Entwurf' %>
+                                </span>
+                            </td>
+                            <td style="font-size: 13px; color: var(--c-muted);"><%= pdf.publish_date.slice(0,10) %> <strong><%= pdf.publish_date.length > 10 ? pdf.publish_date.slice(11,16) : '' %></strong></td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="/admin/pdfs/<%= pdf.id %>/edit" class="btn btn-outline btn-sm">Bearbeiten</a>
+                                    <% if (pdf.status !== 'published') { %>
+                                        <form method="POST" action="/admin/pdfs/<%= pdf.id %>/publish" style="margin: 0;">
+                                            <button type="submit" class="btn btn-primary btn-sm">Jetzt live</button>
+                                        </form>
+                                    <% } %>
+                                    <form method="POST" action="/admin/pdfs/<%= pdf.id %>/delete" style="margin: 0;" onsubmit="return confirm('PDF wirklich l&ouml;schen?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">L&ouml;schen</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <a href="/admin" style="display: inline-block; margin-top: 24px; font-size: 14px; color: var(--c-muted);">&larr; Zum Dashboard</a>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

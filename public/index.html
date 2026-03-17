@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacherPost — Das Briefing für Macher:innen</title>
+    <meta name="description" content="Dein kompaktes Briefing zu Handwerk, Finanzen, KI, Politik und mehr. Jeden Montag & Donnerstag um 06:30. Kostenlos starten oder Abo wählen.">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --c-bg: #FAFAF9; --c-white: #FFFFFF; --c-dark: #1A1A1A; --c-text: #2D2D2D;
+            --c-muted: #6B6B6B; --c-accent: #E85D26; --c-accent-hover: #D04E1C;
+            --c-accent-light: #FFF3ED; --c-border: #E5E5E3; --c-card: #FFFFFF;
+            --c-section-alt: #F3F2EF; --c-green: #16A34A; --c-green-light: #F0FDF4;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --max-w: 1120px; --radius: 12px; --radius-sm: 8px;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+        .icon { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+        .icon-lg { width: 32px; height: 32px; }
+
+        /* Nav */
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,250,249,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--c-border); }
+        .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-dark); }
+        .nav-logo span { color: var(--c-accent); }
+        .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+        .nav-links a { font-size: 14px; font-weight: 500; color: var(--c-muted); transition: color 0.2s; }
+        .nav-links a:hover { color: var(--c-dark); }
+        .nav-cta { display: inline-flex; padding: 10px 22px; background: var(--c-accent); color: white !important; font-weight: 600; font-size: 14px; border-radius: 50px; transition: background 0.2s; }
+        .nav-cta:hover { background: var(--c-accent-hover); }
+
+        /* Hero */
+        .hero { padding: 140px 24px 80px; text-align: center; background: linear-gradient(180deg, var(--c-accent-light) 0%, var(--c-bg) 100%); }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: 50px; font-size: 14px; font-weight: 500; color: var(--c-muted); margin-bottom: 32px; }
+        .hero-badge-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .hero h1 { font-size: clamp(38px, 7vw, 68px); font-weight: 800; line-height: 1.08; letter-spacing: -2px; color: var(--c-dark); margin-bottom: 20px; }
+        .hero h1 em { font-style: normal; color: var(--c-accent); }
+        .hero-sub { font-size: clamp(17px, 2.5vw, 21px); color: var(--c-muted); max-width: 620px; margin: 0 auto 40px; line-height: 1.5; }
+
+        /* Form */
+        .signup-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto 20px; }
+        .signup-form input { flex: 1; padding: 16px 20px; border: 2px solid var(--c-border); border-radius: 50px; font-size: 16px; font-family: var(--font); background: var(--c-white); outline: none; transition: border-color 0.2s; }
+        .signup-form input:focus { border-color: var(--c-accent); }
+        .signup-form input::placeholder { color: #AAA; }
+        .btn-signup { padding: 16px 32px; background: var(--c-accent); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+        .btn-signup:hover { background: var(--c-accent-hover); }
+        .btn-signup:active { transform: scale(0.98); }
+        .hero-trust { font-size: 14px; color: var(--c-muted); }
+        .hero-trust strong { color: var(--c-text); }
+        .success-msg { display: none; text-align: center; padding: 24px; background: var(--c-green-light); border: 1px solid #BBF7D0; border-radius: var(--radius-sm); max-width: 480px; margin: 0 auto; }
+        .success-msg.show { display: block; }
+        .success-msg h3 { font-size: 20px; color: #166534; margin-bottom: 6px; }
+        .success-msg p { font-size: 15px; color: #15803D; }
+
+        /* Stats */
+        .stats-bar { padding: 48px 0; border-bottom: 1px solid var(--c-border); }
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+        .stat-number { font-size: 34px; font-weight: 800; color: var(--c-dark); letter-spacing: -1px; }
+        .stat-label { font-size: 14px; color: var(--c-muted); margin-top: 4px; }
+
+        /* Sections */
+        .section { padding: 96px 0; }
+        .section-alt { background: var(--c-section-alt); }
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-eyebrow { display: inline-block; padding: 6px 16px; background: var(--c-accent-light); color: var(--c-accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 50px; margin-bottom: 20px; }
+        .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; color: var(--c-dark); margin-bottom: 16px; }
+        .section-desc { font-size: 18px; color: var(--c-muted); max-width: 600px; margin: 0 auto; }
+
+        /* Topic Tags */
+        .topics-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 860px; margin: 0 auto; }
+        .topic-tag { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: 50px; font-size: 15px; font-weight: 600; color: var(--c-dark); transition: all 0.2s; cursor: pointer; }
+        .topic-tag:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-color: var(--c-accent); color: var(--c-accent); }
+        .topic-tag .ti { width: 22px; height: 22px; color: var(--c-accent); }
+        .topic-tag .ti svg { width: 22px; height: 22px; }
+        .topic-single-note { text-align: center; margin-top: 32px; padding: 16px 24px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--radius); display: inline-block; }
+        .topic-single-note strong { color: var(--c-accent); }
+        .topics-note-wrap { text-align: center; }
+
+        /* Compare */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 800px; margin: 0 auto; }
+        .compare-card { border-radius: var(--radius); padding: 40px 32px; }
+        .compare-card.free { background: var(--c-white); border: 1px solid var(--c-border); }
+        .compare-card.pro { background: var(--c-dark); color: white; position: relative; }
+        .compare-badge { position: absolute; top: 20px; right: 20px; padding: 4px 12px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .compare-card h3 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .compare-card .compare-price { font-size: 15px; color: var(--c-muted); margin-bottom: 24px; }
+        .compare-card.pro .compare-price { color: #999; }
+        .compare-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .compare-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.5; }
+        .compare-list .ci { flex-shrink: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .compare-list .ci-yes { color: var(--c-green); }
+        .compare-list .ci-no { color: #D4D4D4; }
+        .compare-card.pro .ci-yes { color: #4ADE80; }
+        .compare-card.pro .compare-list li { color: #E5E5E5; }
+
+        /* Pricing */
+        .pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
+        .pricing-toggle span { font-size: 15px; font-weight: 500; color: var(--c-muted); }
+        .pricing-toggle span.active { color: var(--c-dark); font-weight: 700; }
+        .toggle-switch { width: 52px; height: 28px; background: var(--c-border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.2s; border: none; padding: 0; }
+        .toggle-switch.on { background: var(--c-accent); }
+        .toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+        .toggle-switch.on::after { transform: translateX(24px); }
+        .save-badge { padding: 3px 10px; background: var(--c-green-light); color: var(--c-green); font-size: 12px; font-weight: 700; border-radius: 50px; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .price-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 28px 24px; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+        .price-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .price-card.featured { border: 2px solid var(--c-accent); position: relative; }
+        .price-card.featured::before { content: 'Bestes Preis-Leistungs-Verhältnis'; position: absolute; top: -12px; left: 24px; padding: 4px 14px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; }
+        .price-card-icon { margin-bottom: 12px; color: var(--c-accent); }
+        .price-card h3 { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 4px; }
+        .price-card .pc-target { font-size: 13px; color: var(--c-muted); margin-bottom: 16px; }
+        .price-card .pc-price { font-size: 28px; font-weight: 800; color: var(--c-dark); margin-bottom: 4px; }
+        .price-card .pc-price small { font-size: 14px; font-weight: 500; color: var(--c-muted); }
+        .price-card .pc-divider { width: 100%; height: 1px; background: var(--c-border); margin-bottom: 16px; }
+        .price-card .pc-topics { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; flex: 1; }
+        .price-card .pc-topics li { font-size: 14px; color: var(--c-text); display: flex; align-items: center; gap: 8px; }
+        .price-card .pc-topics li::before { content: ''; width: 6px; height: 6px; background: var(--c-accent); border-radius: 50%; flex-shrink: 0; }
+        .pc-btn { display: block; text-align: center; padding: 12px; border-radius: 50px; font-size: 14px; font-weight: 700; font-family: var(--font); cursor: pointer; border: none; transition: all 0.2s; }
+        .pc-btn:active { transform: scale(0.98); }
+        .pc-btn-outline { background: none; border: 2px solid var(--c-border); color: var(--c-dark); }
+        .pc-btn-outline:hover { border-color: var(--c-accent); color: var(--c-accent); }
+        .pc-btn-fill { background: var(--c-accent); color: white; }
+        .pc-btn-fill:hover { background: var(--c-accent-hover); }
+
+        /* Einzelthema banner */
+        .einzelthema-banner { margin-top: 32px; padding: 28px 32px; background: var(--c-accent-light); border: 1px solid #FDDCC8; border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+        .einzelthema-banner .eb-text h4 { font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 4px; }
+        .einzelthema-banner .eb-text p { font-size: 14px; color: var(--c-muted); }
+        .einzelthema-banner .eb-price { text-align: right; white-space: nowrap; }
+        .einzelthema-banner .eb-price .price-main { font-size: 24px; font-weight: 800; color: var(--c-accent); }
+        .einzelthema-banner .eb-price .price-sub { font-size: 13px; color: var(--c-muted); }
+
+        /* Preview */
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+        .preview-text h2 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; color: var(--c-dark); margin-bottom: 20px; }
+        .preview-text p { font-size: 17px; color: var(--c-muted); margin-bottom: 28px; line-height: 1.6; }
+        .preview-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .preview-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 16px; color: var(--c-text); }
+        .preview-list .check { width: 24px; height: 24px; background: var(--c-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+        .preview-list .check svg { width: 14px; height: 14px; stroke: white; stroke-width: 2.5; fill: none; }
+        .preview-mockup { background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+        .mockup-header { padding: 20px 24px; border-bottom: 1px solid var(--c-border); display: flex; align-items: center; gap: 12px; }
+        .mockup-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-border); }
+        .mockup-bar { flex: 1; height: 10px; background: var(--c-section-alt); border-radius: 5px; }
+        .mockup-body { padding: 32px 28px; }
+        .mockup-body .mb-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-accent); margin-bottom: 12px; }
+        .mockup-body h4 { font-size: 22px; font-weight: 800; color: var(--c-dark); margin-bottom: 16px; line-height: 1.3; }
+        .mockup-body p { font-size: 15px; color: var(--c-muted); line-height: 1.7; }
+        .mockup-body .mb-divider { width: 100%; height: 1px; background: var(--c-border); margin: 20px 0; }
+        .mockup-body .mb-tag { display: inline-block; padding: 4px 12px; background: var(--c-accent-light); color: var(--c-accent); font-size: 12px; font-weight: 600; border-radius: 50px; margin-right: 6px; margin-bottom: 6px; }
+        .mb-locked { display: flex; align-items: center; gap: 8px; padding: 14px 16px; background: var(--c-section-alt); border-radius: var(--radius-sm); margin-top: 16px; font-size: 13px; color: var(--c-muted); }
+
+        /* Testimonials */
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .testimonial-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 32px 28px; }
+        .testimonial-stars { color: #F59E0B; font-size: 18px; margin-bottom: 16px; letter-spacing: 2px; }
+        .testimonial-card blockquote { font-size: 15px; color: var(--c-text); line-height: 1.65; margin-bottom: 20px; font-style: italic; }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--c-accent-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--c-accent); }
+        .testimonial-name { font-weight: 700; font-size: 15px; color: var(--c-dark); }
+        .testimonial-role { font-size: 13px; color: var(--c-muted); }
+
+        /* FAQ */
+        .faq-list { max-width: 700px; margin: 0 auto; }
+        .faq-item { border-bottom: 1px solid var(--c-border); }
+        .faq-question { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 24px 0; background: none; border: none; cursor: pointer; font-family: var(--font); font-size: 17px; font-weight: 600; color: var(--c-dark); text-align: left; }
+        .faq-question:hover { color: var(--c-accent); }
+        .faq-icon { font-size: 22px; color: var(--c-muted); transition: transform 0.3s; flex-shrink: 0; margin-left: 16px; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .faq-answer-inner { padding: 0 0 24px; font-size: 15px; color: var(--c-muted); line-height: 1.65; }
+
+        /* CTA */
+        .cta-section { padding: 96px 0; background: var(--c-dark); text-align: center; }
+        .cta-section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 16px; }
+        .cta-section .cta-desc { font-size: 18px; color: #999; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
+        .cta-section .signup-form input { background: #2A2A2A; border-color: #3A3A3A; color: white; }
+        .cta-section .signup-form input::placeholder { color: #777; }
+        .cta-section .signup-form input:focus { border-color: var(--c-accent); }
+        .cta-section .hero-trust { color: #777; }
+        .cta-section .hero-trust strong { color: #CCC; }
+
+        /* Footer */
+        .footer { padding: 40px 0; border-top: 1px solid var(--c-border); text-align: center; }
+        .footer-brand { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 8px; }
+        .footer-brand span { color: var(--c-accent); }
+        .footer p { font-size: 14px; color: var(--c-muted); }
+        .footer-links { margin-top: 16px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .footer-links a { font-size: 14px; color: var(--c-muted); transition: color 0.2s; }
+        .footer-links a:hover { color: var(--c-accent); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .testimonials-grid { grid-template-columns: 1fr 1fr; }
+            .preview-grid, .compare-grid { grid-template-columns: 1fr; gap: 32px; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 640px) {
+            .hero { padding: 120px 20px 60px; }
+            .signup-form { flex-direction: column; }
+            .signup-form input, .btn-signup { width: 100%; text-align: center; }
+            .testimonials-grid, .stats-row { grid-template-columns: 1fr 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .section { padding: 64px 0; }
+            .nav-cta { display: none; }
+            .einzelthema-banner { flex-direction: column; text-align: center; }
+            .einzelthema-banner .eb-price { text-align: center; }
+        }
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- SVG SPRITE (hidden) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <!-- Handwerk: hammer -->
+    <symbol id="i-handwerk" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <!-- Selbständigkeit: rocket -->
+    <symbol id="i-selbst" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11.5a18.3 18.3 0 0 1-4 1.5z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+    <!-- Führung: org chart people -->
+    <symbol id="i-fuehrung" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M6 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="19" r="2.5"/><circle cx="12" cy="19" r="2.5"/></symbol>
+    <!-- Aktien: candlestick chart -->
+    <symbol id="i-aktien" viewBox="0 0 24 24"><path d="M6 4v4"/><rect x="4" y="8" width="4" height="6" rx="1"/><path d="M6 14v2"/><path d="M12 2v3"/><rect x="10" y="5" width="4" height="8" rx="1"/><path d="M12 13v3"/><path d="M18 6v4"/><rect x="16" y="10" width="4" height="6" rx="1"/><path d="M18 16v4"/></symbol>
+    <!-- Krypto: Bitcoin -->
+    <symbol id="i-krypto" viewBox="0 0 24 24"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-6.907-1.218m6.907 1.218-.347 1.97M13.116 4.19l-6.907-1.218m0 0L5.862 4.94m.347-1.97-.694 3.94"/></symbol>
+    <!-- Makro: Waage / Balance -->
+    <symbol id="i-makro" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M3 7l9-4 9 4"/><path d="M3 7l3 6h0a3 3 0 0 0 6 0h0l-3-6"/><path d="M15 7l-3 6h0a3 3 0 0 0 6 0h0l3-6"/><path d="M8 21h8"/></symbol>
+    <!-- Abrechnung: calculator -->
+    <symbol id="i-abrechnung" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="7" y="5" width="10" height="4" rx="1"/><circle cx="8.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="8.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <!-- Welt: globe lines -->
+    <symbol id="i-welt" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 2c2.5 3.2 3.8 6.5 3.8 10s-1.3 6.8-3.8 10c-2.5-3.2-3.8-6.5-3.8-10S9.5 5.2 12 2z"/></symbol>
+    <!-- Lokal: town hall -->
+    <symbol id="i-lokal" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/><path d="M10 10h4"/><path d="M12 7v3"/></symbol>
+    <!-- Politik: columns/parliament -->
+    <symbol id="i-politik" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M12 2l9 5H3l9-5z"/><path d="M6 7v12"/><path d="M10 7v12"/><path d="M14 7v12"/><path d="M18 7v12"/><path d="M2 19h20"/></symbol>
+    <!-- Sport: trophy -->
+    <symbol id="i-sport" viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"/><path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><path d="M6 3h12v7a6 6 0 0 1-12 0V3z"/><path d="M12 16v3"/><path d="M8 22h8"/><path d="M8 22a2 2 0 0 1 0-3h8a2 2 0 0 1 0 3"/></symbol>
+    <!-- KI: brain/neural -->
+    <symbol id="i-ki" viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.5 2.1-1.2 2.8L12 12l-2.8-3.2A4 4 0 0 1 12 2z"/><path d="M12 12l-5 4a3.5 3.5 0 1 0 3.5 3.5"/><path d="M12 12l5 4a3.5 3.5 0 1 1-3.5 3.5"/><circle cx="12" cy="12" r="2"/><path d="M12 22v-2.5"/></symbol>
+    <!-- KI-Auto: cog with lightning -->
+    <symbol id="i-kiauto" viewBox="0 0 24 24"><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="5"/><path d="M13 9l-2 3h2l-2 3"/></symbol>
+    <!-- Robotik: robot head -->
+    <symbol id="i-robotik" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="3.5" r="1.5"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M9 18h6"/><path d="M3 14h2"/><path d="M19 14h2"/></symbol>
+    <!-- Pricing icons -->
+    <symbol id="i-werkbank" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-solo" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11.5a18.3 18.3 0 0 1-4 1.5z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+    <symbol id="i-leitwolf" viewBox="0 0 24 24"><path d="M12 2L9 7H4l2 5-3 5h5l4 5 4-5h5l-3-5 2-5h-5L12 2z"/></symbol>
+    <symbol id="i-kader" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M6 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="19" r="2.5"/><circle cx="12" cy="19" r="2.5"/></symbol>
+    <symbol id="i-kapital" viewBox="0 0 24 24"><path d="M6 4v4"/><rect x="4" y="8" width="4" height="6" rx="1"/><path d="M6 14v2"/><path d="M12 2v3"/><rect x="10" y="5" width="4" height="8" rx="1"/><path d="M12 13v3"/><path d="M18 6v4"/><rect x="16" y="10" width="4" height="6" rx="1"/><path d="M18 16v4"/></symbol>
+    <symbol id="i-kompass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" opacity="0.15"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+    <symbol id="i-tribune" viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"/><path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"/><path d="M6 3h12v7a6 6 0 0 1-12 0V3z"/><path d="M12 16v3"/><path d="M8 22h8"/><path d="M8 22a2 2 0 0 1 0-3h8a2 2 0 0 1 0 3"/></symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 12a10 10 0 0 1 10-10"/><path d="M2 12a10 10 0 0 0 10 10"/><path d="M6 12a6 6 0 0 1 6-6"/><path d="M6 12a6 6 0 0 0 6 6"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-tagespuls" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 9v12"/><path d="M6 6h.01"/><path d="M12 13h5"/><path d="M12 17h5"/></symbol>
+    <symbol id="i-komplett" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+</svg>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">Macher<span>Post</span></a>
+        <ul class="nav-links">
+            <li><a href="#themen">Themen</a></li>
+            <li><a href="#preise">Preise</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#start" class="nav-cta">Kostenlos starten</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge reveal"><span class="hero-badge-dot"></span> Jetzt verfügbar</div>
+        <h1 class="reveal">Dein Briefing.<br>Dein <em>Vorsprung.</em></h1>
+        <p class="hero-sub reveal">Handwerk, Finanzen, KI, Politik, Sport und mehr — kompakt aufbereitet, jeden Montag & Donnerstag um 06:30 in deinem Postfach.</p>
+        <form class="signup-form reveal" id="heroForm" onsubmit="return handleSignup(event, 'hero')">
+            <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
+            <button type="submit" class="btn-signup">Kostenlos starten</button>
+        </form>
+        <div class="success-msg" id="heroSuccess"><h3>Du bist dabei!</h3><p>Wir melden uns, sobald es losgeht.</p></div>
+        <p class="hero-trust reveal"><strong>3 Themen gratis.</strong> Upgrade jederzeit. Kein Spam.</p>
+    </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-bar">
+    <div class="container">
+        <div class="stats-row reveal">
+            <div><div class="stat-number">2x</div><div class="stat-label">Pro Woche (Mo & Do)</div></div>
+            <div><div class="stat-number">06:30</div><div class="stat-label">Pünktlich im Postfach</div></div>
+            <div><div class="stat-number">14</div><div class="stat-label">Themengebiete</div></div>
+            <div><div class="stat-number">100%</div><div class="stat-label">Praxisnah & umsetzbar</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- KOMPLETT HIGHLIGHT -->
+<section class="section" style="padding: 64px 0;">
+    <div class="container">
+        <div class="komplett-highlight reveal" style="background: linear-gradient(135deg, var(--c-dark) 0%, #2D2D2D 100%); border-radius: var(--radius); padding: 48px 40px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 280px;">
+                <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">&#9733; Bestes Preis-Leistungs-Verh&auml;ltnis</div>
+                <h2 style="font-size: clamp(24px, 4vw, 34px); font-weight: 800; color: white; line-height: 1.2; letter-spacing: -1px; margin-bottom: 12px;">Komplett-Paket: Alles f&uuml;r CHF 15.&ndash;/Mt.</h2>
+                <p style="font-size: 17px; color: #999; line-height: 1.6; margin-bottom: 8px;">Alle 14 Themen, Deep-Dives, Sonderausgaben und volles Archiv. Einzeln w&uuml;rden alle Themen CHF 35.&ndash;/Mt. kosten &mdash; du sparst &uuml;ber 57%.</p>
+            </div>
+            <div style="text-align: center; flex-shrink: 0;">
+                <div style="font-size: 48px; font-weight: 800; color: white; line-height: 1; margin-bottom: 4px;">CHF 15.&ndash;</div>
+                <div style="font-size: 14px; color: #999; margin-bottom: 20px;">pro Monat &bull; CHF 150.&ndash;/Jahr</div>
+                <a href="pakete/komplett.html" style="display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s;">Komplett entdecken &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- THEMEN -->
+<section class="section" id="themen">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Themen</div>
+            <h2 class="section-title">Alles, was Macher:innen<br>wissen müssen.</h2>
+            <p class="section-desc">Von Handwerk bis Krypto, von lokaler Politik bis Robotik — wähle die Themen, die zu dir passen.</p>
+        </div>
+        <div class="topics-grid reveal">
+            <a href="themen/handwerk.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-handwerk"/></svg></span> Handwerk</a>
+            <a href="themen/selbstaendigkeit.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-selbst"/></svg></span> Selbständigkeit</a>
+            <a href="themen/fuehrungskompetenzen.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-fuehrung"/></svg></span> Führung</a>
+            <a href="themen/aktien-maerkte.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-aktien"/></svg></span> Aktien & Märkte</a>
+            <a href="themen/krypto.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-krypto"/></svg></span> Krypto</a>
+            <a href="themen/makrooekonomie.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-makro"/></svg></span> Makroökonomie</a>
+            <a href="themen/abrechnung-operativ.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-abrechnung"/></svg></span> Abrechnung</a>
+            <a href="themen/weltgeschehen.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-welt"/></svg></span> Weltgeschehen</a>
+            <a href="themen/lokale-politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-lokal"/></svg></span> Lokale Politik</a>
+            <a href="themen/politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-politik"/></svg></span> Politik</a>
+            <a href="themen/sport.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-sport"/></svg></span> Sport</a>
+            <a href="themen/ki.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-ki"/></svg></span> KI</a>
+            <a href="themen/ki-automatisierung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-kiauto"/></svg></span> KI-Automatisierung</a>
+            <a href="themen/robotik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-robotik"/></svg></span> Robotik</a>
+        </div>
+        <div class="topics-note-wrap reveal">
+            <div class="topic-single-note">Jedes Thema einzeln buchbar: <strong>CHF 2.50/Mt.</strong> oder <strong>CHF 25.–/Jahr</strong></div>
+        </div>
+    </div>
+</section>
+
+<!-- FREE vs PRO -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Free vs. Abo</div>
+            <h2 class="section-title">Kostenlos starten.<br>Jederzeit upgraden.</h2>
+            <p class="section-desc">Mit dem Gratis-Abo erhältst du 3 Themen in Kurzform. Für den vollen Umfang wählst du dein Paket.</p>
+        </div>
+        <div class="compare-grid reveal">
+            <div class="compare-card free">
+                <h3>Gratis</h3>
+                <div class="compare-price">CHF 0.– / für immer</div>
+                <ul class="compare-list">
+                    <li><span class="ci ci-yes">&#10003;</span> 3 Themen nach Wahl</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Kurzfassung pro Ausgabe</li>
+                    <li><span class="ci ci-yes">&#10003;</span> 2x pro Woche (Mo & Do)</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Jederzeit kündbar</li>
+                    <li><span class="ci ci-no">&#10005;</span> Kein Volltext-Zugang</li>
+                    <li><span class="ci ci-no">&#10005;</span> Keine Deep-Dives</li>
+                    <li><span class="ci ci-no">&#10005;</span> Kein Archiv-Zugang</li>
+                </ul>
+            </div>
+            <div class="compare-card pro">
+                <div class="compare-badge">Empfohlen</div>
+                <h3>Abo</h3>
+                <div class="compare-price">Ab CHF 2.50 / Monat</div>
+                <ul class="compare-list">
+                    <li><span class="ci ci-yes">&#10003;</span> Themen nach Wahl oder Paket</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Voller Umfang pro Ausgabe</li>
+                    <li><span class="ci ci-yes">&#10003;</span> 2x pro Woche (Mo & Do)</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Jederzeit kündbar</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Deep-Dives & Analysen</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Volles Archiv</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Jahresabo spart 2 Monate</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="preise">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Preise</div>
+            <h2 class="section-title">Wähle dein Paket.</h2>
+            <p class="section-desc">Themen-Pakete für deine Welt — oder buche einzelne Themen ab CHF 2.50/Mt.</p>
+        </div>
+
+        <div class="pricing-toggle reveal">
+            <span class="active" id="togMonat">Monatlich</span>
+            <button class="toggle-switch" id="toggleSwitch" onclick="togglePricing()" aria-label="Preisumschalter"></button>
+            <span id="togJahr">Jährlich</span>
+            <span class="save-badge">Spare 2 Monate</span>
+        </div>
+
+        <div class="pricing-grid reveal">
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-werkbank"/></svg></div>
+                <h3>Werkbank</h3>
+                <div class="pc-target">Handwerker & Gewerbe</div>
+                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Handwerk</li><li>Selbständigkeit</li><li>Finanzen (Abrechnung & operativ)</li></ul>
+                <a href="pakete/werkbank.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-solo"/></svg></div>
+                <h3>Solo</h3>
+                <div class="pc-target">Selbständige</div>
+                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Selbständigkeit</li><li>Führungskompetenzen</li><li>Finanzen (Abrechnung & operativ)</li></ul>
+                <a href="pakete/solo.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-leitwolf"/></svg></div>
+                <h3>Leitwolf</h3>
+                <div class="pc-target">Unternehmer</div>
+                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Handwerk</li><li>Selbständigkeit</li><li>Führungskompetenzen</li><li>Finanzen (operativ)</li></ul>
+                <a href="pakete/leitwolf.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kader"/></svg></div>
+                <h3>Kader</h3>
+                <div class="pc-target">Führung & Karriere</div>
+                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Führungskompetenzen</li><li>Selbständigkeit</li><li>Finanzen (operativ)</li></ul>
+                <a href="pakete/kader.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kapital"/></svg></div>
+                <h3>Kapital</h3>
+                <div class="pc-target">Finanzen & Investor</div>
+                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Aktien & Märkte</li><li>Krypto</li><li>Makroökonomie</li><li>Abrechnung & operativ</li></ul>
+                <a href="pakete/kapital.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kompass"/></svg></div>
+                <h3>Kompass</h3>
+                <div class="pc-target">Politik & Weltgeschehen</div>
+                <div class="pc-price" data-m="5" data-y="50">CHF 5.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Weltgeschehen</li><li>Politik</li><li>Lokale Politik</li></ul>
+                <a href="pakete/kompass.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-tribune"/></svg></div>
+                <h3>Tribüne</h3>
+                <div class="pc-target">Sport & Gesellschaft</div>
+                <div class="pc-price" data-m="5" data-y="50">CHF 5.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Sport</li><li>Gesellschaft</li><li>Weltgeschehen</li></ul>
+                <a href="pakete/tribune.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-signal"/></svg></div>
+                <h3>Signal</h3>
+                <div class="pc-target">KI & Automatisierung</div>
+                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Künstliche Intelligenz</li><li>KI-Automatisierung</li><li>Robotik</li></ul>
+                <a href="pakete/signal.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-tagespuls"/></svg></div>
+                <h3>Tagespuls</h3>
+                <div class="pc-target">Zeitungsbrief</div>
+                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Politik</li><li>Weltgeschehen</li><li>Sport</li><li>Finanzen (Märkte)</li><li>Lokale Politik</li></ul>
+                <a href="pakete/tagespuls.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
+            </div>
+            <div class="price-card featured">
+                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-komplett"/></svg></div>
+                <h3>Komplett</h3>
+                <div class="pc-target">Alles. Ohne Kompromisse.</div>
+                <div class="pc-price" data-m="15" data-y="150">CHF 15.– <small>/Mt.</small></div>
+                <div class="pc-divider"></div>
+                <ul class="pc-topics"><li>Alle 14 Themengebiete</li><li>Voller Umfang, keine Kürzungen</li><li>Deep-Dives & Sonderausgaben</li><li>Volles Archiv</li></ul>
+                <a href="pakete/komplett.html" class="pc-btn pc-btn-fill">Mehr erfahren</a>
+            </div>
+        </div>
+
+        <div class="einzelthema-banner reveal">
+            <div class="eb-text">
+                <h4>Lieber einzelne Themen?</h4>
+                <p>Jedes der 14 Themen ist auch einzeln buchbar — im vollen Umfang, ohne Paket.</p>
+            </div>
+            <div class="eb-price">
+                <div class="price-main" data-em="2.50" data-ey="25">CHF 2.50 <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Mt.</small></div>
+                <div class="price-sub">oder CHF 25.– / Jahr</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PREVIEW -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="preview-grid">
+            <div class="preview-text reveal">
+                <div class="section-eyebrow">So sieht's aus</div>
+                <h2>Jede Ausgabe liefert dir einen unfairen Vorteil.</h2>
+                <p>Kompakt, umsetzbar und auf den Punkt. Im Gratis-Abo die Kurzversion, im Abo den vollen Umfang.</p>
+                <ul class="preview-list">
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Branchen-Update</strong> — was sich in deiner Welt bewegt</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Praxis-Tipp</strong> — sofort umsetzbar</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Markt & Zahlen</strong> — Kurse, Trends, Makro</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Deep-Dive</strong> — vertiefte Analyse (nur im Abo)</span></li>
+                </ul>
+            </div>
+            <div class="preview-mockup reveal">
+                <div class="mockup-header"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-bar"></div></div>
+                <div class="mockup-body">
+                    <div class="mb-label">MacherPost #24 — Montag, 16. März</div>
+                    <h4>KI-Automatisierung: 3 Tools, die deinen Papierkram halbieren</h4>
+                    <p>Von der automatischen Rechnungserfassung bis zur KI-gestützten Angebotserstellung — diese drei Tools sind 2026 ein Gamechanger...</p>
+                    <div class="mb-divider"></div>
+                    <div><span class="mb-tag">KI</span><span class="mb-tag">Automatisierung</span><span class="mb-tag">Handwerk</span></div>
+                    <div class="mb-locked">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Deep-Dive freischalten mit einem Abo
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal"><div class="section-eyebrow">Das sagen andere</div><h2 class="section-title">Macher:innen vertrauen uns.</h2></div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <blockquote>&laquo;Endlich ein Newsletter, der meine Realität als Schreiner versteht. Werkbank-Abo ist genau mein Ding.&raquo;</blockquote>
+                <div class="testimonial-author"><div class="testimonial-avatar">TM</div><div><div class="testimonial-name">Thomas M.</div><div class="testimonial-role">Schreinermeister, Zürich</div></div></div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <blockquote>&laquo;Kapital-Abo: Märkte, Krypto und Makro — kompakter geht's nicht. Mein Morgen-Briefing vor der Börse.&raquo;</blockquote>
+                <div class="testimonial-author"><div class="testimonial-avatar">SK</div><div><div class="testimonial-name">Sandra K.</div><div class="testimonial-role">Privatinvestorin, Bern</div></div></div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <blockquote>&laquo;Komplett-Abo vom ersten Tag. KI, Politik, Sport — alles in 5 Minuten. Besser als jede Zeitung.&raquo;</blockquote>
+                <div class="testimonial-author"><div class="testimonial-avatar">RF</div><div><div class="testimonial-name">Roman F.</div><div class="testimonial-role">Geschäftsführer, Winterthur</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-alt" id="faq">
+    <div class="container">
+        <div class="section-header reveal"><div class="section-eyebrow">FAQ</div><h2 class="section-title">Häufige Fragen.</h2></div>
+        <div class="faq-list reveal">
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Montag und Donnerstag um 06:30 Uhr. Pünktlich zum Start in den Tag.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich im Gratis-Abo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Du wählst 3 Themen aus unserem gesamten Angebot und erhältst sie in verkürzter Form — kompakt und kostenlos. Für den vollen Umfang, Deep-Dives und Archivzugang brauchst du ein Abo-Paket.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich einzelne Themen buchen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja! Jedes der 14 Themen ist einzeln buchbar für CHF 2.50 pro Monat oder CHF 25.– pro Jahr. Du bekommst den vollen Umfang zu deinem gewählten Thema.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie unterscheiden sich die Pakete?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jedes Paket bündelt Themen für eine bestimmte Zielgruppe und ist günstiger als Einzelbuchungen. Werkbank ist für Handwerker, Signal für KI-Interessierte, Komplett für alle. Die Pakete starten ab CHF 5.– pro Monat.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lohnt sich das Jahresabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja — du sparst 2 Monate. Beispiel: Das Komplett-Abo kostet monatlich CHF 15.–, jährlich nur CHF 150.– statt CHF 180.–.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich jederzeit kündigen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Natürlich. Ein Klick genügt — in jeder Ausgabe findest du einen Abmelde-Link. Kein Kleingedrucktes, kein Drama.</div></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="start">
+    <div class="container">
+        <h2 class="reveal">Bereit, besser informiert zu sein?</h2>
+        <p class="cta-desc reveal">Starte kostenlos mit 3 Themen deiner Wahl. Upgrade jederzeit.</p>
+        <form class="signup-form reveal" id="ctaForm" onsubmit="return handleSignup(event, 'cta')">
+            <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
+            <button type="submit" class="btn-signup">Kostenlos starten</button>
+        </form>
+        <div class="success-msg" id="ctaSuccess"><h3>Du bist dabei!</h3><p>Wir melden uns, sobald es losgeht.</p></div>
+        <p class="hero-trust reveal"><strong>3 Themen gratis.</strong> Kein Spam. Jederzeit kündbar.</p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-brand">Macher<span>Post</span></div>
+        <p>&copy; 2026 MacherPost. Alle Rechte vorbehalten.</p>
+        <div class="footer-links">
+            <a href="#themen">Themen</a><a href="#preise">Preise</a><a href="#faq">FAQ</a>
+            <a href="kontakt.html">Kontakt</a><a href="datenschutz.html">Datenschutz</a><a href="impressum.html">Impressum</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function handleSignup(e,id){e.preventDefault();const f=e.target,em=f.querySelector('input[type="email"]').value.trim();if(!em)return!1;f.style.display='none';const s=document.getElementById(id+'Success');if(s)s.classList.add('show');return!1}
+    let isYearly=false;
+    function togglePricing(){
+        isYearly=!isYearly;
+        document.getElementById('toggleSwitch').classList.toggle('on',isYearly);
+        document.getElementById('togMonat').classList.toggle('active',!isYearly);
+        document.getElementById('togJahr').classList.toggle('active',isYearly);
+        document.querySelectorAll('.pc-price').forEach(el=>{
+            const m=el.dataset.m,y=el.dataset.y;
+            el.innerHTML=isYearly?`CHF ${y}.– <small>/Jahr</small>`:`CHF ${m}.– <small>/Mt.</small>`;
+        });
+        const eb=document.querySelector('.price-main');
+        if(eb){
+            if(isYearly){eb.innerHTML='CHF 25.– <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Jahr</small>';eb.nextElementSibling.textContent='oder CHF 2.50 / Monat';}
+            else{eb.innerHTML='CHF 2.50 <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Mt.</small>';eb.nextElementSibling.textContent='oder CHF 25.– / Jahr';}
+        }
+    }
+    function toggleFaq(btn){const i=btn.parentElement,a=i.querySelector('.faq-answer'),o=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>{x.classList.remove('open');x.querySelector('.faq-answer').style.maxHeight=null});if(!o){i.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}}
+    const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+</script>
+<script src="/js/nav-auth.js"></script>
+</body>
+</html>

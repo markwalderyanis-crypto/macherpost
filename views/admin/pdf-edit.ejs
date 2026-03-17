@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title><%= pdf ? 'PDF bearbeiten' : 'Neues PDF' %> — Admin — MacherPost</title>
+</head>
+<body>
+<%- include('../partials/nav') %>
+
+<main class="content">
+    <a href="/admin/pdfs" style="font-size: 14px; color: var(--c-muted);">&larr; Zur&uuml;ck zur Liste</a>
+    <h1 style="margin-top: 16px;"><%= pdf ? 'PDF bearbeiten' : 'Neues PDF hochladen' %></h1>
+
+    <form method="POST" action="<%= pdf ? '/admin/pdfs/' + pdf.id : '/admin/pdfs' %>" enctype="multipart/form-data" class="card" style="margin-top: 24px;">
+        <div class="form-group">
+            <label for="title">Titel</label>
+            <input type="text" id="title" name="title" required value="<%= pdf ? pdf.title : '' %>" placeholder="z.B. Bitcoin-Analyse KW 12">
+        </div>
+
+        <div class="form-group">
+            <label for="theme_slug">Thema</label>
+            <select id="theme_slug" name="theme_slug" required>
+                <option value="">Thema w&auml;hlen...</option>
+                <% for (const t of themes) { %>
+                    <option value="<%= t.slug %>" <%= pdf && pdf.theme_slug === t.slug ? 'selected' : '' %>><%= t.name %></option>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Beschreibung (optional)</label>
+            <textarea id="description" name="description" placeholder="Kurze Beschreibung des Inhalts..."><%= pdf ? pdf.description : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="pdf_file">PDF-Datei<%= pdf ? ' (leer lassen um bestehende zu behalten)' : '' %></label>
+            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" <%= !pdf ? 'required' : '' %>>
+            <% if (pdf) { %>
+                <p style="font-size: 12px; color: var(--c-muted); margin-top: 4px;">Aktuell: <%= pdf.filename %></p>
+            <% } %>
+        </div>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label for="publish_date">Datum</label>
+                <input type="date" id="publish_date" name="publish_date" required value="<%= pdf ? pdf.publish_date.slice(0,10) : new Date().toISOString().slice(0,10) %>">
+            </div>
+            <div class="form-group">
+                <label for="publish_time">Uhrzeit</label>
+                <input type="time" id="publish_time" name="publish_time" value="<%= pdf && pdf.publish_date.length > 10 ? pdf.publish_date.slice(11,16) : '06:30' %>">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="draft" <%= pdf && pdf.status === 'draft' ? 'selected' : '' %>>Entwurf</option>
+                    <option value="scheduled" <%= pdf && pdf.status === 'scheduled' ? 'selected' : '' %>>Geplant</option>
+                    <option value="published" <%= pdf && pdf.status === 'published' ? 'selected' : '' %>>Ver&ouml;ffentlicht</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button type="submit" class="btn btn-primary"><%= pdf ? 'Speichern' : 'Hochladen' %></button>
+            <a href="/admin/pdfs" class="btn btn-outline">Abbrechen</a>
+        </div>
+    </form>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

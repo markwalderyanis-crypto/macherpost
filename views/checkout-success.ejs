@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('partials/head') %>
+    <title>Zahlung erfolgreich — MacherPost</title>
+</head>
+<body>
+<%- include('partials/nav') %>
+<main class="content" style="text-align: center;">
+    <p style="font-size: 64px; margin-bottom: 16px;">&#9989;</p>
+    <h1>Zahlung erfolgreich!</h1>
+    <p style="color: var(--c-muted); font-size: 17px; margin-bottom: 32px;">Dein Abo ist jetzt aktiv. Du kannst sofort auf deine Inhalte zugreifen.</p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/archiv" class="btn btn-primary">Zum Archiv</a>
+        <a href="/konto" class="btn btn-outline">Mein Konto</a>
+    </div>
+</main>
+<%- include('partials/footer') %>
+</body>
+</html>

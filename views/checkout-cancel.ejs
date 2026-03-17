@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('partials/head') %>
+    <title>Zahlung abgebrochen — MacherPost</title>
+</head>
+<body>
+<%- include('partials/nav') %>
+<main class="content" style="text-align: center;">
+    <p style="font-size: 64px; margin-bottom: 16px;">&#10060;</p>
+    <h1>Zahlung abgebrochen</h1>
+    <p style="color: var(--c-muted); font-size: 17px; margin-bottom: 32px;">Die Zahlung wurde abgebrochen. Dein Warenkorb bleibt erhalten.</p>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/warenkorb" class="btn btn-primary">Zum Warenkorb</a>
+        <a href="/" class="btn btn-outline">Zur Startseite</a>
+    </div>
+</main>
+<%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komplett &mdash; MacherPost</title>
+    <meta name="description" content="Alle 14 Themen. Deep-Dives. Volles Archiv. Das Komplett-Paket von MacherPost &mdash; alles, ohne Kompromisse.">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --c-bg: #FAFAF9; --c-white: #FFFFFF; --c-dark: #1A1A1A; --c-text: #2D2D2D;
+            --c-muted: #6B6B6B; --c-accent: #E85D26; --c-accent-hover: #D04E1C;
+            --c-accent-light: #FFF3ED; --c-border: #E5E5E3; --c-card: #FFFFFF;
+            --c-section-alt: #F3F2EF; --c-green: #16A34A; --c-green-light: #F0FDF4;
+            --c-gold: #F59E0B; --c-gold-light: #FFFBEB; --c-gold-dark: #B45309;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --max-w: 1120px; --radius: 12px; --radius-sm: 8px;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+        /* Nav */
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,250,249,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--c-border); }
+        .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-dark); }
+        .nav-logo span { color: var(--c-accent); }
+        .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+        .nav-links a { font-size: 14px; font-weight: 500; color: var(--c-muted); transition: color 0.2s; }
+        .nav-links a:hover { color: var(--c-dark); }
+        .nav-back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--c-muted); transition: color 0.2s; }
+        .nav-back:hover { color: var(--c-accent); }
+        .nav-back svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+        /* Hero - Premium */
+        .hero { padding: 140px 24px 80px; text-align: center; background: linear-gradient(135deg, #1A1A1A 0%, #2D1810 40%, #3D1E0F 60%, #1A1A1A 100%); position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(232,93,38,0.12) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(245,158,11,0.08) 0%, transparent 40%); animation: shimmer 8s ease-in-out infinite; pointer-events: none; }
+        @keyframes shimmer { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-2%,1%); } }
+        .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top, var(--c-bg), transparent); pointer-events: none; }
+        .hero-icon { width: 72px; height: 72px; color: var(--c-gold); margin: 0 auto 20px; position: relative; z-index: 1; }
+        .hero-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 20px rgba(245,158,11,0.3)); }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; background: linear-gradient(135deg, var(--c-gold), #D97706); color: #FFFFFF; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 50px; margin-bottom: 24px; position: relative; z-index: 1; box-shadow: 0 4px 20px rgba(245,158,11,0.3); }
+        .hero-badge svg { width: 14px; height: 14px; fill: currentColor; }
+        .hero h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 800; line-height: 1.05; letter-spacing: -2px; color: #FFFFFF; margin-bottom: 16px; position: relative; z-index: 1; }
+        .hero-desc { font-size: clamp(17px, 2.5vw, 21px); color: rgba(255,255,255,0.6); max-width: 580px; margin: 0 auto 32px; line-height: 1.5; position: relative; z-index: 1; }
+        .price-badge { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; font-size: 16px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 32px; position: relative; z-index: 1; backdrop-filter: blur(10px); }
+        .price-badge .amount { color: var(--c-gold); font-weight: 800; font-size: 18px; }
+        .btn-cta { display: inline-flex; padding: 18px 42px; background: linear-gradient(135deg, var(--c-accent), var(--c-accent-hover)); color: white; font-weight: 700; font-size: 17px; border-radius: 50px; border: none; cursor: pointer; font-family: var(--font); transition: transform 0.2s, box-shadow 0.2s; position: relative; z-index: 1; box-shadow: 0 4px 24px rgba(232,93,38,0.35); }
+        .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,93,38,0.45); }
+        .btn-cta:active { transform: scale(0.98); }
+
+        /* Sections */
+        .section { padding: 96px 0; }
+        .section-alt { background: var(--c-section-alt); }
+        .section-header { text-align: center; margin-bottom: 56px; }
+        .section-eyebrow { display: inline-block; padding: 6px 16px; background: var(--c-accent-light); color: var(--c-accent); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 50px; margin-bottom: 20px; }
+        .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -1px; color: var(--c-dark); margin-bottom: 16px; }
+        .section-desc { font-size: 18px; color: var(--c-muted); max-width: 600px; margin: 0 auto; }
+
+        /* Comparison / Warum Komplett */
+        .comparison { max-width: 800px; margin: 0 auto; }
+        .comparison-grid { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 24px; align-items: center; }
+        .comp-box { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 36px 28px; text-align: center; }
+        .comp-box.premium { background: linear-gradient(135deg, #1A1A1A, #2D1810); border: 2px solid var(--c-gold); position: relative; }
+        .comp-box.premium::after { content: ''; position: absolute; inset: -2px; border-radius: var(--radius); background: linear-gradient(135deg, var(--c-gold), var(--c-accent)); z-index: -1; opacity: 0.15; }
+        .comp-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--c-muted); margin-bottom: 12px; }
+        .comp-box.premium .comp-label { color: rgba(255,255,255,0.5); }
+        .comp-price { font-size: 42px; font-weight: 800; color: var(--c-dark); letter-spacing: -1px; }
+        .comp-box.premium .comp-price { color: var(--c-gold); }
+        .comp-price small { font-size: 18px; font-weight: 600; }
+        .comp-detail { font-size: 14px; color: var(--c-muted); margin-top: 8px; line-height: 1.5; }
+        .comp-box.premium .comp-detail { color: rgba(255,255,255,0.5); }
+        .comp-old { text-decoration: line-through; color: #D97706; }
+        .comp-vs { font-size: 16px; font-weight: 800; color: var(--c-muted); text-align: center; }
+        .savings-banner { margin-top: 32px; padding: 20px 28px; background: var(--c-green-light); border: 1px solid #BBF7D0; border-radius: var(--radius-sm); text-align: center; }
+        .savings-banner .savings-big { font-size: 28px; font-weight: 800; color: var(--c-green); }
+        .savings-banner p { font-size: 15px; color: #166534; margin-top: 4px; }
+
+        /* Content Cards */
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 860px; margin: 0 auto; }
+        .card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 32px 28px; transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+        .card-icon { width: 40px; height: 40px; background: var(--c-accent-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--c-accent); }
+        .card-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .card h3 { font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 8px; }
+        .card p { font-size: 15px; color: var(--c-muted); line-height: 1.6; }
+
+        /* Topics Grid */
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; max-width: 960px; margin: 0 auto; }
+        .topic-item { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius-sm); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+        .topic-item:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); border-color: var(--c-accent); }
+        .topic-check { width: 22px; height: 22px; background: var(--c-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .topic-check svg { width: 12px; height: 12px; stroke: white; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .topic-name { font-size: 15px; font-weight: 600; color: var(--c-dark); }
+
+        /* Headlines */
+        .headlines-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .headline-item { display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius-sm); transition: transform 0.2s, box-shadow 0.2s; }
+        .headline-item:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+        .headline-num { font-size: 14px; font-weight: 800; color: var(--c-accent); background: var(--c-accent-light); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .headline-text { font-size: 16px; font-weight: 600; color: var(--c-dark); }
+        .headline-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--c-accent); background: var(--c-accent-light); padding: 3px 10px; border-radius: 50px; white-space: nowrap; margin-left: auto; flex-shrink: 0; }
+
+        /* CTA */
+        .cta-section { padding: 96px 0; background: var(--c-dark); text-align: center; }
+        .cta-section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 16px; }
+        .cta-section .cta-desc { font-size: 18px; color: #999; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
+        .signup-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto 20px; }
+        .signup-form input { flex: 1; padding: 16px 20px; border: 2px solid #3A3A3A; border-radius: 50px; font-size: 16px; font-family: var(--font); background: #2A2A2A; color: white; outline: none; transition: border-color 0.2s; }
+        .signup-form input:focus { border-color: var(--c-accent); }
+        .signup-form input::placeholder { color: #777; }
+        .btn-signup { padding: 16px 32px; background: var(--c-accent); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+        .btn-signup:hover { background: var(--c-accent-hover); }
+        .btn-signup:active { transform: scale(0.98); }
+        .cta-trust { font-size: 14px; color: #777; }
+        .cta-trust strong { color: #CCC; }
+        .success-msg { display: none; text-align: center; padding: 24px; background: var(--c-green-light); border: 1px solid #BBF7D0; border-radius: var(--radius-sm); max-width: 480px; margin: 0 auto; }
+        .success-msg.show { display: block; }
+        .success-msg h3 { font-size: 20px; color: #166534; margin-bottom: 6px; }
+        .success-msg p { font-size: 15px; color: #15803D; }
+
+        /* Footer */
+        .footer { padding: 40px 0; border-top: 1px solid var(--c-border); text-align: center; }
+        .footer-brand { font-size: 20px; font-weight: 800; color: var(--c-dark); margin-bottom: 8px; }
+        .footer-brand span { color: var(--c-accent); }
+        .footer p { font-size: 14px; color: var(--c-muted); }
+        .footer-links { margin-top: 16px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .footer-links a { font-size: 14px; color: var(--c-muted); transition: color 0.2s; }
+        .footer-links a:hover { color: var(--c-accent); }
+
+        /* Reveal animation */
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; gap: 12px; }
+            .comp-vs { display: none; }
+            .topics-grid { grid-template-columns: repeat(2, 1fr); }
+            .signup-form { flex-direction: column; }
+            .signup-form input, .btn-signup { width: 100%; }
+            .nav-links { gap: 16px; }
+            .headline-tag { display: none; }
+        }
+        @media (max-width: 480px) {
+            .nav-inner { padding: 0 16px; }
+            .hero { padding: 120px 16px 60px; }
+            .section { padding: 64px 0; }
+            .cta-section { padding: 64px 0; }
+            .topics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="../index.html" class="nav-logo">Macher<span>Post</span></a>
+        <div class="nav-links">
+            <a href="../index.html" class="nav-back">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Zur&uuml;ck zur &Uuml;bersicht
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-icon reveal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="reveal">
+            <div class="hero-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                Bestes Preis-Leistungs-Verh&auml;ltnis
+            </div>
+        </div>
+        <h1 class="reveal">Komplett</h1>
+        <p class="hero-desc reveal">Alles. Ohne Kompromisse. F&uuml;r alle, die das volle Bild wollen &mdash; 14&nbsp;Themen, Deep&#8209;Dives und volles Archiv.</p>
+        <div class="price-badge reveal">
+            <span class="amount">CHF 15.&ndash;/Mt.</span> oder <span class="amount">CHF 150.&ndash;/Jahr</span>
+        </div>
+        <div class="reveal">
+            <a href="../index.html#start" class="btn-cta">Jetzt Komplett starten</a>
+        </div>
+    </div>
+</section>
+
+<!-- WARUM KOMPLETT -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Warum Komplett?</div>
+            <h2 class="section-title">Mehr Inhalt. Weniger Kosten.</h2>
+            <p class="section-desc">Einzeln gebucht zahlst du deutlich mehr. Das Komplett-Paket gibt dir alles &mdash; zum besten Preis.</p>
+        </div>
+        <div class="comparison">
+            <div class="comparison-grid reveal">
+                <div class="comp-box">
+                    <div class="comp-label">14 Themen einzeln</div>
+                    <div class="comp-price"><small>CHF</small> 35<small>/Mt.</small></div>
+                    <div class="comp-detail">14 &times; CHF 2.50 pro Thema</div>
+                </div>
+                <div class="comp-vs">vs.</div>
+                <div class="comp-box premium">
+                    <div class="comp-label">Komplett-Paket</div>
+                    <div class="comp-price"><small>CHF</small> 15<small>/Mt.</small></div>
+                    <div class="comp-detail">Alle 14 Themen + Deep-Dives + Archiv</div>
+                </div>
+            </div>
+            <div class="savings-banner reveal">
+                <div class="savings-big">57 % Ersparnis</div>
+                <p>Du sparst <strong>CHF 20.&ndash; pro Monat</strong> gegen&uuml;ber Einzelbuchung &mdash; und bekommst noch mehr dazu.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ALLE 14 THEMEN -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Alle 14 Themen</div>
+            <h2 class="section-title">Dein komplettes Briefing-Universum.</h2>
+            <p class="section-desc">Jedes Thema ist einzeln kuratiert &mdash; zusammen ergeben sie das volle Bild.</p>
+        </div>
+        <div class="topics-grid">
+            <a href="../themen/handwerk.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Handwerk</div>
+            </a>
+            <a href="../themen/selbstaendigkeit.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Selbst&auml;ndigkeit</div>
+            </a>
+            <a href="../themen/fuehrungskompetenzen.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">F&uuml;hrungskompetenzen</div>
+            </a>
+            <a href="../themen/aktien-maerkte.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Aktien &amp; M&auml;rkte</div>
+            </a>
+            <a href="../themen/krypto.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Krypto</div>
+            </a>
+            <a href="../themen/makrooekonomie.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Makro&ouml;konomie</div>
+            </a>
+            <a href="../themen/abrechnung-operativ.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Abrechnung &amp; operativ</div>
+            </a>
+            <a href="../themen/weltgeschehen.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Weltgeschehen</div>
+            </a>
+            <a href="../themen/lokale-politik.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Lokale Politik</div>
+            </a>
+            <a href="../themen/politik.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Politik</div>
+            </a>
+            <a href="../themen/sport.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Sport</div>
+            </a>
+            <a href="../themen/ki.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">KI</div>
+            </a>
+            <a href="../themen/ki-automatisierung.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">KI-Automatisierung</div>
+            </a>
+            <a href="../themen/robotik.html" class="topic-item reveal">
+                <div class="topic-check"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+                <div class="topic-name">Robotik</div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- WAS DU BEKOMMST -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Was du bekommst</div>
+            <h2 class="section-title">Alles, was du brauchst. Nichts, was fehlt.</h2>
+            <p class="section-desc">Das Komplett-Paket ist f&uuml;r alle gebaut, die informiert statt &uuml;berfordert sein wollen.</p>
+        </div>
+        <div class="cards-grid">
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+                </div>
+                <h3>Alle 14 Themen im Vollumfang</h3>
+                <p>Von Handwerk &uuml;ber Krypto bis Robotik &mdash; jedes Thema wird t&auml;glich kuratiert und in dein Briefing gepackt.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <h3>Deep-Dives &amp; Sonderausgaben</h3>
+                <p>Exklusive Tiefenanalysen zu aktuellen Themen &mdash; nur f&uuml;r Komplett-Abonnent:innen.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+                <h3>Volles Archiv</h3>
+                <p>Zugang zu allen bisherigen Ausgaben &mdash; durchsuchbar, immer verf&uuml;gbar, dein Wissens-Backup.</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>
+                </div>
+                <h3>Exklusive Analysen</h3>
+                <p>Datengetriebene Einordnungen und Hintergrundberichte, die &uuml;ber die Schlagzeilen hinausgehen.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BEISPIEL-THEMEN -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Beispiel-Themen</div>
+            <h2 class="section-title">Von Handwerk bis KI &mdash; in einem Briefing.</h2>
+            <p class="section-desc">So k&ouml;nnte ein typischer Mix in deiner Komplett-Ausgabe aussehen.</p>
+        </div>
+        <div class="headlines-list">
+            <div class="headline-item reveal">
+                <div class="headline-num">1</div>
+                <div class="headline-text">Wie digitale Rapporte den Handwerksbetrieb ver&auml;ndern</div>
+                <div class="headline-tag">Handwerk</div>
+            </div>
+            <div class="headline-item reveal">
+                <div class="headline-num">2</div>
+                <div class="headline-text">Bitcoin nach dem Halving: Was der Markt jetzt erwartet</div>
+                <div class="headline-tag">Krypto</div>
+            </div>
+            <div class="headline-item reveal">
+                <div class="headline-num">3</div>
+                <div class="headline-text">KI in der Buchhaltung: Automatisierung, die wirklich funktioniert</div>
+                <div class="headline-tag">KI-Automatisierung</div>
+            </div>
+            <div class="headline-item reveal">
+                <div class="headline-num">4</div>
+                <div class="headline-text">Bundesratswahlen 2027: Was Unternehmer wissen m&uuml;ssen</div>
+                <div class="headline-tag">Politik</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="reveal">Bereit f&uuml;r das volle Bild?</h2>
+        <p class="cta-desc reveal">Starte kostenlos mit 3 Themen deiner Wahl. Upgrade jederzeit auf Komplett.</p>
+        <form class="signup-form reveal" id="ctaForm" onsubmit="return handleSignup(event)">
+            <input type="email" placeholder="deine@email.ch" required aria-label="E-Mail-Adresse">
+            <button type="submit" class="btn-signup">Kostenlos starten</button>
+        </form>
+        <div class="success-msg" id="ctaSuccess"><h3>Du bist dabei!</h3><p>Wir melden uns, sobald es losgeht.</p></div>
+        <p class="cta-trust reveal"><strong>3 Themen gratis.</strong> Kein Spam. Jederzeit k&uuml;ndbar.</p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-brand">Macher<span>Post</span></div>
+        <p>&copy; 2026 MacherPost. Alle Rechte vorbehalten.</p>
+        <div class="footer-links">
+            <a href="../index.html#themen">Themen</a>
+            <a href="../index.html#preise">Preise</a>
+            <a href="../index.html#faq">FAQ</a>
+            <a href="../kontakt.html">Kontakt</a>
+            <a href="../datenschutz.html">Datenschutz</a>
+            <a href="../impressum.html">Impressum</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function handleSignup(e){e.preventDefault();const f=e.target,em=f.querySelector('input[type="email"]').value.trim();if(!em)return!1;f.style.display='none';document.getElementById('ctaSuccess').classList.add('show');return!1}
+    const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+<script src="/js/nav-auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">Macher<span>Post</span></a>
+        <div class="nav-links">
+            <% if (user) { %>
+                <a href="/archiv">Archiv</a>
+                <a href="/konto">Konto</a>
+                <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
+                <a href="/logout" class="nav-cta" style="background: var(--c-dark);">Abmelden</a>
+            <% } else { %>
+                <a href="/login" class="nav-cta">Anmelden</a>
+            <% } %>
+        </div>
+    </div>
+</nav>
