@@ -14,4 +14,26 @@ router.get('/konto', isAuthenticated, (req, res) => {
   res.render('konto', { subscriptions });
 });
 
+// Stripe Billing Portal
+router.post('/billing/portal', isAuthenticated, async (req, res, next) => {
+  try {
+    const stripe = require('../config/stripe');
+    const db = getDb();
+    const sub = db.get('SELECT stripe_customer_id FROM subscriptions WHERE user_id = ? AND stripe_customer_id IS NOT NULL LIMIT 1', [req.user.id]);
+
+    if (!sub || !sub.stripe_customer_id) {
+      return res.redirect('/konto');
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${process.env.BASE_URL}/konto`
+    });
+
+    res.redirect(session.url);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

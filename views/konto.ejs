@@ -42,6 +42,19 @@
             <% } %>
         </div>
     <% } %>
+
+    <h2 style="margin-top: 40px;">Abrechnung</h2>
+    <div class="card" style="margin-top: 16px;">
+        <% if (subscriptions.length > 0 && subscriptions.some(s => s.stripe_customer_id)) { %>
+            <p style="margin-bottom: 16px;">Hier kannst du deine Zahlungsmethoden und Rechnungen verwalten:</p>
+            <form action="/billing/portal" method="POST">
+                <button type="submit" class="btn btn-primary">Abrechnungsportal &ouml;ffnen</button>
+            </form>
+        <% } else { %>
+            <p style="color: var(--c-muted);">Noch keine Abrechnungsdaten vorhanden. Abonniere ein Thema oder Paket, um deine Rechnungen hier einzusehen.</p>
+            <a href="/pakete/komplett.html" class="btn btn-primary" style="margin-top: 12px; display: inline-block;">Pakete entdecken</a>
+        <% } %>
+    </div>
 </main>
 
 <%- include('partials/footer') %>

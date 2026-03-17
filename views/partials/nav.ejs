@@ -4,6 +4,7 @@
         <div class="nav-links">
             <% if (user) { %>
                 <a href="/archiv">Archiv</a>
+                <a href="/warenkorb">Warenkorb</a>
                 <a href="/konto">Konto</a>
                 <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
                 <a href="/logout" class="nav-cta" style="background: var(--c-dark);">Abmelden</a>

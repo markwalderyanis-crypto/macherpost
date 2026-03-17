@@ -17,6 +17,7 @@
       if (user) {
         links.innerHTML = `
           <a href="/archiv" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Archiv</a>
+          <a href="/warenkorb" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Warenkorb</a>
           <a href="/konto" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Konto</a>
           ${user.role === 'admin' ? '<a href="/admin" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Admin</a>' : ''}
           <a href="/logout" style="display:inline-flex;padding:10px 22px;background:#1A1A1A;color:#fff;font-weight:700;font-size:14px;border-radius:50px;text-decoration:none;">Abmelden</a>
