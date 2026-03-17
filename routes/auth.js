@@ -61,6 +61,24 @@ router.post('/register', async (req, res, next) => {
     const result = db.run('INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)', [emailClean, name.trim(), hash]);
     const user = db.get('SELECT id, email, name, role FROM users WHERE id = ?', [result.lastInsertRowid]);
 
+    // Send welcome email
+    sendMail({
+      to: emailClean,
+      subject: 'Willkommen bei MacherPost!',
+      html: `
+        <div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto;">
+          <h2 style="color: #1A1A1A;">Willkommen bei MacherPost, ${name.trim()}!</h2>
+          <p>Dein Konto wurde erfolgreich erstellt.</p>
+          <p>Du kannst jetzt Themen und Pakete abonnieren und hast Zugang zum Archiv.</p>
+          <p style="margin: 24px 0;">
+            <a href="${process.env.BASE_URL}/konto" style="display: inline-block; padding: 12px 24px; background: #E85D26; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700;">Zu deinem Konto</a>
+          </p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+          <p style="color: #999; font-size: 12px;">MacherPost — Das Briefing f&uuml;r Macher:innen</p>
+        </div>
+      `
+    }).catch(() => {});
+
     req.logIn(user, (err) => {
       if (err) return next(err);
       res.redirect('/konto');
