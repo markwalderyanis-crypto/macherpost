@@ -9,6 +9,7 @@
                 <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
                 <a href="/logout" class="nav-cta" style="background: var(--c-dark);">Abmelden</a>
             <% } else { %>
+                <a href="/warenkorb">Warenkorb</a>
                 <a href="/login" class="nav-cta">Anmelden</a>
             <% } %>
         </div>

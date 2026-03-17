@@ -4,8 +4,8 @@ const stripe = require('../config/stripe');
 const { getDb } = require('../db/init');
 const { isAuthenticated } = require('../middleware/auth');
 
-// Cart page
-router.get('/warenkorb', isAuthenticated, (req, res) => {
+// Cart page (no auth required)
+router.get('/warenkorb', (req, res) => {
   const db = getDb();
   const cart = req.session.cart || [];
   const items = [];
@@ -18,8 +18,8 @@ router.get('/warenkorb', isAuthenticated, (req, res) => {
   res.render('warenkorb', { items });
 });
 
-// Add to cart
-router.get('/warenkorb/add', isAuthenticated, (req, res) => {
+// Add to cart (no auth required)
+router.get('/warenkorb/add', (req, res) => {
   const slug = req.query.slug;
   if (!slug) return res.redirect('/warenkorb');
 
@@ -30,8 +30,8 @@ router.get('/warenkorb/add', isAuthenticated, (req, res) => {
   req.session.save(() => res.redirect('/warenkorb'));
 });
 
-// Remove from cart
-router.post('/warenkorb/remove', isAuthenticated, (req, res) => {
+// Remove from cart (no auth required)
+router.post('/warenkorb/remove', (req, res) => {
   const { slug } = req.body;
   if (req.session.cart) {
     req.session.cart = req.session.cart.filter(s => s !== slug);

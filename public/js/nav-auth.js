@@ -24,6 +24,7 @@
         `;
       } else {
         links.innerHTML = `
+          <a href="/warenkorb" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Warenkorb</a>
           <a href="/login" style="display:inline-flex;padding:10px 22px;background:#E85D26;color:#fff;font-weight:700;font-size:14px;border-radius:50px;text-decoration:none;">Anmelden</a>
         `;
       }

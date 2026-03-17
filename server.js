@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 3457;
     store: new FileStore({ path: path.join(__dirname, 'db', 'sessions'), ttl: 30 * 24 * 60 * 60, retries: 0 }),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
   }));
 

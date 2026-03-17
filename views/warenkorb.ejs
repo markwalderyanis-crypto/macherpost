@@ -47,6 +47,7 @@
                 </div>
             </div>
 
+            <% if (user) { %>
             <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                 <form method="POST" action="/api/checkout" style="flex: 1;">
                     <input type="hidden" name="interval" value="monthly">
@@ -57,6 +58,9 @@
                     <button type="submit" class="btn btn-outline" style="width: 100%;">J&auml;hrlich abonnieren (spare 2 Mt.)</button>
                 </form>
             </div>
+            <% } else { %>
+            <a href="/login" class="btn btn-primary" style="width: 100%; text-align: center; display: block;">Anmelden um zu bestellen</a>
+            <% } %>
             <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--c-muted);">
                 Sichere Zahlung via Stripe &bull; Kreditkarte &amp; Twint
             </p>
