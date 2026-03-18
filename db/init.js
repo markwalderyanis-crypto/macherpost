@@ -19,6 +19,9 @@ async function initDb() {
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   db.run(schema);
 
+  // Migrate: add category column to pdfs if missing
+  try { db.run("ALTER TABLE pdfs ADD COLUMN category TEXT NOT NULL DEFAULT 'tagesbericht'"); } catch (e) { /* already exists */ }
+
   const result = db.exec('SELECT COUNT(*) FROM products');
   const count = result.length > 0 ? result[0].values[0][0] : 0;
   if (count === 0) seedProducts();

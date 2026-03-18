@@ -72,14 +72,14 @@ router.get('/pdfs/:id/edit', (req, res) => {
 
 // Create PDF
 router.post('/pdfs', upload.single('pdf_file'), (req, res) => {
-  const { title, theme_slug, description, publish_date, publish_time, status } = req.body;
+  const { title, theme_slug, category, description, publish_date, publish_time, status } = req.body;
   if (!req.file) return res.redirect('/admin/pdfs/new');
 
   const datetime = `${publish_date}T${publish_time || '06:30'}`;
   const db = getDb();
   db.run(
-    'INSERT INTO pdfs (theme_slug, title, description, filename, publish_date, status) VALUES (?, ?, ?, ?, ?, ?)',
-    [theme_slug, title, description || '', req.file.filename, datetime, status || 'draft']
+    'INSERT INTO pdfs (theme_slug, category, title, description, filename, publish_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [theme_slug, category || 'tagesbericht', title, description || '', req.file.filename, datetime, status || 'draft']
   );
 
   res.redirect('/admin/pdfs');
@@ -87,7 +87,7 @@ router.post('/pdfs', upload.single('pdf_file'), (req, res) => {
 
 // Update PDF
 router.post('/pdfs/:id', upload.single('pdf_file'), (req, res) => {
-  const { title, theme_slug, description, publish_date, publish_time, status } = req.body;
+  const { title, theme_slug, category, description, publish_date, publish_time, status } = req.body;
   const db = getDb();
   const existing = db.get('SELECT * FROM pdfs WHERE id = ?', [req.params.id]);
   if (!existing) return res.status(404).render('error', { title: '404', message: 'PDF nicht gefunden' });
@@ -96,8 +96,8 @@ router.post('/pdfs/:id', upload.single('pdf_file'), (req, res) => {
   const datetime = `${publish_date}T${publish_time || '06:30'}`;
 
   db.run(
-    'UPDATE pdfs SET theme_slug = ?, title = ?, description = ?, filename = ?, publish_date = ?, status = ? WHERE id = ?',
-    [theme_slug, title, description || '', filename, datetime, status || existing.status, req.params.id]
+    'UPDATE pdfs SET theme_slug = ?, category = ?, title = ?, description = ?, filename = ?, publish_date = ?, status = ? WHERE id = ?',
+    [theme_slug, category || existing.category, title, description || '', filename, datetime, status || existing.status, req.params.id]
   );
 
   res.redirect('/admin/pdfs');

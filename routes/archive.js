@@ -42,6 +42,8 @@ router.get('/archiv/:themeSlug', (req, res) => {
   const userThemes = req.user ? getUserThemes(req.user.id) : new Set();
   const hasPaidAccess = isAdmin || userThemes.has(themeSlug);
 
+  const category = req.query.cat || 'all';
+
   let pdfs = db.all(
     "SELECT * FROM pdfs WHERE theme_slug = ? AND status = 'published' ORDER BY publish_date DESC", [themeSlug]
   );
@@ -51,7 +53,23 @@ router.get('/archiv/:themeSlug', (req, res) => {
     pdfs = pdfs.filter(p => isTuesday(p.publish_date));
   }
 
-  res.render('archiv-theme', { theme, pdfs, hasAccess: true, hasPaidAccess });
+  // Filter by category
+  const filteredPdfs = category === 'all' ? pdfs : pdfs.filter(p => p.category === category);
+
+  // Count per category
+  const catCounts = { all: pdfs.length, recherche: 0, tagesbericht: 0, brisantes: 0 };
+  for (const p of pdfs) {
+    if (catCounts[p.category] !== undefined) catCounts[p.category]++;
+  }
+
+  // Get avg ratings for each PDF
+  const pdfRatings = {};
+  for (const p of filteredPdfs) {
+    const r = db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [p.id]);
+    pdfRatings[p.id] = { avg: r ? Math.round((r.avg || 0) * 10) / 10 : 0, count: r ? r.count : 0 };
+  }
+
+  res.render('archiv-theme', { theme, pdfs: filteredPdfs, hasAccess: true, hasPaidAccess, category, catCounts, pdfRatings });
 });
 
 // Single article (PDF view + comments)
@@ -78,7 +96,17 @@ router.get('/artikel/:pdfId', (req, res) => {
 
   const theme = db.get("SELECT name FROM products WHERE slug = ?", [pdf.theme_slug]);
 
-  res.render('artikel', { pdf, comments, themeName: theme ? theme.name : pdf.theme_slug });
+  // Ratings
+  const ratingData = db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [pdf.id]);
+  const userRating = req.user ? db.get('SELECT stars FROM ratings WHERE pdf_id = ? AND user_id = ?', [pdf.id, req.user.id]) : null;
+
+  res.render('artikel', {
+    pdf, comments,
+    themeName: theme ? theme.name : pdf.theme_slug,
+    avgRating: ratingData ? Math.round((ratingData.avg || 0) * 10) / 10 : 0,
+    ratingCount: ratingData ? ratingData.count : 0,
+    userRating: userRating ? userRating.stars : 0
+  });
 });
 
 // PDF inline view (in iframe)

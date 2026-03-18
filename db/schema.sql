@@ -37,6 +37,7 @@ CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
 CREATE TABLE IF NOT EXISTS pdfs (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     theme_slug      TEXT NOT NULL,
+    category        TEXT NOT NULL DEFAULT 'tagesbericht',
     title           TEXT NOT NULL,
     description     TEXT,
     filename        TEXT NOT NULL,
@@ -55,3 +56,13 @@ CREATE TABLE IF NOT EXISTS comments (
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_comments_pdf ON comments(pdf_id);
+
+CREATE TABLE IF NOT EXISTS ratings (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    pdf_id      INTEGER NOT NULL REFERENCES pdfs(id) ON DELETE CASCADE,
+    user_id     INTEGER NOT NULL REFERENCES users(id),
+    stars       INTEGER NOT NULL CHECK(stars >= 1 AND stars <= 5),
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(pdf_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_ratings_pdf ON ratings(pdf_id);

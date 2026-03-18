@@ -3,6 +3,22 @@
 <head>
     <%- include('partials/head') %>
     <title><%= theme.name %> — Archiv — MacherPost</title>
+    <style>
+        .cat-tabs { display: flex; gap: 8px; margin: 24px 0; flex-wrap: wrap; }
+        .cat-tab { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 50px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid var(--c-border); color: var(--c-muted); background: var(--c-white); }
+        .cat-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
+        .cat-tab.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+        .cat-tab .cat-count { font-size: 12px; opacity: 0.7; }
+        .cat-icon { font-size: 16px; }
+        .stars { color: #F59E0B; font-size: 13px; letter-spacing: 1px; }
+        .stars-muted { color: var(--c-muted); font-size: 12px; }
+        .pdf-card { text-decoration: none; transition: all 0.2s; }
+        .pdf-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+        .cat-recherche { background: #EEF2FF; color: #4338CA; }
+        .cat-tagesbericht { background: #F0FDF4; color: #16A34A; }
+        .cat-brisantes { background: #FEF2F2; color: #DC2626; }
+    </style>
 </head>
 <body>
 <%- include('partials/nav') %>
@@ -17,28 +33,65 @@
             <p style="margin-bottom: 20px;">Du hast kein aktives Abo f&uuml;r dieses Thema.</p>
             <a href="/warenkorb/add?slug=<%= theme.slug %>" class="btn btn-primary">Jetzt abonnieren — CHF <%= (theme.price_monthly / 100).toFixed(2) %>/Mt.</a>
         </div>
-    <% } else if (pdfs.length === 0) { %>
-        <div class="card" style="text-align: center; padding: 48px;">
-            <p style="font-size: 48px; margin-bottom: 16px;">&#128196;</p>
-            <h2 style="margin: 0 0 8px;">Noch keine Beitr&auml;ge</h2>
-            <p style="color: var(--c-muted); margin: 0;">Neue Beitr&auml;ge werden bald ver&ouml;ffentlicht.</p>
-        </div>
     <% } else { %>
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 24px;">
-            <% for (const pdf of pdfs) { %>
-                <a href="/artikel/<%= pdf.id %>" class="card" style="text-decoration: none; transition: all 0.2s;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
-                        <div>
-                            <h3 style="font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= pdf.title %></h3>
-                            <% if (pdf.description) { %>
-                                <p style="font-size: 14px; color: var(--c-muted); margin: 0; line-height: 1.5;"><%= pdf.description %></p>
-                            <% } %>
-                        </div>
-                        <span style="font-size: 13px; color: var(--c-muted); white-space: nowrap;"><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
-                    </div>
-                </a>
-            <% } %>
+        <!-- Kategorie-Tabs -->
+        <div class="cat-tabs">
+            <a href="/archiv/<%= theme.slug %>" class="cat-tab <%= category === 'all' ? 'active' : '' %>">
+                <span class="cat-icon">&#128240;</span> Alle <span class="cat-count">(<%= catCounts.all %>)</span>
+            </a>
+            <a href="/archiv/<%= theme.slug %>?cat=recherche" class="cat-tab <%= category === 'recherche' ? 'active' : '' %>">
+                <span class="cat-icon">&#128270;</span> Recherchen <span class="cat-count">(<%= catCounts.recherche %>)</span>
+            </a>
+            <a href="/archiv/<%= theme.slug %>?cat=tagesbericht" class="cat-tab <%= category === 'tagesbericht' ? 'active' : '' %>">
+                <span class="cat-icon">&#128196;</span> Tagesberichte <span class="cat-count">(<%= catCounts.tagesbericht %>)</span>
+            </a>
+            <a href="/archiv/<%= theme.slug %>?cat=brisantes" class="cat-tab <%= category === 'brisantes' ? 'active' : '' %>">
+                <span class="cat-icon">&#128293;</span> Brisantes <span class="cat-count">(<%= catCounts.brisantes %>)</span>
+            </a>
         </div>
+
+        <% if (!hasPaidAccess) { %>
+        <div style="background: #FFF7ED; border: 1px solid #FED7AA; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #EA580C;">
+            &#128274; Du siehst nur die kostenlosen Dienstags-Ausgaben. <a href="/warenkorb/add?slug=<%= theme.slug %>" style="font-weight: 700; text-decoration: underline;">Abonnieren</a> f&uuml;r vollen Zugang.
+        </div>
+        <% } %>
+
+        <% if (pdfs.length === 0) { %>
+            <div class="card" style="text-align: center; padding: 48px;">
+                <p style="font-size: 48px; margin-bottom: 16px;">&#128196;</p>
+                <h2 style="margin: 0 0 8px;">Noch keine Beitr&auml;ge</h2>
+                <p style="color: var(--c-muted); margin: 0;">Neue Beitr&auml;ge werden bald ver&ouml;ffentlicht.</p>
+            </div>
+        <% } else { %>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 8px;">
+                <% for (const pdf of pdfs) { %>
+                    <a href="/artikel/<%= pdf.id %>" class="card pdf-card" style="text-decoration: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                    <% if (pdf.category === 'recherche') { %>
+                                        <span class="cat-badge cat-recherche">&#128270; Recherche</span>
+                                    <% } else if (pdf.category === 'brisantes') { %>
+                                        <span class="cat-badge cat-brisantes">&#128293; Brisantes</span>
+                                    <% } else { %>
+                                        <span class="cat-badge cat-tagesbericht">&#128196; Tagesbericht</span>
+                                    <% } %>
+                                </div>
+                                <h3 style="font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= pdf.title %></h3>
+                                <% if (pdf.description) { %>
+                                    <p style="font-size: 14px; color: var(--c-muted); margin: 0 0 8px; line-height: 1.5;"><%= pdf.description %></p>
+                                <% } %>
+                                <% if (pdfRatings[pdf.id] && pdfRatings[pdf.id].count > 0) { %>
+                                    <span class="stars"><% for (let i = 1; i <= 5; i++) { %><%= i <= Math.round(pdfRatings[pdf.id].avg) ? '★' : '☆' %><% } %></span>
+                                    <span class="stars-muted">(<%= pdfRatings[pdf.id].avg %> / <%= pdfRatings[pdf.id].count %>)</span>
+                                <% } %>
+                            </div>
+                            <span style="font-size: 13px; color: var(--c-muted); white-space: nowrap;"><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
+                        </div>
+                    </a>
+                <% } %>
+            </div>
+        <% } %>
     <% } %>
 </main>
 

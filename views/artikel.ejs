@@ -3,6 +3,24 @@
 <head>
     <%- include('partials/head') %>
     <title><%= pdf.title %> — MacherPost</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+    <style>
+        .rating-section { margin: 24px 0 32px; padding: 20px 24px; background: var(--c-section-alt); border-radius: var(--radius); }
+        .rating-stars { display: inline-flex; gap: 4px; }
+        .rating-stars label { cursor: pointer; font-size: 28px; color: #D1D5DB; transition: color 0.15s; }
+        .rating-stars label:hover, .rating-stars label:hover ~ label { color: #F59E0B; }
+        .rating-stars input:checked ~ label { color: #F59E0B; }
+        .rating-stars input { display: none; }
+        .rating-stars { direction: rtl; }
+        .rating-avg { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--c-muted); }
+        .rating-avg .stars-display { color: #F59E0B; font-size: 18px; letter-spacing: 1px; }
+        .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; }
+        .cat-recherche { background: #EEF2FF; color: #4338CA; }
+        .cat-tagesbericht { background: #F0FDF4; color: #16A34A; }
+        .cat-brisantes { background: #FEF2F2; color: #DC2626; }
+        .pdf-page-container { margin: 32px 0; }
+        .pdf-page { width: 100%; margin-bottom: 2px; display: block; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    </style>
 </head>
 <body>
 <%- include('partials/nav') %>
@@ -10,25 +28,66 @@
 <main class="content">
     <a href="/archiv/<%= pdf.theme_slug %>" style="font-size: 14px; color: var(--c-muted);">&larr; Zur&uuml;ck zu <%= themeName %></a>
 
-    <h1 style="margin-top: 16px;"><%= pdf.title %></h1>
-    <p style="color: var(--c-muted); font-size: 14px;">
-        <%= themeName %> &bull; <%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %>
-    </p>
+    <div style="margin-top: 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <% if (pdf.category === 'recherche') { %>
+            <span class="cat-badge cat-recherche">&#128270; Recherche</span>
+        <% } else if (pdf.category === 'brisantes') { %>
+            <span class="cat-badge cat-brisantes">&#128293; Brisantes</span>
+        <% } else { %>
+            <span class="cat-badge cat-tagesbericht">&#128196; Tagesbericht</span>
+        <% } %>
+        <span style="font-size: 13px; color: var(--c-muted);"><%= themeName %> &bull; <%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
+    </div>
+
+    <h1 style="margin-top: 12px;"><%= pdf.title %></h1>
 
     <% if (pdf.description) { %>
-        <p style="margin-top: 20px; font-size: 17px; line-height: 1.7;"><%= pdf.description %></p>
+        <p style="margin-top: 12px; font-size: 17px; line-height: 1.7; color: var(--c-text);"><%= pdf.description %></p>
     <% } %>
 
-    <div style="margin: 32px 0; border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden;">
-        <iframe src="/pdf/<%= pdf.id %>/view" style="width: 100%; height: 80vh; border: none;"></iframe>
+    <!-- Durchschnittliche Bewertung -->
+    <% if (ratingCount > 0) { %>
+    <div class="rating-avg" style="margin-top: 12px;">
+        <span class="stars-display"><% for (let i = 1; i <= 5; i++) { %><%= i <= Math.round(avgRating) ? '★' : '☆' %><% } %></span>
+        <span><%= avgRating %> von 5 &bull; <%= ratingCount %> Bewertung<%= ratingCount !== 1 ? 'en' : '' %></span>
     </div>
+    <% } %>
+
+    <!-- PDF als Seiten (kein iframe, volle Höhe) -->
+    <div class="pdf-page-container" id="pdf-container">
+        <div style="text-align: center; padding: 48px; color: var(--c-muted);">
+            <p>PDF wird geladen...</p>
+        </div>
+    </div>
+
     <div style="text-align: center; margin-bottom: 32px;">
         <a href="/pdf/<%= pdf.id %>/download" class="btn btn-outline btn-sm">&#8681; PDF herunterladen</a>
     </div>
 
-    <!-- Kommentare -->
-    <h2 style="margin-top: 48px;">Kommentare (<%= comments.length %>)</h2>
+    <!-- Bewertung -->
+    <% if (user) { %>
+    <div class="rating-section">
+        <h3 style="margin: 0 0 12px; font-size: 16px;">Wie hat dir dieser Beitrag gefallen?</h3>
+        <form method="POST" action="/api/rate" id="rating-form">
+            <input type="hidden" name="pdf_id" value="<%= pdf.id %>">
+            <div class="rating-stars">
+                <% for (let i = 5; i >= 1; i--) { %>
+                    <input type="radio" name="stars" value="<%= i %>" id="star<%= i %>" <%= userRating === i ? 'checked' : '' %>>
+                    <label for="star<%= i %>" title="<%= i %> Stern<%= i > 1 ? 'e' : '' %>">★</label>
+                <% } %>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 12px;">Bewerten</button>
+            <% if (userRating > 0) { %>
+                <span style="font-size: 13px; color: var(--c-muted); margin-left: 12px;">Du hast <%= userRating %> Stern<%= userRating > 1 ? 'e' : '' %> gegeben</span>
+            <% } %>
+        </form>
+    </div>
+    <% } %>
 
+    <!-- Kommentare -->
+    <h2 style="margin-top: 32px;">Kommentare (<%= comments.length %>)</h2>
+
+    <% if (user) { %>
     <form method="POST" action="/api/comments" style="margin: 24px 0;">
         <input type="hidden" name="pdf_id" value="<%= pdf.id %>">
         <div class="form-group">
@@ -36,6 +95,9 @@
         </div>
         <button type="submit" class="btn btn-primary btn-sm">Kommentar senden</button>
     </form>
+    <% } else { %>
+    <p style="color: var(--c-muted); margin: 24px 0; font-size: 14px;"><a href="/login" style="color: var(--c-accent); font-weight: 600;">Anmelden</a> um zu kommentieren und bewerten.</p>
+    <% } %>
 
     <% if (comments.length === 0) { %>
         <p style="color: var(--c-muted); font-style: italic;">Noch keine Kommentare. Sei der Erste!</p>
@@ -60,5 +122,33 @@
 </main>
 
 <%- include('partials/footer') %>
+
+<script type="module">
+  const pdfjsLib = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+  const container = document.getElementById('pdf-container');
+  try {
+    const pdf = await pdfjsLib.getDocument('/pdf/<%= pdf.id %>/view').promise;
+    container.innerHTML = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const scale = (container.clientWidth) / page.getViewport({ scale: 1 }).width;
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.className = 'pdf-page';
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = '100%';
+      canvas.style.height = 'auto';
+      container.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+  } catch (e) {
+    container.innerHTML = '<div style="text-align:center;padding:48px;color:var(--c-muted);">' +
+      '<p>PDF konnte nicht geladen werden.</p>' +
+      '<a href="/pdf/<%= pdf.id %>/download" class="btn btn-primary btn-sm">PDF herunterladen</a></div>';
+  }
+</script>
 </body>
 </html>
