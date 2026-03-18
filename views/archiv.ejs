@@ -9,18 +9,17 @@
 
 <main class="content" style="max-width: var(--max-w);">
     <h1>Archiv</h1>
-    <p style="color: var(--c-muted); margin-bottom: 40px;">W&auml;hle ein Thema, um die Beitr&auml;ge zu lesen.</p>
+    <p style="color: var(--c-muted); margin-bottom: 12px;">W&auml;hle ein Thema, um die Beitr&auml;ge zu lesen.</p>
+    <p style="font-size: 13px; color: var(--c-accent); margin-bottom: 40px; font-weight: 600;">Dienstags-Ausgaben sind f&uuml;r alle kostenlos verf&uuml;gbar.</p>
 
     <div class="grid-3">
         <% for (const theme of themes) { %>
             <% const hasAccess = userThemes.has(theme.slug); %>
-            <a href="/archiv/<%= theme.slug %>" class="card" style="text-decoration: none; transition: all 0.2s; <%= !hasAccess ? 'opacity: 0.6;' : '' %>">
+            <a href="/archiv/<%= theme.slug %>" class="card" style="text-decoration: none; transition: all 0.2s; position: relative;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                     <h3 style="font-size: 16px; font-weight: 700; color: var(--c-dark);"><%= theme.name %></h3>
-                    <% if (!hasAccess) { %>
-                        <span style="font-size: 18px;" class="lock-icon">&#128274;</span>
-                    <% } else { %>
-                        <span style="font-size: 18px;">&#9989;</span>
+                    <% if (hasAccess) { %>
+                        <span class="badge badge-active" style="font-size: 10px; padding: 2px 8px;">Abo</span>
                     <% } %>
                 </div>
                 <p style="font-size: 13px; color: var(--c-muted); margin: 0;">
@@ -31,8 +30,8 @@
     </div>
 
     <div style="margin-top: 48px; padding: 32px; background: var(--c-accent-light); border-radius: var(--radius); text-align: center;">
-        <h2 style="margin: 0 0 12px;">Mehr Themen freischalten?</h2>
-        <p style="color: var(--c-muted); margin-bottom: 20px;">Entdecke unsere Pakete und erhalte Zugang zu mehreren Themen gleichzeitig.</p>
+        <h2 style="margin: 0 0 12px;">Alle Ausgaben lesen?</h2>
+        <p style="color: var(--c-muted); margin-bottom: 20px;">Mit einem Abo erh&auml;ltst du t&auml;glich Zugang zu allen Beitr&auml;gen — nicht nur dienstags.</p>
         <a href="/pakete/komplett.html" class="btn btn-primary">Pakete entdecken</a>
     </div>
 </main>

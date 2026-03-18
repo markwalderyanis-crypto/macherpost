@@ -3,36 +3,86 @@
 <head>
     <%- include('partials/head') %>
     <title>Mein Konto — MacherPost</title>
+    <style>
+        .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 32px; }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--c-accent-light); color: var(--c-accent); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; flex-shrink: 0; }
+        .profile-info h1 { margin: 0 0 4px; font-size: 28px; }
+        .profile-meta { font-size: 14px; color: var(--c-muted); margin: 0; }
+        .stat-row { display: flex; gap: 16px; margin: 20px 0 32px; flex-wrap: wrap; }
+        .stat-item { flex: 1; min-width: 120px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-num { font-size: 24px; font-weight: 800; color: var(--c-dark); }
+        .stat-lbl { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+        .section-title { display: flex; align-items: center; gap: 8px; margin: 32px 0 16px; }
+        .section-title svg { width: 20px; height: 20px; stroke: var(--c-accent); }
+        .section-title h2 { margin: 0; font-size: 20px; }
+        .pw-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 640px) { .pw-form { grid-template-columns: 1fr; } .profile-header { flex-direction: column; text-align: center; } .stat-row { flex-direction: column; } }
+    </style>
 </head>
 <body>
 <%- include('partials/nav') %>
 
 <main class="content">
-    <h1>Mein Konto</h1>
+    <% if (success) { %>
+        <div class="alert alert-success"><%= decodeURIComponent(success) %></div>
+    <% } %>
+    <% if (error) { %>
+        <div class="alert alert-error"><%= decodeURIComponent(error) %></div>
+    <% } %>
 
-    <div class="card" style="margin-bottom: 32px;">
-        <h2 style="margin: 0 0 16px;">Profil</h2>
-        <p><strong>Name:</strong> <%= user.name || '–' %></p>
-        <p><strong>E-Mail:</strong> <%= user.email %></p>
-        <p style="margin: 0;"><strong>Rolle:</strong> <%= user.role === 'admin' ? 'Administrator' : 'Benutzer' %></p>
+    <!-- Profil Header -->
+    <div class="profile-header">
+        <div class="profile-avatar"><%= (user.name || user.email).charAt(0).toUpperCase() %></div>
+        <div class="profile-info">
+            <h1><%= user.name || 'Benutzer' %></h1>
+            <p class="profile-meta">
+                <%= user.email %>
+                <% if (user.role === 'admin') { %> &bull; <span style="color: var(--c-accent); font-weight: 600;">Administrator</span><% } %>
+            </p>
+            <% if (stats.memberSince) { %>
+                <p class="profile-meta" style="margin: 0;">Mitglied seit <%= new Date(stats.memberSince).toLocaleDateString('de-CH', { year: 'numeric', month: 'long' }) %></p>
+            <% } %>
+        </div>
     </div>
 
-    <h2>Meine Abonnements</h2>
+    <!-- Statistiken -->
+    <div class="stat-row">
+        <div class="stat-item">
+            <div class="stat-num"><%= subscriptions.filter(s => s.status === 'active').length %></div>
+            <div class="stat-lbl">Aktive Abos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num"><%= stats.ratings %></div>
+            <div class="stat-lbl">Bewertungen</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num"><%= stats.comments %></div>
+            <div class="stat-lbl">Kommentare</div>
+        </div>
+    </div>
+
+    <!-- Abonnements -->
+    <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <h2>Meine Abonnements</h2>
+    </div>
 
     <% if (subscriptions.length === 0) { %>
-        <div class="card" style="text-align: center; padding: 32px; margin-top: 16px;">
+        <div class="card" style="text-align: center; padding: 32px;">
+            <p style="font-size: 32px; margin-bottom: 12px;">&#128230;</p>
             <p style="color: var(--c-muted); margin-bottom: 16px;">Du hast noch keine Abonnements.</p>
             <a href="/pakete/komplett.html" class="btn btn-primary">Pakete entdecken</a>
         </div>
     <% } else { %>
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
             <% for (const sub of subscriptions) { %>
                 <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <div>
-                        <h3 style="font-size: 16px; font-weight: 700; color: var(--c-dark);"><%= sub.product_name %></h3>
-                        <p style="font-size: 13px; color: var(--c-muted); margin: 4px 0 0;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--c-dark); margin: 0 0 4px;"><%= sub.product_name %></h3>
+                        <p style="font-size: 13px; color: var(--c-muted); margin: 0;">
                             <%= sub.product_type === 'package' ? 'Paket' : 'Einzelthema' %> &bull;
                             <%= sub.billing_interval === 'yearly' ? 'J&auml;hrlich' : 'Monatlich' %>
+                            <% if (sub.current_period_end) { %> &bull; N&auml;chste Abrechnung: <%= new Date(sub.current_period_end).toLocaleDateString('de-CH') %><% } %>
                         </p>
                     </div>
                     <span class="badge badge-<%= sub.status === 'active' ? 'active' : sub.status === 'canceled' ? 'canceled' : 'draft' %>">
@@ -43,17 +93,45 @@
         </div>
     <% } %>
 
-    <h2 style="margin-top: 40px;">Abrechnung</h2>
-    <div class="card" style="margin-top: 16px;">
+    <!-- Abrechnung -->
+    <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <h2>Abrechnung</h2>
+    </div>
+    <div class="card">
         <% if (subscriptions.length > 0 && subscriptions.some(s => s.stripe_customer_id)) { %>
-            <p style="margin-bottom: 16px;">Hier kannst du deine Zahlungsmethoden und Rechnungen verwalten:</p>
+            <p style="margin-bottom: 16px;">Verwalte deine Zahlungsmethoden, Rechnungen und Abonnements:</p>
             <form action="/billing/portal" method="POST">
                 <button type="submit" class="btn btn-primary">Abrechnungsportal &ouml;ffnen</button>
             </form>
         <% } else { %>
-            <p style="color: var(--c-muted);">Noch keine Abrechnungsdaten vorhanden. Abonniere ein Thema oder Paket, um deine Rechnungen hier einzusehen.</p>
-            <a href="/pakete/komplett.html" class="btn btn-primary" style="margin-top: 12px; display: inline-block;">Pakete entdecken</a>
+            <p style="color: var(--c-muted); margin: 0;">Noch keine Abrechnungsdaten vorhanden. Abonniere ein Thema oder Paket, um deine Rechnungen hier einzusehen.</p>
         <% } %>
+    </div>
+
+    <!-- Passwort -->
+    <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h2>Passwort &auml;ndern</h2>
+    </div>
+    <div class="card">
+        <form method="POST" action="/konto/passwort">
+            <div class="pw-form">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="current_password">Aktuelles Passwort</label>
+                    <input type="password" id="current_password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_password">Neues Passwort</label>
+                    <input type="password" id="new_password" name="new_password" required minlength="8" placeholder="Mind. 8 Zeichen">
+                </div>
+                <div class="form-group">
+                    <label for="new_password2">Wiederholen</label>
+                    <input type="password" id="new_password2" name="new_password2" required placeholder="Passwort best&auml;tigen">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline btn-sm" style="margin-top: 4px;">Passwort &auml;ndern</button>
+        </form>
     </div>
 </main>
 

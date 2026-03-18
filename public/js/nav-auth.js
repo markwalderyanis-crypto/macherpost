@@ -6,32 +6,39 @@
       const nav = document.querySelector('.nav-inner');
       if (!nav) return;
 
-      // Remove existing nav-links and nav-cta if present
       const existingLinks = nav.querySelector('.nav-links');
       const existingCta = nav.querySelector('.nav-cta');
 
       const links = document.createElement('div');
       links.className = 'nav-links';
-      links.style.cssText = 'display:flex;align-items:center;gap:16px;';
 
       if (user) {
-        links.innerHTML = `
-          <a href="/archiv" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Archiv</a>
-          <a href="/warenkorb" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Warenkorb</a>
-          <a href="/konto" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Konto</a>
-          ${user.role === 'admin' ? '<a href="/admin" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Admin</a>' : ''}
-          <a href="/logout" style="display:inline-flex;padding:10px 22px;background:#1A1A1A;color:#fff;font-weight:700;font-size:14px;border-radius:50px;text-decoration:none;">Abmelden</a>
-        `;
+        links.innerHTML =
+          '<a href="/archiv" title="Archiv">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>' +
+            '<span class="nav-label">Archiv</span></a>' +
+          '<a href="/warenkorb" title="Warenkorb">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>' +
+            '<span class="nav-label">Warenkorb</span></a>' +
+          '<a href="/konto" title="Konto">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+            '<span class="nav-label">Konto</span></a>' +
+          (user.role === 'admin'
+            ? '<a href="/admin" title="Admin">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>' +
+              '<span class="nav-label">Admin</span></a>'
+            : '') +
+          '<a href="/logout" class="nav-cta" style="background:var(--c-dark);">Abmelden</a>';
       } else {
-        links.innerHTML = `
-          <a href="/warenkorb" style="font-size:14px;font-weight:600;color:#6B6B6B;text-decoration:none;">Warenkorb</a>
-          <a href="/login" style="display:inline-flex;padding:10px 22px;background:#E85D26;color:#fff;font-weight:700;font-size:14px;border-radius:50px;text-decoration:none;">Anmelden</a>
-        `;
+        links.innerHTML =
+          '<a href="/archiv" title="Archiv">Archiv</a>' +
+          '<a href="/warenkorb" title="Warenkorb">Warenkorb</a>' +
+          '<a href="/login" class="nav-cta">Anmelden</a>';
       }
 
       if (existingLinks) existingLinks.remove();
       if (existingCta) existingCta.remove();
       nav.appendChild(links);
     })
-    .catch(() => {}); // Silently fail if API not available
+    .catch(() => {});
 })();
