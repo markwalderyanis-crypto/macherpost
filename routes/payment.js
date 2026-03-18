@@ -75,7 +75,7 @@ router.post('/api/checkout', isAuthenticated, (req, res, next) => {
 
     const session = await stripe.checkout.sessions.create({
       customer_email: req.user.email,
-      payment_method_types: ['card', 'twint'],
+      payment_method_types: ['card'],
       mode: 'subscription',
       line_items: lineItems,
       success_url: `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
