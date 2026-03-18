@@ -5,11 +5,20 @@ const { getDb } = require('../db/init');
 const { isAuthenticated } = require('../middleware/auth');
 const { getUserThemes } = require('../middleware/subscription');
 
-// Archive overview
-router.get('/archiv', isAuthenticated, (req, res) => {
+// Helper: check if a PDF's publish_date falls on a Tuesday
+function isTuesday(publishDate) {
+  if (!publishDate) return false;
+  const d = new Date(publishDate);
+  return d.getUTCDay() === 2; // 0=Sun, 1=Mon, 2=Tue
+}
+
+// Archive overview (accessible without login)
+router.get('/archiv', (req, res) => {
   const db = getDb();
   const themes = db.all("SELECT * FROM products WHERE type = 'theme' ORDER BY name", []);
-  const userThemes = req.user.role === 'admin' ? new Set(themes.map(t => t.slug)) : getUserThemes(req.user.id);
+  const userThemes = req.user
+    ? (req.user.role === 'admin' ? new Set(themes.map(t => t.slug)) : getUserThemes(req.user.id))
+    : new Set();
 
   // Count published PDFs per theme
   const pdfCounts = {};
@@ -21,41 +30,44 @@ router.get('/archiv', isAuthenticated, (req, res) => {
   res.render('archiv', { themes, userThemes, pdfCounts });
 });
 
-// Theme archive
-router.get('/archiv/:themeSlug', isAuthenticated, (req, res) => {
+// Theme archive (accessible without login, but content limited for free users)
+router.get('/archiv/:themeSlug', (req, res) => {
   const db = getDb();
   const { themeSlug } = req.params;
 
   const theme = db.get("SELECT * FROM products WHERE slug = ? AND type = 'theme'", [themeSlug]);
   if (!theme) return res.status(404).render('error', { title: '404', message: 'Thema nicht gefunden' });
 
-  // Check access
-  if (req.user.role !== 'admin') {
-    const userThemes = getUserThemes(req.user.id);
-    if (!userThemes.has(themeSlug)) {
-      return res.render('archiv-theme', { theme, pdfs: [], hasAccess: false });
-    }
-  }
+  const isAdmin = req.user && req.user.role === 'admin';
+  const userThemes = req.user ? getUserThemes(req.user.id) : new Set();
+  const hasPaidAccess = isAdmin || userThemes.has(themeSlug);
 
-  const pdfs = db.all(
+  let pdfs = db.all(
     "SELECT * FROM pdfs WHERE theme_slug = ? AND status = 'published' ORDER BY publish_date DESC", [themeSlug]
   );
 
-  res.render('archiv-theme', { theme, pdfs, hasAccess: true });
+  // Free users (not subscribed): only see Tuesday articles
+  if (!hasPaidAccess) {
+    pdfs = pdfs.filter(p => isTuesday(p.publish_date));
+  }
+
+  res.render('archiv-theme', { theme, pdfs, hasAccess: true, hasPaidAccess });
 });
 
 // Single article (PDF view + comments)
-router.get('/artikel/:pdfId', isAuthenticated, (req, res) => {
+router.get('/artikel/:pdfId', (req, res) => {
   const db = getDb();
   const pdf = db.get("SELECT * FROM pdfs WHERE id = ? AND status = 'published'", [req.params.pdfId]);
   if (!pdf) return res.status(404).render('error', { title: '404', message: 'Artikel nicht gefunden' });
 
-  // Check access
-  if (req.user.role !== 'admin') {
-    const userThemes = getUserThemes(req.user.id);
-    if (!userThemes.has(pdf.theme_slug)) {
-      return res.status(403).render('error', { title: 'Kein Zugriff', message: 'Du hast kein Abo für dieses Thema.' });
-    }
+  const isAdmin = req.user && req.user.role === 'admin';
+  const userThemes = req.user ? getUserThemes(req.user.id) : new Set();
+  const hasPaidAccess = isAdmin || userThemes.has(pdf.theme_slug);
+  const isFreeArticle = isTuesday(pdf.publish_date);
+
+  // Block access if not a free article and no paid access
+  if (!hasPaidAccess && !isFreeArticle) {
+    return res.status(403).render('error', { title: 'Kein Zugriff', message: 'Dieser Artikel ist nur für Abonnenten verfügbar. Dienstags-Ausgaben sind kostenlos!' });
   }
 
   const comments = db.all(
@@ -70,15 +82,17 @@ router.get('/artikel/:pdfId', isAuthenticated, (req, res) => {
 });
 
 // PDF inline view (in iframe)
-router.get('/pdf/:pdfId/view', isAuthenticated, (req, res) => {
+router.get('/pdf/:pdfId/view', (req, res) => {
   const db = getDb();
   const pdf = db.get("SELECT * FROM pdfs WHERE id = ? AND status = 'published'", [req.params.pdfId]);
   if (!pdf) return res.status(404).send('Nicht gefunden');
 
-  if (req.user.role !== 'admin') {
-    const userThemes = getUserThemes(req.user.id);
-    if (!userThemes.has(pdf.theme_slug)) return res.status(403).send('Kein Zugriff');
-  }
+  const isAdmin = req.user && req.user.role === 'admin';
+  const userThemes = req.user ? getUserThemes(req.user.id) : new Set();
+  const hasPaidAccess = isAdmin || userThemes.has(pdf.theme_slug);
+  const isFreeArticle = isTuesday(pdf.publish_date);
+
+  if (!hasPaidAccess && !isFreeArticle) return res.status(403).send('Kein Zugriff');
 
   const filePath = path.join(__dirname, '..', 'content', 'pdfs', pdf.filename);
   res.setHeader('Content-Type', 'application/pdf');
@@ -87,15 +101,17 @@ router.get('/pdf/:pdfId/view', isAuthenticated, (req, res) => {
 });
 
 // PDF download
-router.get('/pdf/:pdfId/download', isAuthenticated, (req, res) => {
+router.get('/pdf/:pdfId/download', (req, res) => {
   const db = getDb();
   const pdf = db.get("SELECT * FROM pdfs WHERE id = ? AND status = 'published'", [req.params.pdfId]);
   if (!pdf) return res.status(404).send('Nicht gefunden');
 
-  if (req.user.role !== 'admin') {
-    const userThemes = getUserThemes(req.user.id);
-    if (!userThemes.has(pdf.theme_slug)) return res.status(403).send('Kein Zugriff');
-  }
+  const isAdmin = req.user && req.user.role === 'admin';
+  const userThemes = req.user ? getUserThemes(req.user.id) : new Set();
+  const hasPaidAccess = isAdmin || userThemes.has(pdf.theme_slug);
+  const isFreeArticle = isTuesday(pdf.publish_date);
+
+  if (!hasPaidAccess && !isFreeArticle) return res.status(403).send('Kein Zugriff');
 
   const filePath = path.join(__dirname, '..', 'content', 'pdfs', pdf.filename);
   res.download(filePath, `${pdf.title}.pdf`);
