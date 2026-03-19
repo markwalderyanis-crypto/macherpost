@@ -74,8 +74,9 @@ function seedProducts() {
     ['handwerk', 'Handwerk'], ['selbstaendigkeit', 'Selbstständigkeit'],
     ['fuehrungskompetenzen', 'Führungskompetenzen'], ['aktien-maerkte', 'Aktien & Märkte'],
     ['krypto', 'Krypto'], ['makrooekonomie', 'Makroökonomie'],
-    ['abrechnung-operativ', 'Abrechnung & Operativ'], ['weltgeschehen', 'Weltgeschehen'],
-    ['lokale-politik', 'Lokale Politik'], ['politik', 'Politik'],
+    ['abrechnung-operativ', 'Abrechnung & Operativ'],
+    ['schweizer-politik', 'Schweizer Politik'], ['weltpolitik', 'Weltpolitik'],
+    ['europaeische-politik', 'Europäische Politik'], ['enthuellung', 'Enthüllungen'],
     ['sport', 'Sport'], ['ki', 'KI'],
     ['ki-automatisierung', 'KI-Automatisierung'], ['robotik', 'Robotik']
   ];
@@ -87,12 +88,12 @@ function seedProducts() {
     ['werkbank', 'Werkbank', 700, 7000, ['handwerk', 'selbstaendigkeit', 'abrechnung-operativ']],
     ['solo', 'Solo', 700, 7000, ['selbstaendigkeit', 'abrechnung-operativ', 'makrooekonomie']],
     ['leitwolf', 'Leitwolf', 900, 9000, ['fuehrungskompetenzen', 'selbstaendigkeit', 'abrechnung-operativ', 'makrooekonomie']],
-    ['kader', 'Kader', 700, 7000, ['fuehrungskompetenzen', 'politik', 'makrooekonomie']],
-    ['kapital', 'Kapital', 900, 9000, ['aktien-maerkte', 'krypto', 'makrooekonomie', 'weltgeschehen']],
-    ['kompass', 'Kompass', 500, 5000, ['politik', 'lokale-politik', 'weltgeschehen']],
-    ['tribune', 'Tribüne', 500, 5000, ['sport', 'weltgeschehen', 'politik']],
+    ['kader', 'Kader', 700, 7000, ['fuehrungskompetenzen', 'weltpolitik', 'makrooekonomie']],
+    ['kapital', 'Kapital', 900, 9000, ['aktien-maerkte', 'krypto', 'makrooekonomie', 'weltpolitik']],
+    ['kompass', 'Kompass', 500, 5000, ['weltpolitik', 'schweizer-politik', 'europaeische-politik']],
+    ['tribune', 'Tribüne', 500, 5000, ['sport', 'weltpolitik']],
     ['signal', 'Signal', 700, 7000, ['ki', 'ki-automatisierung', 'robotik']],
-    ['tagespuls', 'Tagespuls', 900, 9000, ['politik', 'weltgeschehen', 'aktien-maerkte', 'sport']],
+    ['tagespuls', 'Tagespuls', 900, 9000, ['weltpolitik', 'aktien-maerkte', 'sport', 'europaeische-politik', 'enthuellung']],
     ['komplett', 'Komplett', 1500, 15000, themes.map(t => t[0])]
   ];
   for (const [slug, name, m, y, tl] of packages) {
