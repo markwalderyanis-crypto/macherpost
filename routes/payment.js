@@ -93,9 +93,47 @@ router.post('/api/checkout', isAuthenticated, (req, res, next) => {
   })().catch(next);
 });
 
-// Success page
-router.get('/checkout/success', isAuthenticated, (req, res) => {
-  res.render('checkout-success');
+// Success page — also activates subscription by reading checkout session from Stripe
+router.get('/checkout/success', isAuthenticated, async (req, res, next) => {
+  try {
+    const sessionId = req.query.session_id;
+    if (sessionId) {
+      const db = getDb();
+      const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (checkoutSession && checkoutSession.metadata) {
+        const userId = parseInt(checkoutSession.metadata.user_id);
+        const productSlugs = JSON.parse(checkoutSession.metadata.product_slugs || '[]');
+        const interval = checkoutSession.metadata.interval || 'monthly';
+
+        // Only activate for the logged-in user
+        if (userId === req.user.id) {
+          for (const slug of productSlugs) {
+            const existing = db.get(
+              'SELECT id FROM subscriptions WHERE user_id = ? AND product_slug = ?', [userId, slug]
+            );
+
+            if (existing) {
+              db.run(
+                "UPDATE subscriptions SET stripe_subscription_id = ?, stripe_customer_id = ?, status = 'active', billing_interval = ? WHERE id = ?",
+                [checkoutSession.subscription, checkoutSession.customer, interval, existing.id]
+              );
+            } else {
+              db.run(
+                'INSERT INTO subscriptions (user_id, product_slug, stripe_subscription_id, stripe_customer_id, billing_interval, status) VALUES (?, ?, ?, ?, ?, ?)',
+                [userId, slug, checkoutSession.subscription, checkoutSession.customer, interval, 'active']
+              );
+            }
+          }
+          console.log(`[Stripe] Checkout success for user ${userId}: ${productSlugs.join(', ')}`);
+        }
+      }
+    }
+    res.render('checkout-success');
+  } catch (err) {
+    console.error('[Stripe] Error processing checkout success:', err.message);
+    res.render('checkout-success');
+  }
 });
 
 // Cancel page

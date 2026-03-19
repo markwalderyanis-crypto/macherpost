@@ -50,7 +50,9 @@ router.get('/archiv/:themeSlug', (req, res) => {
 
   // Free users (not subscribed): only see Tuesday articles
   if (!hasPaidAccess) {
+    console.log(`[Archive] User ${req.user ? req.user.id : 'anon'} has no paid access to ${themeSlug}. Filtering ${pdfs.length} PDFs to Tuesday-only.`);
     pdfs = pdfs.filter(p => isTuesday(p.publish_date));
+    console.log(`[Archive] After filter: ${pdfs.length} Tuesday PDFs remain.`);
   }
 
   // Filter by category

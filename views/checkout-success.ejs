@@ -6,13 +6,17 @@
 </head>
 <body>
 <%- include('partials/nav') %>
-<main class="content" style="text-align: center;">
-    <p style="font-size: 64px; margin-bottom: 16px;">&#9989;</p>
-    <h1>Zahlung erfolgreich!</h1>
-    <p style="color: var(--c-muted); font-size: 17px; margin-bottom: 32px;">Dein Abo ist jetzt aktiv. Du kannst sofort auf deine Inhalte zugreifen.</p>
-    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-        <a href="/archiv" class="btn btn-primary">Zum Archiv</a>
-        <a href="/konto" class="btn btn-outline">Mein Konto</a>
+<main class="content" style="max-width: 560px;">
+    <div class="card" style="text-align: center; padding: 48px 32px;">
+        <div style="width: 72px; height: 72px; margin: 0 auto 20px; background: #F0FDF4; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h1 style="font-size: 28px; margin-bottom: 8px;">Zahlung erfolgreich!</h1>
+        <p style="color: var(--c-muted); font-size: 16px; margin-bottom: 32px; line-height: 1.6;">Dein Abo ist jetzt aktiv. Du kannst sofort auf alle Inhalte zugreifen.</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="/archiv" class="btn btn-primary">Zum Archiv</a>
+            <a href="/konto" class="btn btn-outline">Mein Konto</a>
+        </div>
     </div>
 </main>
 <%- include('partials/footer') %>
