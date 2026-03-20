@@ -306,20 +306,34 @@
     </div>
 </section>
 
-<!-- KOMPLETT HIGHLIGHT -->
-<section class="section" style="padding: 64px 0;">
+<!-- ABO HIGHLIGHT -->
+<section class="section" style="padding: 64px 0;" id="preise">
     <div class="container">
-        <div class="komplett-highlight reveal" style="background: linear-gradient(135deg, var(--c-dark) 0%, #2D2D2D 100%); border-radius: var(--radius); padding: 48px 40px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 280px;">
-                <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">&#9733; Bestes Preis-Leistungs-Verh&auml;ltnis</div>
-                <h2 style="font-size: clamp(24px, 4vw, 34px); font-weight: 800; color: white; line-height: 1.2; letter-spacing: -1px; margin-bottom: 12px;">Komplett-Paket: Alles f&uuml;r CHF 15.&ndash;/Mt.</h2>
-                <p style="font-size: 17px; color: #999; line-height: 1.6; margin-bottom: 8px;">Alle 15 Themen, Deep-Dives, Sonderausgaben und volles Archiv. Einzeln w&uuml;rden alle Themen CHF 37.50/Mt. kosten &mdash; du sparst &uuml;ber 60%.</p>
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Ein Abo. Alles drin.</div>
+            <h2 class="section-title">15 Themen. Ein Preis.<br>Keine Kompromisse.</h2>
+            <p class="section-desc">Alle Themen, Deep-Dives, Sonderausgaben und das volle Archiv — t&auml;glich um 06:30.</p>
+        </div>
+        <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto;">
+            <!-- Monatlich -->
+            <div style="background: var(--c-white); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 36px 28px; text-align: center; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.06)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="font-size: 14px; font-weight: 600; color: var(--c-muted); margin-bottom: 12px;">Monatlich</div>
+                <div style="font-size: 48px; font-weight: 800; color: var(--c-dark); line-height: 1;">CHF 19.99</div>
+                <div style="font-size: 14px; color: var(--c-muted); margin-top: 4px; margin-bottom: 24px;">pro Monat &bull; jederzeit k&uuml;ndbar</div>
+                <a href="/abo?interval=monthly" style="display: block; padding: 14px; background: var(--c-accent); color: white; font-weight: 700; font-size: 15px; border-radius: 50px; transition: background 0.2s; text-decoration: none;">Jetzt abonnieren</a>
             </div>
-            <div style="text-align: center; flex-shrink: 0;">
-                <div style="font-size: 48px; font-weight: 800; color: white; line-height: 1; margin-bottom: 4px;">CHF 15.&ndash;</div>
-                <div style="font-size: 14px; color: #999; margin-bottom: 20px;">pro Monat &bull; CHF 150.&ndash;/Jahr</div>
-                <a href="pakete/komplett.html" style="display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s;">Komplett entdecken &rarr;</a>
+            <!-- Jährlich -->
+            <div style="background: var(--c-dark); border: 2px solid var(--c-accent); border-radius: var(--radius); padding: 36px 28px; text-align: center; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 4px 16px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Spare CHF 89.89</div>
+                <div style="font-size: 14px; font-weight: 600; color: #999; margin-bottom: 12px;">J&auml;hrlich</div>
+                <div style="font-size: 22px; color: #666; text-decoration: line-through; margin-bottom: 4px;">CHF 239.88</div>
+                <div style="font-size: 48px; font-weight: 800; color: white; line-height: 1;">CHF 149.99</div>
+                <div style="font-size: 14px; color: #999; margin-top: 4px; margin-bottom: 24px;">pro Jahr &bull; entspricht CHF 12.50/Mt.</div>
+                <a href="/abo?interval=yearly" style="display: block; padding: 14px; background: var(--c-accent); color: white; font-weight: 700; font-size: 15px; border-radius: 50px; transition: background 0.2s; text-decoration: none;">Jetzt abonnieren</a>
             </div>
+        </div>
+        <div class="reveal" style="text-align: center; margin-top: 24px;">
+            <p style="font-size: 14px; color: var(--c-muted);">Sichere Zahlung via Stripe &bull; Kreditkarte &bull; Jederzeit k&uuml;ndbar</p>
         </div>
     </div>
 </section>
@@ -350,7 +364,7 @@
             <a href="themen/robotik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-robotik"/></svg></span> Robotik</a>
         </div>
         <div class="topics-note-wrap reveal">
-            <div class="topic-single-note">Jedes Thema einzeln buchbar: <strong>CHF 2.50/Mt.</strong> oder <strong>CHF 25.–/Jahr</strong></div>
+            <div class="topic-single-note">Alle 15 Themen im Abo: <strong>CHF 19.99/Mt.</strong> oder <strong>CHF 149.99/Jahr</strong> &mdash; <a href="#preise" style="color: var(--c-accent); font-weight: 600;">Jetzt abonnieren</a></div>
         </div>
     </div>
 </section>
@@ -361,12 +375,12 @@
         <div class="section-header reveal">
             <div class="section-eyebrow">Free vs. Abo</div>
             <h2 class="section-title">Dienstags kostenlos.<br>Jederzeit upgraden.</h2>
-            <p class="section-desc">Dienstags-Ausgaben sind kostenlos f&uuml;r alle. F&uuml;r t&auml;glichen Zugang w&auml;hlst du dein Paket.</p>
+            <p class="section-desc">Dienstags-Ausgaben sind kostenlos f&uuml;r alle. F&uuml;r t&auml;glichen Zugang gibt es das Abo.</p>
         </div>
         <div class="compare-grid reveal">
             <div class="compare-card free">
                 <h3>Kostenlos</h3>
-                <div class="compare-price">CHF 0.– / Dienstags-Ausgabe</div>
+                <div class="compare-price">CHF 0.&ndash; / Dienstags-Ausgabe</div>
                 <ul class="compare-list">
                     <li><span class="ci ci-yes">&#10003;</span> Dienstags-Ausgaben aller Themen</li>
                     <li><span class="ci ci-yes">&#10003;</span> Keine Anmeldung n&ouml;tig</li>
@@ -378,173 +392,21 @@
             </div>
             <div class="compare-card pro">
                 <div class="compare-badge">Empfohlen</div>
-                <h3>Abo</h3>
-                <div class="compare-price">Ab CHF 2.50 / Monat</div>
+                <h3>MacherPost Abo</h3>
+                <div class="compare-price">CHF 19.99 / Monat oder CHF 149.99 / Jahr</div>
                 <ul class="compare-list">
-                    <li><span class="ci ci-yes">&#10003;</span> Themen nach Wahl oder Paket</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Voller Umfang pro Ausgabe</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Täglich (Mo–So)</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Jederzeit kündbar</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Deep-Dives & Analysen</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Alle 15 Themen inklusive</li>
+                    <li><span class="ci ci-yes">&#10003;</span> T&auml;glich (Mo&ndash;So) um 06:30</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Deep-Dives &amp; Montags-Analysen</li>
                     <li><span class="ci ci-yes">&#10003;</span> Volles Archiv</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Jahresabo spart 2 Monate</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Jederzeit k&uuml;ndbar</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Jahresabo spart CHF 89.89</li>
                 </ul>
             </div>
         </div>
     </div>
 </section>
 
-<!-- PRICING -->
-<section class="section" id="preise">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-eyebrow">Preise</div>
-            <h2 class="section-title">Wähle dein Paket.</h2>
-            <p class="section-desc">Themen-Pakete für deine Welt — oder buche einzelne Themen ab CHF 2.50/Mt.</p>
-        </div>
-
-        <div class="pricing-toggle reveal">
-            <span class="active" id="togMonat">Monatlich</span>
-            <button class="toggle-switch" id="toggleSwitch" onclick="togglePricing()" aria-label="Preisumschalter"></button>
-            <span id="togJahr">Jährlich</span>
-            <span class="save-badge">Spare 2 Monate</span>
-        </div>
-
-        <div class="pricing-grid reveal">
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-werkbank"/></svg></div>
-                <h3>Werkbank</h3>
-                <div class="pc-target">Handwerker & Gewerbe</div>
-                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Handwerk</li><li>Selbständigkeit</li><li>Finanzen (Abrechnung & operativ)</li></ul>
-                <a href="pakete/werkbank.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=werkbank" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-solo"/></svg></div>
-                <h3>Solo</h3>
-                <div class="pc-target">Selbständige</div>
-                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Selbständigkeit</li><li>Führungskompetenzen</li><li>Finanzen (Abrechnung & operativ)</li></ul>
-                <a href="pakete/solo.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=solo" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-leitwolf"/></svg></div>
-                <h3>Leitwolf</h3>
-                <div class="pc-target">Unternehmer</div>
-                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Handwerk</li><li>Selbständigkeit</li><li>Führungskompetenzen</li><li>Finanzen (operativ)</li></ul>
-                <a href="pakete/leitwolf.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=leitwolf" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kader"/></svg></div>
-                <h3>Kader</h3>
-                <div class="pc-target">Führung & Karriere</div>
-                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Führungskompetenzen</li><li>Selbständigkeit</li><li>Finanzen (operativ)</li></ul>
-                <a href="pakete/kader.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=kader" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kapital"/></svg></div>
-                <h3>Kapital</h3>
-                <div class="pc-target">Finanzen & Investor</div>
-                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Aktien & Märkte</li><li>Krypto</li><li>Makroökonomie</li><li>Weltpolitik</li></ul>
-                <a href="pakete/kapital.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=kapital" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-kompass"/></svg></div>
-                <h3>Kompass</h3>
-                <div class="pc-target">Politik & Geopolitik</div>
-                <div class="pc-price" data-m="5" data-y="50">CHF 5.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Weltpolitik</li><li>Schweizer Politik</li><li>Europ&auml;ische Politik</li></ul>
-                <a href="pakete/kompass.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=kompass" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-tribune"/></svg></div>
-                <h3>Tribüne</h3>
-                <div class="pc-target">Sport & Gesellschaft</div>
-                <div class="pc-price" data-m="5" data-y="50">CHF 5.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Sport</li><li>Gesellschaft</li><li>Weltpolitik</li></ul>
-                <a href="pakete/tribune.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=tribune" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-signal"/></svg></div>
-                <h3>Signal</h3>
-                <div class="pc-target">KI & Automatisierung</div>
-                <div class="pc-price" data-m="7" data-y="70">CHF 7.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Künstliche Intelligenz</li><li>KI-Automatisierung</li><li>Robotik</li></ul>
-                <a href="pakete/signal.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=signal" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-tagespuls"/></svg></div>
-                <h3>Tagespuls</h3>
-                <div class="pc-target">Zeitungsbrief</div>
-                <div class="pc-price" data-m="9" data-y="90">CHF 9.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Weltpolitik</li><li>Sport</li><li>Finanzen (M&auml;rkte)</li><li>Europ&auml;ische Politik</li><li>Enth&uuml;llungen</li></ul>
-                <a href="pakete/tagespuls.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=tagespuls" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-europa"/></svg></div>
-                <h3>Europ&auml;ische Politik</h3>
-                <div class="pc-target">EU &amp; Europa</div>
-                <div class="pc-price" data-m="2.50" data-y="25">CHF 2.50 <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>EU-Gesetzgebung &amp; Handelsabkommen</li><li>Europ&auml;ische Entscheidungen f&uuml;r die Schweiz</li></ul>
-                <a href="themen/europaeische-politik.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=europaeische-politik" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-enthuellung"/></svg></div>
-                <h3>Enth&uuml;llungen</h3>
-                <div class="pc-target">Investigativ &amp; Aufdeckung</div>
-                <div class="pc-price" data-m="2.50" data-y="25">CHF 2.50 <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>CEO-Skandale &amp; Machtmissbrauch</li><li>Fragw&uuml;rdige Gesch&auml;ftspraktiken aufgedeckt</li></ul>
-                <a href="themen/enthuellung.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=enthuellung" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-            <div class="price-card featured">
-                <div class="price-card-icon"><svg class="icon icon-lg"><use href="#i-komplett"/></svg></div>
-                <h3>Komplett</h3>
-                <div class="pc-target">Alles. Ohne Kompromisse.</div>
-                <div class="pc-price" data-m="15" data-y="150">CHF 15.– <small>/Mt.</small></div>
-                <div class="pc-divider"></div>
-                <ul class="pc-topics"><li>Alle 15 Themengebiete</li><li>Voller Umfang, keine K&uuml;rzungen</li><li>Deep-Dives &amp; Sonderausgaben</li><li>Volles Archiv</li></ul>
-                <a href="pakete/komplett.html" class="pc-btn pc-btn-outline">Mehr erfahren</a>
-                <a href="/warenkorb/add?slug=komplett" class="pc-btn pc-btn-fill" style="margin-top:8px;">In den Warenkorb</a>
-            </div>
-        </div>
-
-        <div class="einzelthema-banner reveal">
-            <div class="eb-text">
-                <h4>Lieber einzelne Themen?</h4>
-                <p>Jedes der 15 Themen ist auch einzeln buchbar — im vollen Umfang, ohne Paket.</p>
-            </div>
-            <div class="eb-price">
-                <div class="price-main" data-em="2.50" data-ey="25">CHF 2.50 <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Mt.</small></div>
-                <div class="price-sub">oder CHF 25.– / Jahr</div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- PREVIEW -->
 <section class="section section-alt">
@@ -586,18 +448,18 @@
         <div class="testimonials-grid">
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;Endlich ein Newsletter, der meine Realität als Schreiner versteht. Werkbank-Abo ist genau mein Ding.&raquo;</blockquote>
-                <div class="testimonial-author"><div class="testimonial-avatar">TM</div><div><div class="testimonial-name">Thomas M.</div><div class="testimonial-role">Schreinermeister, Zürich</div></div></div>
+                <blockquote>&laquo;Endlich ein Briefing, das meine Realit&auml;t als Handwerker versteht. Jeden Morgen in 5 Minuten auf dem Laufenden.&raquo;</blockquote>
+                <div class="testimonial-author"><div class="testimonial-avatar">TM</div><div><div class="testimonial-name">Thomas M.</div><div class="testimonial-role">Schreinermeister, Z&uuml;rich</div></div></div>
             </div>
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;Kapital-Abo: Märkte, Krypto und Makro — kompakter geht's nicht. Mein Morgen-Briefing vor der Börse.&raquo;</blockquote>
+                <blockquote>&laquo;M&auml;rkte, Krypto und Makro — kompakter geht's nicht. Mein Morgen-Briefing vor der B&ouml;rse.&raquo;</blockquote>
                 <div class="testimonial-author"><div class="testimonial-avatar">SK</div><div><div class="testimonial-name">Sandra K.</div><div class="testimonial-role">Privatinvestorin, Bern</div></div></div>
             </div>
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;Komplett-Abo vom ersten Tag. KI, Politik, Sport — alles in 5 Minuten. Besser als jede Zeitung.&raquo;</blockquote>
-                <div class="testimonial-author"><div class="testimonial-avatar">RF</div><div><div class="testimonial-name">Roman F.</div><div class="testimonial-role">Geschäftsführer, Winterthur</div></div></div>
+                <blockquote>&laquo;KI, Politik, Sport — alles in einem Briefing. Besser und g&uuml;nstiger als jede Zeitung.&raquo;</blockquote>
+                <div class="testimonial-author"><div class="testimonial-avatar">RF</div><div><div class="testimonial-name">Roman F.</div><div class="testimonial-role">Gesch&auml;ftsf&uuml;hrer, Winterthur</div></div></div>
             </div>
         </div>
     </div>
@@ -608,12 +470,12 @@
     <div class="container">
         <div class="section-header reveal"><div class="section-eyebrow">FAQ</div><h2 class="section-title">Häufige Fragen.</h2></div>
         <div class="faq-list reveal">
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Tag um 06:30 Uhr. Pünktlich zum Start in den Tag.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich kostenlos?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Dienstag erhältst du kostenlose Ausgaben zu allen Themen — ohne Anmeldung. Für den täglichen Zugang, Deep-Dives und das volle Archiv brauchst du ein Abo-Paket.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich einzelne Themen buchen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja! Jedes der 15 Themen ist einzeln buchbar für CHF 2.50 pro Monat oder CHF 25.– pro Jahr. Du bekommst den vollen Umfang zu deinem gewählten Thema.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie unterscheiden sich die Pakete?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jedes Paket bündelt Themen für eine bestimmte Zielgruppe und ist günstiger als Einzelbuchungen. Werkbank ist für Handwerker, Signal für KI-Interessierte, Komplett für alle. Die Pakete starten ab CHF 5.– pro Monat.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lohnt sich das Jahresabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja — du sparst 2 Monate. Beispiel: Das Komplett-Abo kostet monatlich CHF 15.–, jährlich nur CHF 150.– statt CHF 180.–.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich jederzeit kündigen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Natürlich. Ein Klick genügt — in jeder Ausgabe findest du einen Abmelde-Link. Kein Kleingedrucktes, kein Drama.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Tag um 06:30 Uhr. P&uuml;nktlich zum Start in den Tag.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich kostenlos?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Dienstag erh&auml;ltst du kostenlose Ausgaben zu allen Themen &mdash; ohne Anmeldung. F&uuml;r den t&auml;glichen Zugang, Deep-Dives und das volle Archiv brauchst du das Abo.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist im Abo enthalten?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Alle 15 Themengebiete, t&auml;gliche Artikel, Montags-Deep-Dives, Sonderausgaben und das komplette Archiv. Ein Abo, alles drin.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lohnt sich das Jahresabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja &mdash; du sparst CHF 89.89 gegen&uuml;ber dem Monatspreis. Statt CHF 239.88 zahlst du nur CHF 149.99 pro Jahr.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich jederzeit k&uuml;ndigen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Nat&uuml;rlich. Ein Klick gen&uuml;gt &mdash; &uuml;ber dein Konto oder den Link in jeder Ausgabe. Kein Kleingedrucktes, kein Drama.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie kann ich bezahlen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Per Kreditkarte &uuml;ber Stripe &mdash; sicher, verschl&uuml;sselt und PCI-konform. Deine Zahlungsdaten werden nie bei uns gespeichert.</div></div></div>
         </div>
     </div>
 </section>
@@ -622,13 +484,12 @@
 <section class="cta-section" id="start">
     <div class="container">
         <h2 class="reveal">Bereit, besser informiert zu sein?</h2>
-        <p class="cta-desc reveal">Dienstags-Ausgaben kostenlos. Kein Spam. Jederzeit abbestellen.</p>
-        <form class="signup-form reveal" id="ctaForm" onsubmit="return handleSignup(event, 'cta')">
-            <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
-            <button type="submit" class="btn-signup">Newsletter abonnieren</button>
-        </form>
-        <div class="success-msg" id="ctaSuccess"><h3>Du bist dabei!</h3><p>Wir melden uns, sobald es losgeht.</p></div>
-        <p class="hero-trust reveal"><strong>Dienstags-Ausgaben kostenlos.</strong> Kein Spam. Jederzeit abbestellen.</p>
+        <p class="cta-desc reveal">Alle 15 Themen. T&auml;glich um 06:30. Dienstags kostenlos.</p>
+        <div class="reveal" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;">
+            <a href="/abo?interval=monthly" style="display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s;">CHF 19.99/Mt. &mdash; Jetzt starten</a>
+            <a href="/abo?interval=yearly" style="display: inline-flex; padding: 16px 36px; background: transparent; color: white; font-weight: 700; font-size: 16px; border-radius: 50px; border: 2px solid #555; transition: border-color 0.2s;">CHF 149.99/Jahr &mdash; Spare 37%</a>
+        </div>
+        <p class="hero-trust reveal"><strong>Dienstags-Ausgaben kostenlos.</strong> Kein Abo n&ouml;tig. Jederzeit k&uuml;ndbar.</p>
     </div>
 </section>
 
@@ -646,22 +507,6 @@
 
 <script>
     function handleSignup(e,id){e.preventDefault();const f=e.target,em=f.querySelector('input[type="email"]').value.trim();if(!em)return!1;f.style.display='none';const s=document.getElementById(id+'Success');if(s)s.classList.add('show');return!1}
-    let isYearly=false;
-    function togglePricing(){
-        isYearly=!isYearly;
-        document.getElementById('toggleSwitch').classList.toggle('on',isYearly);
-        document.getElementById('togMonat').classList.toggle('active',!isYearly);
-        document.getElementById('togJahr').classList.toggle('active',isYearly);
-        document.querySelectorAll('.pc-price').forEach(el=>{
-            const m=el.dataset.m,y=el.dataset.y;
-            el.innerHTML=isYearly?`CHF ${y}.– <small>/Jahr</small>`:`CHF ${m}.– <small>/Mt.</small>`;
-        });
-        const eb=document.querySelector('.price-main');
-        if(eb){
-            if(isYearly){eb.innerHTML='CHF 25.– <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Jahr</small>';eb.nextElementSibling.textContent='oder CHF 2.50 / Monat';}
-            else{eb.innerHTML='CHF 2.50 <small style="font-size:14px;font-weight:500;color:var(--c-muted)">/Mt.</small>';eb.nextElementSibling.textContent='oder CHF 25.– / Jahr';}
-        }
-    }
     function toggleFaq(btn){const i=btn.parentElement,a=i.querySelector('.faq-answer'),o=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>{x.classList.remove('open');x.querySelector('.faq-answer').style.maxHeight=null});if(!o){i.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}}
     const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
     document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));

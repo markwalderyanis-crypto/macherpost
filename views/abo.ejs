@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('partials/head') %>
+    <title>Abo abschliessen — MacherPost</title>
+</head>
+<body>
+<%- include('partials/nav') %>
+
+<main class="content">
+    <div style="max-width: 520px; margin: 0 auto; text-align: center;">
+        <h1 style="margin-bottom: 8px;">MacherPost Abo</h1>
+        <p style="color: var(--c-muted); margin-bottom: 32px;">Alle 15 Themen. T&auml;glich um 06:30. Deep-Dives &amp; volles Archiv.</p>
+
+        <div class="card" style="padding: 32px;">
+            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <button onclick="selectInterval('monthly')" id="btn-monthly" class="btn btn-primary" style="flex: 1; padding: 12px;">
+                    Monatlich
+                </button>
+                <button onclick="selectInterval('yearly')" id="btn-yearly" class="btn btn-outline" style="flex: 1; padding: 12px;">
+                    J&auml;hrlich
+                </button>
+            </div>
+
+            <div id="price-display">
+                <div style="font-size: 42px; font-weight: 800; color: var(--c-dark); line-height: 1;" id="price-amount">CHF 19.99</div>
+                <div style="font-size: 14px; color: var(--c-muted); margin-top: 4px;" id="price-period">pro Monat</div>
+                <div style="font-size: 13px; color: var(--c-muted); margin-top: 8px; display: none;" id="price-savings"></div>
+            </div>
+
+            <form method="POST" action="/api/checkout" style="margin-top: 24px;">
+                <input type="hidden" name="interval" id="checkout-interval" value="<%= interval %>">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px;">
+                    Jetzt abonnieren
+                </button>
+            </form>
+
+            <p style="font-size: 13px; color: var(--c-muted); margin-top: 16px;">
+                Sichere Zahlung via Stripe &bull; Jederzeit k&uuml;ndbar
+            </p>
+        </div>
+
+        <div style="margin-top: 32px; text-align: left;">
+            <h3 style="font-size: 16px; margin-bottom: 12px;">Im Abo enthalten:</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                <li style="display: flex; align-items: center; gap: 8px; font-size: 15px;"><span style="color: var(--c-green);">&#10003;</span> Alle 15 Themengebiete</li>
+                <li style="display: flex; align-items: center; gap: 8px; font-size: 15px;"><span style="color: var(--c-green);">&#10003;</span> T&auml;glich neue Artikel um 06:30</li>
+                <li style="display: flex; align-items: center; gap: 8px; font-size: 15px;"><span style="color: var(--c-green);">&#10003;</span> Montags-Deep-Dives &amp; Analysen</li>
+                <li style="display: flex; align-items: center; gap: 8px; font-size: 15px;"><span style="color: var(--c-green);">&#10003;</span> Volles Archiv</li>
+                <li style="display: flex; align-items: center; gap: 8px; font-size: 15px;"><span style="color: var(--c-green);">&#10003;</span> Jederzeit k&uuml;ndbar</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
+
+<script>
+    const initial = '<%= interval %>';
+    if (initial === 'yearly') selectInterval('yearly');
+
+    function selectInterval(iv) {
+        document.getElementById('checkout-interval').value = iv;
+        const btnM = document.getElementById('btn-monthly');
+        const btnY = document.getElementById('btn-yearly');
+        const amount = document.getElementById('price-amount');
+        const period = document.getElementById('price-period');
+        const savings = document.getElementById('price-savings');
+
+        if (iv === 'yearly') {
+            btnY.className = 'btn btn-primary'; btnY.style.flex = '1'; btnY.style.padding = '12px';
+            btnM.className = 'btn btn-outline'; btnM.style.flex = '1'; btnM.style.padding = '12px';
+            amount.textContent = 'CHF 149.99';
+            period.textContent = 'pro Jahr (CHF 12.50/Mt.)';
+            savings.style.display = 'block';
+            savings.innerHTML = '<span style="text-decoration: line-through;">CHF 239.88</span> &mdash; Du sparst CHF 89.89';
+        } else {
+            btnM.className = 'btn btn-primary'; btnM.style.flex = '1'; btnM.style.padding = '12px';
+            btnY.className = 'btn btn-outline'; btnY.style.flex = '1'; btnY.style.padding = '12px';
+            amount.textContent = 'CHF 19.99';
+            period.textContent = 'pro Monat';
+            savings.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

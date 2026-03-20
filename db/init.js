@@ -70,36 +70,14 @@ function getDb() {
 }
 
 function seedProducts() {
-  const themes = [
-    ['handwerk', 'Handwerk'], ['selbstaendigkeit', 'Selbstständigkeit'],
-    ['fuehrungskompetenzen', 'Führungskompetenzen'], ['aktien-maerkte', 'Aktien & Märkte'],
-    ['krypto', 'Krypto'], ['makrooekonomie', 'Makroökonomie'],
-    ['abrechnung-operativ', 'Abrechnung & Operativ'],
-    ['schweizer-politik', 'Schweizer Politik'], ['weltpolitik', 'Weltpolitik'],
-    ['europaeische-politik', 'Europäische Politik'], ['enthuellung', 'Enthüllungen'],
-    ['sport', 'Sport'], ['ki', 'KI'],
-    ['ki-automatisierung', 'KI-Automatisierung'], ['robotik', 'Robotik']
+  const allThemes = [
+    'handwerk', 'selbstaendigkeit', 'fuehrungskompetenzen', 'aktien-maerkte',
+    'krypto', 'makrooekonomie', 'abrechnung-operativ', 'schweizer-politik',
+    'weltpolitik', 'europaeische-politik', 'enthuellung', 'sport',
+    'ki', 'ki-automatisierung', 'robotik'
   ];
-  for (const [slug, name] of themes) {
-    db.run('INSERT INTO products (slug,type,name,price_monthly,price_yearly,themes) VALUES (?,?,?,?,?,?)',
-      [slug, 'theme', name, 250, 2500, JSON.stringify([slug])]);
-  }
-  const packages = [
-    ['werkbank', 'Werkbank', 700, 7000, ['handwerk', 'selbstaendigkeit', 'abrechnung-operativ']],
-    ['solo', 'Solo', 700, 7000, ['selbstaendigkeit', 'abrechnung-operativ', 'makrooekonomie']],
-    ['leitwolf', 'Leitwolf', 900, 9000, ['fuehrungskompetenzen', 'selbstaendigkeit', 'abrechnung-operativ', 'makrooekonomie']],
-    ['kader', 'Kader', 700, 7000, ['fuehrungskompetenzen', 'weltpolitik', 'makrooekonomie']],
-    ['kapital', 'Kapital', 900, 9000, ['aktien-maerkte', 'krypto', 'makrooekonomie', 'weltpolitik']],
-    ['kompass', 'Kompass', 500, 5000, ['weltpolitik', 'schweizer-politik', 'europaeische-politik']],
-    ['tribune', 'Tribüne', 500, 5000, ['sport', 'weltpolitik']],
-    ['signal', 'Signal', 700, 7000, ['ki', 'ki-automatisierung', 'robotik']],
-    ['tagespuls', 'Tagespuls', 900, 9000, ['weltpolitik', 'aktien-maerkte', 'sport', 'europaeische-politik', 'enthuellung']],
-    ['komplett', 'Komplett', 1500, 15000, themes.map(t => t[0])]
-  ];
-  for (const [slug, name, m, y, tl] of packages) {
-    db.run('INSERT INTO products (slug,type,name,price_monthly,price_yearly,themes) VALUES (?,?,?,?,?,?)',
-      [slug, 'package', name, m, y, JSON.stringify(tl)]);
-  }
+  db.run('INSERT INTO products (slug,type,name,price_monthly,price_yearly,themes) VALUES (?,?,?,?,?,?)',
+    ['komplett', 'package', 'MacherPost Abo', 1999, 14999, JSON.stringify(allThemes)]);
   saveDb();
   console.log('[DB] Products seeded');
 }

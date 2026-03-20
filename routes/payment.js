@@ -4,74 +4,46 @@ const stripe = require('../config/stripe');
 const { getDb } = require('../db/init');
 const { isAuthenticated } = require('../middleware/auth');
 
-// Cart page (no auth required)
-router.get('/warenkorb', (req, res) => {
+// Direct subscription page — redirects to login if not authenticated
+router.get('/abo', (req, res) => {
+  if (!req.user) {
+    req.session.returnTo = req.originalUrl;
+    return res.redirect('/login');
+  }
+
   const db = getDb();
-  const cart = req.session.cart || [];
-  const items = [];
-
-  for (const slug of cart) {
-    const product = db.get('SELECT * FROM products WHERE slug = ?', [slug]);
-    if (product) items.push(product);
+  const existing = db.get(
+    "SELECT * FROM subscriptions WHERE user_id = ? AND status = 'active'", [req.user.id]
+  );
+  if (existing) {
+    return res.redirect('/konto');
   }
 
-  res.render('warenkorb', { items });
+  const interval = req.query.interval === 'yearly' ? 'yearly' : 'monthly';
+  // Render a simple confirmation or go straight to checkout
+  res.render('abo', { interval });
 });
 
-// Add to cart (no auth required)
-router.get('/warenkorb/add', (req, res) => {
-  const slug = req.query.slug;
-  if (!slug) return res.redirect('/warenkorb');
-
-  if (!req.session.cart) req.session.cart = [];
-  if (!req.session.cart.includes(slug)) {
-    req.session.cart.push(slug);
-  }
-  req.session.save(() => res.redirect('/warenkorb'));
-});
-
-// Remove from cart (no auth required)
-router.post('/warenkorb/remove', (req, res) => {
-  const { slug } = req.body;
-  if (req.session.cart) {
-    req.session.cart = req.session.cart.filter(s => s !== slug);
-  }
-  res.redirect('/warenkorb');
-});
-
-// Create Stripe Checkout Session
+// Create Stripe Checkout Session — single subscription
 router.post('/api/checkout', isAuthenticated, (req, res, next) => {
   (async () => {
     const db = getDb();
-    const cart = req.session.cart || [];
-    const interval = req.body.interval || 'monthly';
+    const interval = req.body.interval === 'yearly' ? 'yearly' : 'monthly';
+    const product = db.get("SELECT * FROM products WHERE slug = 'komplett'");
 
-    if (cart.length === 0) return res.redirect('/warenkorb');
+    if (!product) return res.redirect('/');
 
-    const lineItems = [];
-    for (const slug of cart) {
-      const product = db.get('SELECT * FROM products WHERE slug = ?', [slug]);
-      if (!product) continue;
+    const amount = interval === 'yearly' ? product.price_yearly : product.price_monthly;
 
-      const priceId = interval === 'yearly' ? product.stripe_price_yearly : product.stripe_price_monthly;
-      if (!priceId) {
-        // If no Stripe Price ID, create a price on the fly
-        const amount = interval === 'yearly' ? product.price_yearly : product.price_monthly;
-        lineItems.push({
-          price_data: {
-            currency: 'chf',
-            product_data: { name: `MacherPost ${product.name}` },
-            unit_amount: amount,
-            recurring: { interval: interval === 'yearly' ? 'year' : 'month' }
-          },
-          quantity: 1
-        });
-      } else {
-        lineItems.push({ price: priceId, quantity: 1 });
-      }
-    }
-
-    if (lineItems.length === 0) return res.redirect('/warenkorb');
+    const lineItems = [{
+      price_data: {
+        currency: 'chf',
+        product_data: { name: 'MacherPost Abo' },
+        unit_amount: amount,
+        recurring: { interval: interval === 'yearly' ? 'year' : 'month' }
+      },
+      quantity: 1
+    }];
 
     const session = await stripe.checkout.sessions.create({
       customer_email: req.user.email,
@@ -82,18 +54,16 @@ router.post('/api/checkout', isAuthenticated, (req, res, next) => {
       cancel_url: `${process.env.BASE_URL}/checkout/cancel`,
       metadata: {
         user_id: String(req.user.id),
-        product_slugs: JSON.stringify(cart),
+        product_slug: 'komplett',
         interval: interval
       }
     });
 
-    // Clear cart
-    req.session.cart = [];
     res.redirect(303, session.url);
   })().catch(next);
 });
 
-// Success page — also activates subscription by reading checkout session from Stripe
+// Success page — activates subscription
 router.get('/checkout/success', isAuthenticated, async (req, res, next) => {
   try {
     const sessionId = req.query.session_id;
@@ -103,29 +73,26 @@ router.get('/checkout/success', isAuthenticated, async (req, res, next) => {
 
       if (checkoutSession && checkoutSession.metadata) {
         const userId = parseInt(checkoutSession.metadata.user_id);
-        const productSlugs = JSON.parse(checkoutSession.metadata.product_slugs || '[]');
+        const slug = checkoutSession.metadata.product_slug || 'komplett';
         const interval = checkoutSession.metadata.interval || 'monthly';
 
-        // Only activate for the logged-in user
         if (userId === req.user.id) {
-          for (const slug of productSlugs) {
-            const existing = db.get(
-              'SELECT id FROM subscriptions WHERE user_id = ? AND product_slug = ?', [userId, slug]
-            );
+          const existing = db.get(
+            'SELECT id FROM subscriptions WHERE user_id = ? AND product_slug = ?', [userId, slug]
+          );
 
-            if (existing) {
-              db.run(
-                "UPDATE subscriptions SET stripe_subscription_id = ?, stripe_customer_id = ?, status = 'active', billing_interval = ? WHERE id = ?",
-                [checkoutSession.subscription, checkoutSession.customer, interval, existing.id]
-              );
-            } else {
-              db.run(
-                'INSERT INTO subscriptions (user_id, product_slug, stripe_subscription_id, stripe_customer_id, billing_interval, status) VALUES (?, ?, ?, ?, ?, ?)',
-                [userId, slug, checkoutSession.subscription, checkoutSession.customer, interval, 'active']
-              );
-            }
+          if (existing) {
+            db.run(
+              "UPDATE subscriptions SET stripe_subscription_id = ?, stripe_customer_id = ?, status = 'active', billing_interval = ? WHERE id = ?",
+              [checkoutSession.subscription, checkoutSession.customer, interval, existing.id]
+            );
+          } else {
+            db.run(
+              'INSERT INTO subscriptions (user_id, product_slug, stripe_subscription_id, stripe_customer_id, billing_interval, status) VALUES (?, ?, ?, ?, ?, ?)',
+              [userId, slug, checkoutSession.subscription, checkoutSession.customer, interval, 'active']
+            );
           }
-          console.log(`[Stripe] Checkout success for user ${userId}: ${productSlugs.join(', ')}`);
+          console.log(`[Stripe] Checkout success for user ${userId}: ${slug} (${interval})`);
         }
       }
     }
@@ -137,7 +104,7 @@ router.get('/checkout/success', isAuthenticated, async (req, res, next) => {
 });
 
 // Cancel page
-router.get('/checkout/cancel', isAuthenticated, (req, res) => {
+router.get('/checkout/cancel', (req, res) => {
   res.render('checkout-cancel');
 });
 
@@ -151,7 +118,6 @@ function handleWebhook(req, res) {
     if (webhookSecret) {
       event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
     } else {
-      // In development without webhook secret, parse directly
       event = JSON.parse(req.body);
     }
   } catch (err) {
@@ -165,27 +131,25 @@ function handleWebhook(req, res) {
     case 'checkout.session.completed': {
       const session = event.data.object;
       const userId = parseInt(session.metadata.user_id);
-      const productSlugs = JSON.parse(session.metadata.product_slugs || '[]');
+      const slug = session.metadata.product_slug || 'komplett';
       const interval = session.metadata.interval || 'monthly';
 
-      for (const slug of productSlugs) {
-        const existing = db.get(
-          'SELECT id FROM subscriptions WHERE user_id = ? AND product_slug = ?', [userId, slug]
-        );
+      const existing = db.get(
+        'SELECT id FROM subscriptions WHERE user_id = ? AND product_slug = ?', [userId, slug]
+      );
 
-        if (existing) {
-          db.run(
-            "UPDATE subscriptions SET stripe_subscription_id = ?, stripe_customer_id = ?, status = 'active', billing_interval = ? WHERE id = ?",
-            [session.subscription, session.customer, interval, existing.id]
-          );
-        } else {
-          db.run(
-            'INSERT INTO subscriptions (user_id, product_slug, stripe_subscription_id, stripe_customer_id, billing_interval, status) VALUES (?, ?, ?, ?, ?, ?)',
-            [userId, slug, session.subscription, session.customer, interval, 'active']
-          );
-        }
+      if (existing) {
+        db.run(
+          "UPDATE subscriptions SET stripe_subscription_id = ?, stripe_customer_id = ?, status = 'active', billing_interval = ? WHERE id = ?",
+          [session.subscription, session.customer, interval, existing.id]
+        );
+      } else {
+        db.run(
+          'INSERT INTO subscriptions (user_id, product_slug, stripe_subscription_id, stripe_customer_id, billing_interval, status) VALUES (?, ?, ?, ?, ?, ?)',
+          [userId, slug, session.subscription, session.customer, interval, 'active']
+        );
       }
-      console.log(`[Stripe] Checkout completed for user ${userId}: ${productSlugs.join(', ')}`);
+      console.log(`[Stripe] Checkout completed for user ${userId}: ${slug}`);
       break;
     }
 
