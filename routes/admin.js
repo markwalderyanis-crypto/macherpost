@@ -78,7 +78,34 @@ router.get('/', (req, res) => {
      ORDER BY r.created_at DESC LIMIT 10`, []
   );
 
-  res.render('admin/dashboard', { stats, recentPdfs, recentComments, recentUsers, recentRatings, themeStats, themes: THEMES });
+  // Monthly trends (last 12 months)
+  const months = [];
+  const now = new Date();
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = d.toISOString().slice(0, 7); // YYYY-MM
+    const label = d.toLocaleDateString('de-CH', { month: 'short', year: '2-digit' });
+    months.push({ key, label });
+  }
+
+  const usersByMonth = {};
+  const pdfsByMonth = {};
+  const subsByMonth = {};
+  for (const m of months) {
+    const startKey = m.key + '-01';
+    const endD = new Date(parseInt(m.key.slice(0, 4)), parseInt(m.key.slice(5, 7)), 1);
+    const endKey = endD.toISOString().slice(0, 10);
+    const uRow = db.get("SELECT COUNT(*) as c FROM users WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
+    usersByMonth[m.key] = uRow ? uRow.c : 0;
+    const pRow = db.get("SELECT COUNT(*) as c FROM pdfs WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
+    pdfsByMonth[m.key] = pRow ? pRow.c : 0;
+    const sRow = db.get("SELECT COUNT(*) as c FROM subscriptions WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
+    subsByMonth[m.key] = sRow ? sRow.c : 0;
+  }
+
+  const trends = { months, usersByMonth, pdfsByMonth, subsByMonth };
+
+  res.render('admin/dashboard', { stats, recentPdfs, recentComments, recentUsers, recentRatings, themeStats, themes: THEMES, trends });
 });
 
 // PDF list
