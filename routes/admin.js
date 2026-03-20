@@ -78,32 +78,81 @@ router.get('/', (req, res) => {
      ORDER BY r.created_at DESC LIMIT 10`, []
   );
 
-  // Monthly trends (last 12 months)
-  const months = [];
+  // Flexible time range trends
+  const range = req.query.range || '1y';
   const now = new Date();
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = d.toISOString().slice(0, 7); // YYYY-MM
-    const label = d.toLocaleDateString('de-CH', { month: 'short', year: '2-digit' });
-    months.push({ key, label });
+  const buckets = [];
+
+  if (range === '24h') {
+    // 24 buckets of 1 hour each
+    for (let i = 23; i >= 0; i--) {
+      const start = new Date(now.getTime() - i * 3600000);
+      const end = new Date(now.getTime() - (i - 1) * 3600000);
+      buckets.push({
+        label: start.getHours() + ':00',
+        start: start.toISOString().slice(0, 19).replace('T', ' '),
+        end: end.toISOString().slice(0, 19).replace('T', ' ')
+      });
+    }
+  } else if (range === '1w') {
+    // 7 buckets of 1 day each
+    for (let i = 6; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i + 1);
+      buckets.push({
+        label: start.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric' }),
+        start: start.toISOString().slice(0, 10),
+        end: end.toISOString().slice(0, 10)
+      });
+    }
+  } else if (range === '6m') {
+    // 6 buckets of 1 month each
+    for (let i = 5; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      buckets.push({
+        label: start.toLocaleDateString('de-CH', { month: 'short', year: '2-digit' }),
+        start: start.toISOString().slice(0, 10),
+        end: end.toISOString().slice(0, 10)
+      });
+    }
+  } else if (range === '5y') {
+    // 5 buckets of 1 year each
+    for (let i = 4; i >= 0; i--) {
+      const start = new Date(now.getFullYear() - i, 0, 1);
+      const end = new Date(now.getFullYear() - i + 1, 0, 1);
+      buckets.push({
+        label: start.getFullYear().toString(),
+        start: start.toISOString().slice(0, 10),
+        end: end.toISOString().slice(0, 10)
+      });
+    }
+  } else {
+    // 1y: 12 buckets of 1 month each
+    for (let i = 11; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      buckets.push({
+        label: start.toLocaleDateString('de-CH', { month: 'short', year: '2-digit' }),
+        start: start.toISOString().slice(0, 10),
+        end: end.toISOString().slice(0, 10)
+      });
+    }
   }
 
-  const usersByMonth = {};
-  const pdfsByMonth = {};
-  const subsByMonth = {};
-  for (const m of months) {
-    const startKey = m.key + '-01';
-    const endD = new Date(parseInt(m.key.slice(0, 4)), parseInt(m.key.slice(5, 7)), 1);
-    const endKey = endD.toISOString().slice(0, 10);
-    const uRow = db.get("SELECT COUNT(*) as c FROM users WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
-    usersByMonth[m.key] = uRow ? uRow.c : 0;
-    const pRow = db.get("SELECT COUNT(*) as c FROM pdfs WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
-    pdfsByMonth[m.key] = pRow ? pRow.c : 0;
-    const sRow = db.get("SELECT COUNT(*) as c FROM subscriptions WHERE created_at >= ? AND created_at < ?", [startKey, endKey]);
-    subsByMonth[m.key] = sRow ? sRow.c : 0;
+  const usersData = [];
+  const pdfsData = [];
+  const subsData = [];
+  for (const b of buckets) {
+    const uRow = db.get("SELECT COUNT(*) as c FROM users WHERE created_at >= ? AND created_at < ?", [b.start, b.end]);
+    usersData.push(uRow ? uRow.c : 0);
+    const pRow = db.get("SELECT COUNT(*) as c FROM pdfs WHERE created_at >= ? AND created_at < ?", [b.start, b.end]);
+    pdfsData.push(pRow ? pRow.c : 0);
+    const sRow = db.get("SELECT COUNT(*) as c FROM subscriptions WHERE created_at >= ? AND created_at < ?", [b.start, b.end]);
+    subsData.push(sRow ? sRow.c : 0);
   }
 
-  const trends = { months, usersByMonth, pdfsByMonth, subsByMonth };
+  const trends = { buckets, usersData, pdfsData, subsData, range };
 
   res.render('admin/dashboard', { stats, recentPdfs, recentComments, recentUsers, recentRatings, themeStats, themes: THEMES, trends });
 });
