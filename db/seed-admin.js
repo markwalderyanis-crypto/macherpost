@@ -1,4 +1,4 @@
-const { initDb, getDb } = require('./init');
+const { initDb, getDb, saveDb } = require('./init');
 const bcryptjs = require('bcryptjs');
 
 (async () => {
@@ -15,5 +15,7 @@ const bcryptjs = require('bcryptjs');
     db.run('INSERT INTO users (email, name, password_hash, role) VALUES (?, ?, ?, ?)', [email, 'Yanis Markwalder', hash, 'admin']);
     console.log('Admin account created: ' + email + ' / 12345678');
   }
+  saveDb();
+  console.log('IMPORTANT: Run "pm2 restart macherpost" now so the server picks up the new database.');
   process.exit(0);
 })();
