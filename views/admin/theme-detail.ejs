@@ -33,7 +33,6 @@
 
         .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 50px; font-size: 10px; font-weight: 600; }
         .cat-recherche { background: #EEF2FF; color: #4338CA; }
-        .cat-brisantes { background: #FEF2F2; color: #DC2626; }
 
         @media (max-width: 640px) {
             .stat-row { flex-wrap: wrap; }
@@ -65,18 +64,6 @@
         </div>
     </div>
 
-    <!-- Category Tabs -->
-    <div class="cat-tabs">
-        <a href="/admin/thema/<%= theme.slug %>" class="cat-tab <%= category === 'all' ? 'active' : '' %>">
-            Alle <span class="cat-count">(<%= catCounts.all %>)</span>
-        </a>
-        <a href="/admin/thema/<%= theme.slug %>?cat=recherche" class="cat-tab <%= category === 'recherche' ? 'active' : '' %>">
-            &#128270; Recherchen <span class="cat-count">(<%= catCounts.recherche %>)</span>
-        </a>
-        <a href="/admin/thema/<%= theme.slug %>?cat=brisantes" class="cat-tab <%= category === 'brisantes' ? 'active' : '' %>">
-            &#128293; Brisantes <span class="cat-count">(<%= catCounts.brisantes %>)</span>
-        </a>
-    </div>
 
     <!-- Articles ranked by views -->
     <div style="background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden;">
@@ -87,14 +74,7 @@
                 <div class="article-row">
                     <div class="article-rank"><%= i + 1 %></div>
                     <div class="article-info">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <a href="/admin/pdfs/<%= p.id %>/edit" class="article-title" style="text-decoration: none;"><%= p.title %></a>
-                            <% if (p.category === 'brisantes') { %>
-                                <span class="cat-badge cat-brisantes">Brisantes</span>
-                            <% } else { %>
-                                <span class="cat-badge cat-recherche">Recherche</span>
-                            <% } %>
-                        </div>
+                        <a href="/admin/pdfs/<%= p.id %>/edit" class="article-title" style="text-decoration: none;"><%= p.title %></a>
                         <div class="article-meta">
                             <span class="status-dot <%= p.status %>"></span><%= p.status === 'published' ? 'Live' : p.status === 'scheduled' ? 'Geplant' : 'Entwurf' %>
                             &bull; <%= p.publish_date ? p.publish_date.substring(0, 10) : '—' %>

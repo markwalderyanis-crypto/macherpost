@@ -23,8 +23,8 @@ async function initDb() {
   try { db.run("ALTER TABLE pdfs ADD COLUMN category TEXT NOT NULL DEFAULT 'recherche'"); } catch (e) { /* already exists */ }
   // Migrate: add views column to pdfs if missing
   try { db.run("ALTER TABLE pdfs ADD COLUMN views INTEGER NOT NULL DEFAULT 0"); } catch (e) { /* already exists */ }
-  // Migrate: convert old tagesbericht category to recherche
-  try { db.run("UPDATE pdfs SET category = 'recherche' WHERE category = 'tagesbericht'"); } catch (e) { /* ignore */ }
+  // Migrate: convert old categories to recherche
+  try { db.run("UPDATE pdfs SET category = 'recherche' WHERE category IN ('tagesbericht', 'brisantes')"); } catch (e) { /* ignore */ }
 
   const result = db.exec('SELECT COUNT(*) FROM products');
   const count = result.length > 0 ? result[0].values[0][0] : 0;

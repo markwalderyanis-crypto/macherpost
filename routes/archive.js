@@ -54,8 +54,6 @@ router.get('/archiv/:themeSlug', (req, res) => {
   const isAdmin = req.user && req.user.role === 'admin';
   const hasPaidAccess = isAdmin || (req.user && hasActiveSubscription(req.user.id));
 
-  const category = req.query.cat || 'all';
-
   let pdfs = db.all(
     "SELECT * FROM pdfs WHERE theme_slug = ? AND status = 'published' ORDER BY publish_date DESC", [themeSlug]
   );
@@ -65,14 +63,10 @@ router.get('/archiv/:themeSlug', (req, res) => {
     pdfs = pdfs.filter(p => isTuesday(p.publish_date));
   }
 
-  // Filter by category
-  const filteredPdfs = category === 'all' ? pdfs : pdfs.filter(p => p.category === category);
+  const filteredPdfs = pdfs;
 
-  // Count per category
-  const catCounts = { all: pdfs.length, recherche: 0, brisantes: 0 };
-  for (const p of pdfs) {
-    if (catCounts[p.category] !== undefined) catCounts[p.category]++;
-  }
+  // Count articles
+  const catCounts = { all: pdfs.length };
 
   // Get avg ratings for each PDF
   const pdfRatings = {};
@@ -81,7 +75,7 @@ router.get('/archiv/:themeSlug', (req, res) => {
     pdfRatings[p.id] = { avg: r ? Math.round((r.avg || 0) * 10) / 10 : 0, count: r ? r.count : 0 };
   }
 
-  res.render('archiv-theme', { theme, pdfs: filteredPdfs, hasAccess: true, hasPaidAccess, category, catCounts, pdfRatings });
+  res.render('archiv-theme', { theme, pdfs: filteredPdfs, hasAccess: true, hasPaidAccess, pdfRatings });
 });
 
 // Single article (PDF view + comments)

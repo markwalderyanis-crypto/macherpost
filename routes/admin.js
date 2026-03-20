@@ -239,7 +239,6 @@ router.get('/thema/:slug', (req, res) => {
   const theme = THEMES.find(t => t.slug === slug);
   if (!theme) return res.status(404).render('error', { title: '404', message: 'Thema nicht gefunden' });
 
-  const category = req.query.cat || 'all';
   const pdfs = db.all('SELECT * FROM pdfs WHERE theme_slug = ? ORDER BY views DESC', [slug]);
   const totalViews = pdfs.reduce((sum, p) => sum + (p.views || 0), 0);
 
@@ -249,13 +248,7 @@ router.get('/thema/:slug', (req, res) => {
     ratingData: db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [p.id])
   }));
 
-  const filtered = category === 'all' ? enriched : enriched.filter(p => p.category === category);
-  const catCounts = { all: pdfs.length, recherche: 0, brisantes: 0 };
-  for (const p of pdfs) {
-    if (catCounts[p.category] !== undefined) catCounts[p.category]++;
-  }
-
-  res.render('admin/theme-detail', { theme, pdfs: filtered, totalViews, category, catCounts });
+  res.render('admin/theme-detail', { theme, pdfs: enriched, totalViews });
 });
 
 module.exports = router;
