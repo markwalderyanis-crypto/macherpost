@@ -74,7 +74,7 @@ function seedProducts() {
     'handwerk', 'selbstaendigkeit', 'fuehrungskompetenzen', 'aktien-maerkte',
     'krypto', 'makrooekonomie', 'abrechnung-operativ', 'schweizer-politik',
     'weltpolitik', 'europaeische-politik', 'enthuellung', 'sport',
-    'ki', 'ki-automatisierung', 'robotik'
+    'ki', 'ki-automatisierung', 'robotik', 'technik'
   ];
   db.run('INSERT INTO products (slug,type,name,price_monthly,price_yearly,themes) VALUES (?,?,?,?,?,?)',
     ['komplett', 'package', 'MacherPost Abo', 1999, 14999, JSON.stringify(allThemes)]);

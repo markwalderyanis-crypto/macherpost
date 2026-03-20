@@ -253,6 +253,8 @@
     <symbol id="i-kiauto" viewBox="0 0 24 24"><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="5"/><path d="M13 9l-2 3h2l-2 3"/></symbol>
     <!-- Robotik: robot head -->
     <symbol id="i-robotik" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="3.5" r="1.5"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M9 18h6"/><path d="M3 14h2"/><path d="M19 14h2"/></symbol>
+    <!-- Technik: wrench + circuit -->
+    <symbol id="i-technik" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"/><path d="M6 6h4"/></symbol>
     <!-- Pricing icons -->
     <symbol id="i-werkbank" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
     <symbol id="i-solo" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11.5a18.3 18.3 0 0 1-4 1.5z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
@@ -284,7 +286,7 @@
     <div class="container">
         <div class="hero-badge reveal"><span class="hero-badge-dot"></span> Jetzt verfügbar</div>
         <h1 class="reveal">Dein Briefing.<br>Dein <em>Vorsprung.</em></h1>
-        <p class="hero-sub reveal">Handwerk, Finanzen, KI, Politik, Sport und mehr — kompakt aufbereitet, jeden Tag um 06:30 in deinem Postfach.</p>
+        <p class="hero-sub reveal">Handwerk, Finanzen, KI, Politik, Technik und mehr — kompakt aufbereitet, jeden Tag um 06:30 in deinem Postfach.</p>
         <form class="signup-form reveal" id="heroForm" onsubmit="return handleSignup(event, 'hero')">
             <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
             <button type="submit" class="btn-signup">Newsletter abonnieren</button>
@@ -300,7 +302,7 @@
         <div class="stats-row reveal">
             <div><div class="stat-number">7x</div><div class="stat-label">Pro Woche (Täglich)</div></div>
             <div><div class="stat-number">06:30</div><div class="stat-label">Pünktlich im Postfach</div></div>
-            <div><div class="stat-number">15</div><div class="stat-label">Themengebiete</div></div>
+            <div><div class="stat-number">16</div><div class="stat-label">Themengebiete</div></div>
             <div><div class="stat-number">100%</div><div class="stat-label">Praxisnah & umsetzbar</div></div>
         </div>
     </div>
@@ -311,7 +313,7 @@
     <div class="container">
         <div class="section-header reveal">
             <div class="section-eyebrow">Ein Abo. Alles drin.</div>
-            <h2 class="section-title">15 Themen. Ein Preis.<br>Keine Kompromisse.</h2>
+            <h2 class="section-title">16 Themen. Ein Preis.<br>Keine Kompromisse.</h2>
             <p class="section-desc">Alle Themen, Deep-Dives, Sonderausgaben und das volle Archiv — t&auml;glich um 06:30.</p>
         </div>
         <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto;">
@@ -347,24 +349,30 @@
             <p class="section-desc">Von Handwerk bis Krypto, von Schweizer Politik bis Robotik — wähle die Themen, die zu dir passen.</p>
         </div>
         <div class="topics-grid reveal">
+            <!-- Wirtschaft & Beruf -->
             <a href="themen/handwerk.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-handwerk"/></svg></span> Handwerk</a>
-            <a href="themen/selbstaendigkeit.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-selbst"/></svg></span> Selbständigkeit</a>
-            <a href="themen/fuehrungskompetenzen.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-fuehrung"/></svg></span> Führung</a>
-            <a href="themen/aktien-maerkte.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-aktien"/></svg></span> Aktien & Märkte</a>
-            <a href="themen/krypto.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-krypto"/></svg></span> Krypto</a>
-            <a href="themen/makrooekonomie.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-makro"/></svg></span> Makroökonomie</a>
+            <a href="themen/selbstaendigkeit.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-selbst"/></svg></span> Selbst&auml;ndigkeit</a>
+            <a href="themen/fuehrungskompetenzen.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-fuehrung"/></svg></span> F&uuml;hrung</a>
             <a href="themen/abrechnung-operativ.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-abrechnung"/></svg></span> Abrechnung</a>
+            <!-- Finanzen -->
+            <a href="themen/aktien-maerkte.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-aktien"/></svg></span> Aktien &amp; M&auml;rkte</a>
+            <a href="themen/krypto.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-krypto"/></svg></span> Krypto</a>
+            <a href="themen/makrooekonomie.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-makro"/></svg></span> Makro&ouml;konomie</a>
+            <!-- Politik -->
             <a href="themen/schweizer-politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-lokal"/></svg></span> Schweizer Politik</a>
-            <a href="themen/weltpolitik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-politik"/></svg></span> Weltpolitik</a>
             <a href="themen/europaeische-politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-europa"/></svg></span> Europ&auml;ische Politik</a>
-            <a href="themen/enthuellung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-enthuellung"/></svg></span> Enth&uuml;llungen</a>
-            <a href="themen/sport.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-sport"/></svg></span> Sport</a>
+            <a href="themen/weltpolitik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-politik"/></svg></span> Weltpolitik</a>
+            <!-- Technologie -->
             <a href="themen/ki.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-ki"/></svg></span> KI</a>
             <a href="themen/ki-automatisierung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-kiauto"/></svg></span> KI-Automatisierung</a>
             <a href="themen/robotik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-robotik"/></svg></span> Robotik</a>
+            <a href="themen/technik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-technik"/></svg></span> Technik</a>
+            <!-- Gesellschaft -->
+            <a href="themen/sport.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-sport"/></svg></span> Sport</a>
+            <a href="themen/enthuellung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-enthuellung"/></svg></span> Enth&uuml;llungen</a>
         </div>
         <div class="topics-note-wrap reveal">
-            <div class="topic-single-note">Alle 15 Themen im Abo: <strong>CHF 19.99/Mt.</strong> oder <strong>CHF 149.99/Jahr</strong> &mdash; <a href="#preise" style="color: var(--c-accent); font-weight: 600;">Jetzt abonnieren</a></div>
+            <div class="topic-single-note">Alle 16 Themen im Abo: <strong>CHF 19.99/Mt.</strong> oder <strong>CHF 149.99/Jahr</strong> &mdash; <a href="#preise" style="color: var(--c-accent); font-weight: 600;">Jetzt abonnieren</a></div>
         </div>
     </div>
 </section>
@@ -395,7 +403,7 @@
                 <h3>MacherPost Abo</h3>
                 <div class="compare-price">CHF 19.99 / Monat oder CHF 149.99 / Jahr</div>
                 <ul class="compare-list">
-                    <li><span class="ci ci-yes">&#10003;</span> Alle 15 Themen inklusive</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Alle 16 Themen inklusive</li>
                     <li><span class="ci ci-yes">&#10003;</span> T&auml;glich (Mo&ndash;So) um 06:30</li>
                     <li><span class="ci ci-yes">&#10003;</span> Deep-Dives &amp; Montags-Analysen</li>
                     <li><span class="ci ci-yes">&#10003;</span> Volles Archiv</li>
@@ -472,7 +480,7 @@
         <div class="faq-list reveal">
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Tag um 06:30 Uhr. P&uuml;nktlich zum Start in den Tag.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich kostenlos?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Dienstag erh&auml;ltst du kostenlose Ausgaben zu allen Themen &mdash; ohne Anmeldung. F&uuml;r den t&auml;glichen Zugang, Deep-Dives und das volle Archiv brauchst du das Abo.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist im Abo enthalten?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Alle 15 Themengebiete, t&auml;gliche Artikel, Montags-Deep-Dives, Sonderausgaben und das komplette Archiv. Ein Abo, alles drin.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist im Abo enthalten?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Alle 16 Themengebiete, t&auml;gliche Artikel, Montags-Deep-Dives, Sonderausgaben und das komplette Archiv. Ein Abo, alles drin.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lohnt sich das Jahresabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja &mdash; du sparst CHF 89.89 gegen&uuml;ber dem Monatspreis. Statt CHF 239.88 zahlst du nur CHF 149.99 pro Jahr.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich jederzeit k&uuml;ndigen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Nat&uuml;rlich. Ein Klick gen&uuml;gt &mdash; &uuml;ber dein Konto oder den Link in jeder Ausgabe. Kein Kleingedrucktes, kein Drama.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie kann ich bezahlen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Per Kreditkarte &uuml;ber Stripe &mdash; sicher, verschl&uuml;sselt und PCI-konform. Deine Zahlungsdaten werden nie bei uns gespeichert.</div></div></div>
@@ -484,7 +492,7 @@
 <section class="cta-section" id="start">
     <div class="container">
         <h2 class="reveal">Bereit, besser informiert zu sein?</h2>
-        <p class="cta-desc reveal">Alle 15 Themen. T&auml;glich um 06:30. Dienstags kostenlos.</p>
+        <p class="cta-desc reveal">Alle 16 Themen. T&auml;glich um 06:30. Dienstags kostenlos.</p>
         <div class="reveal" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;">
             <a href="/abo?interval=monthly" style="display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s;">CHF 19.99/Mt. &mdash; Jetzt starten</a>
             <a href="/abo?interval=yearly" style="display: inline-flex; padding: 16px 36px; background: transparent; color: white; font-weight: 700; font-size: 16px; border-radius: 50px; border: 2px solid #555; transition: border-color 0.2s;">CHF 149.99/Jahr &mdash; Spare 37%</a>
