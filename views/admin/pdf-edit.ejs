@@ -30,7 +30,6 @@
         <div class="form-group">
             <label for="category">Kategorie</label>
             <select id="category" name="category" required>
-                <option value="tagesbericht" <%= pdf && pdf.category === 'tagesbericht' ? 'selected' : '' %>>&#128196; Tagesbericht</option>
                 <option value="recherche" <%= pdf && pdf.category === 'recherche' ? 'selected' : '' %>>&#128270; Recherche</option>
                 <option value="brisantes" <%= pdf && pdf.category === 'brisantes' ? 'selected' : '' %>>&#128293; Brisantes</option>
             </select>

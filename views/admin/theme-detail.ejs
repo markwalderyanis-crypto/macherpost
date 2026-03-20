@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title><%= theme.name %> — Admin — MacherPost</title>
+    <style>
+        .cat-tabs { display: flex; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+        .cat-tab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s; border: 1px solid var(--c-border); color: var(--c-muted); background: var(--c-white); }
+        .cat-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
+        .cat-tab.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+        .cat-count { font-size: 11px; opacity: 0.7; }
+
+        .stat-row { display: flex; gap: 16px; margin-bottom: 24px; }
+        .stat-box { flex: 1; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; text-align: center; }
+        .stat-box-label { font-size: 12px; color: var(--c-muted); margin-bottom: 4px; }
+        .stat-box-value { font-size: 28px; font-weight: 800; color: var(--c-dark); }
+        .stat-box-value.accent { color: var(--c-accent); }
+
+        .article-row { display: flex; align-items: center; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--c-border); transition: background 0.15s; }
+        .article-row:hover { background: var(--c-section-alt); }
+        .article-row:last-child { border-bottom: none; }
+        .article-rank { font-size: 18px; font-weight: 800; color: var(--c-muted); width: 32px; text-align: center; flex-shrink: 0; }
+        .article-info { flex: 1; min-width: 0; }
+        .article-title { font-size: 14px; font-weight: 700; color: var(--c-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .article-meta { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+        .article-stats { display: flex; gap: 20px; flex-shrink: 0; align-items: center; }
+        .article-stat { text-align: center; }
+        .article-stat-val { font-size: 16px; font-weight: 700; color: var(--c-dark); }
+        .article-stat-label { font-size: 10px; color: var(--c-muted); text-transform: uppercase; }
+
+        .view-bar { width: 80px; height: 8px; background: var(--c-section-alt); border-radius: 4px; overflow: hidden; }
+        .view-bar-fill { height: 100%; background: var(--c-accent); border-radius: 4px; }
+
+        .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 50px; font-size: 10px; font-weight: 600; }
+        .cat-recherche { background: #EEF2FF; color: #4338CA; }
+        .cat-brisantes { background: #FEF2F2; color: #DC2626; }
+
+        @media (max-width: 640px) {
+            .stat-row { flex-wrap: wrap; }
+            .stat-box { min-width: 45%; }
+            .article-stats { gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+<%- include('../partials/nav') %>
+
+<main class="content" style="max-width: var(--max-w);">
+    <a href="/admin" style="font-size: 14px; color: var(--c-muted);">&larr; Zum Dashboard</a>
+    <h1 style="margin-top: 16px;"><%= theme.name %></h1>
+
+    <!-- Stats -->
+    <div class="stat-row">
+        <div class="stat-box">
+            <div class="stat-box-label">Artikel</div>
+            <div class="stat-box-value"><%= pdfs.length %></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-label">Views gesamt</div>
+            <div class="stat-box-value accent"><%= totalViews %></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-label">&empty; Views/Artikel</div>
+            <div class="stat-box-value"><%= pdfs.length > 0 ? Math.round(totalViews / pdfs.length) : 0 %></div>
+        </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="cat-tabs">
+        <a href="/admin/thema/<%= theme.slug %>" class="cat-tab <%= category === 'all' ? 'active' : '' %>">
+            Alle <span class="cat-count">(<%= catCounts.all %>)</span>
+        </a>
+        <a href="/admin/thema/<%= theme.slug %>?cat=recherche" class="cat-tab <%= category === 'recherche' ? 'active' : '' %>">
+            &#128270; Recherchen <span class="cat-count">(<%= catCounts.recherche %>)</span>
+        </a>
+        <a href="/admin/thema/<%= theme.slug %>?cat=brisantes" class="cat-tab <%= category === 'brisantes' ? 'active' : '' %>">
+            &#128293; Brisantes <span class="cat-count">(<%= catCounts.brisantes %>)</span>
+        </a>
+    </div>
+
+    <!-- Articles ranked by views -->
+    <div style="background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden;">
+        <% if (pdfs.length === 0) { %>
+            <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 40px;">Noch keine Artikel in diesem Thema.</p>
+        <% } else { %>
+            <% for (let i = 0; i < pdfs.length; i++) { const p = pdfs[i]; const avgR = p.ratingData ? Math.round((p.ratingData.avg || 0) * 10) / 10 : 0; %>
+                <div class="article-row">
+                    <div class="article-rank"><%= i + 1 %></div>
+                    <div class="article-info">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <a href="/admin/pdfs/<%= p.id %>/edit" class="article-title" style="text-decoration: none;"><%= p.title %></a>
+                            <% if (p.category === 'brisantes') { %>
+                                <span class="cat-badge cat-brisantes">Brisantes</span>
+                            <% } else { %>
+                                <span class="cat-badge cat-recherche">Recherche</span>
+                            <% } %>
+                        </div>
+                        <div class="article-meta">
+                            <span class="status-dot <%= p.status %>"></span><%= p.status === 'published' ? 'Live' : p.status === 'scheduled' ? 'Geplant' : 'Entwurf' %>
+                            &bull; <%= p.publish_date ? p.publish_date.substring(0, 10) : '—' %>
+                            <% if (avgR > 0) { %>&bull; <span style="color: #F59E0B;">&#9733;</span> <%= avgR %><% } %>
+                        </div>
+                    </div>
+                    <div class="article-stats">
+                        <div class="article-stat">
+                            <div class="article-stat-val"><%= p.views || 0 %></div>
+                            <div class="article-stat-label">Views</div>
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div class="view-bar">
+                                    <div class="view-bar-fill" style="width: <%= p.viewPct %>%;"></div>
+                                </div>
+                                <span style="font-size: 13px; font-weight: 700; color: var(--c-accent);"><%= p.viewPct %>%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>
+</body>
+</html>

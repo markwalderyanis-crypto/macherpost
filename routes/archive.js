@@ -69,7 +69,7 @@ router.get('/archiv/:themeSlug', (req, res) => {
   const filteredPdfs = category === 'all' ? pdfs : pdfs.filter(p => p.category === category);
 
   // Count per category
-  const catCounts = { all: pdfs.length, recherche: 0, tagesbericht: 0, brisantes: 0 };
+  const catCounts = { all: pdfs.length, recherche: 0, brisantes: 0 };
   for (const p of pdfs) {
     if (catCounts[p.category] !== undefined) catCounts[p.category]++;
   }
@@ -97,6 +97,9 @@ router.get('/artikel/:pdfId', (req, res) => {
   if (!hasPaidAccess && !isFreeArticle) {
     return res.status(403).render('error', { title: 'Kein Zugriff', message: 'Dieser Artikel ist nur für Abonnenten verfügbar. Dienstags-Ausgaben sind kostenlos!' });
   }
+
+  // Track view
+  db.run('UPDATE pdfs SET views = views + 1 WHERE id = ?', [pdf.id]);
 
   const comments = db.all(
     `SELECT c.*, u.name as user_name FROM comments c

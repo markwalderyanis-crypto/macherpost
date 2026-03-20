@@ -49,13 +49,20 @@ router.get('/', (req, res) => {
   const yearlySubs = yearlyRow ? yearlyRow.c : 0;
   stats.monthlyRevenue = (monthlySubs * 19.99) + (yearlySubs * (149.99 / 12));
 
-  // PDFs per theme
+  // PDFs per theme with views
   const themeCounts = db.all(
-    "SELECT theme_slug, COUNT(*) as c FROM pdfs GROUP BY theme_slug ORDER BY c DESC", []
+    "SELECT theme_slug, COUNT(*) as c, SUM(views) as v FROM pdfs GROUP BY theme_slug ORDER BY v DESC", []
   );
+  const totalViews = themeCounts.reduce((sum, tc) => sum + (tc.v || 0), 0);
   const themeStats = themeCounts.map(tc => {
     const theme = THEMES.find(t => t.slug === tc.theme_slug);
-    return { slug: tc.theme_slug, name: theme ? theme.name : tc.theme_slug, count: tc.c };
+    return {
+      slug: tc.theme_slug,
+      name: theme ? theme.name : tc.theme_slug,
+      count: tc.c,
+      views: tc.v || 0,
+      viewPct: totalViews > 0 ? Math.round((tc.v || 0) / totalViews * 100) : 0
+    };
   });
 
   // Recent PDFs
@@ -186,7 +193,7 @@ router.post('/pdfs', upload.single('pdf_file'), (req, res) => {
   const db = getDb();
   db.run(
     'INSERT INTO pdfs (theme_slug, category, title, description, filename, publish_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [theme_slug, category || 'tagesbericht', title, description || '', req.file.filename, datetime, status || 'draft']
+    [theme_slug, category || 'recherche', title, description || '', req.file.filename, datetime, status || 'draft']
   );
 
   res.redirect('/admin/pdfs');
@@ -223,6 +230,32 @@ router.post('/pdfs/:id/publish', (req, res) => {
   const now = new Date().toISOString().slice(0, 10);
   db.run("UPDATE pdfs SET status = 'published', publish_date = ? WHERE id = ?", [now, req.params.id]);
   res.redirect('/admin/pdfs');
+});
+
+// Theme detail — articles per theme with stats
+router.get('/thema/:slug', (req, res) => {
+  const db = getDb();
+  const { slug } = req.params;
+  const theme = THEMES.find(t => t.slug === slug);
+  if (!theme) return res.status(404).render('error', { title: '404', message: 'Thema nicht gefunden' });
+
+  const category = req.query.cat || 'all';
+  const pdfs = db.all('SELECT * FROM pdfs WHERE theme_slug = ? ORDER BY views DESC', [slug]);
+  const totalViews = pdfs.reduce((sum, p) => sum + (p.views || 0), 0);
+
+  const enriched = pdfs.map(p => ({
+    ...p,
+    viewPct: totalViews > 0 ? Math.round((p.views || 0) / totalViews * 100) : 0,
+    ratingData: db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [p.id])
+  }));
+
+  const filtered = category === 'all' ? enriched : enriched.filter(p => p.category === category);
+  const catCounts = { all: pdfs.length, recherche: 0, brisantes: 0 };
+  for (const p of pdfs) {
+    if (catCounts[p.category] !== undefined) catCounts[p.category]++;
+  }
+
+  res.render('admin/theme-detail', { theme, pdfs: filtered, totalViews, category, catCounts });
 });
 
 module.exports = router;

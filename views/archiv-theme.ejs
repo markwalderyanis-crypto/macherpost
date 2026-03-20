@@ -16,7 +16,6 @@
         .pdf-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
         .cat-recherche { background: #EEF2FF; color: #4338CA; }
-        .cat-tagesbericht { background: #F0FDF4; color: #16A34A; }
         .cat-brisantes { background: #FEF2F2; color: #DC2626; }
     </style>
 </head>
@@ -41,9 +40,6 @@
             </a>
             <a href="/archiv/<%= theme.slug %>?cat=recherche" class="cat-tab <%= category === 'recherche' ? 'active' : '' %>">
                 <span class="cat-icon">&#128270;</span> Recherchen <span class="cat-count">(<%= catCounts.recherche %>)</span>
-            </a>
-            <a href="/archiv/<%= theme.slug %>?cat=tagesbericht" class="cat-tab <%= category === 'tagesbericht' ? 'active' : '' %>">
-                <span class="cat-icon">&#128196;</span> Tagesberichte <span class="cat-count">(<%= catCounts.tagesbericht %>)</span>
             </a>
             <a href="/archiv/<%= theme.slug %>?cat=brisantes" class="cat-tab <%= category === 'brisantes' ? 'active' : '' %>">
                 <span class="cat-icon">&#128293;</span> Brisantes <span class="cat-count">(<%= catCounts.brisantes %>)</span>
@@ -75,12 +71,10 @@
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
                             <div style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                    <% if (pdf.category === 'recherche') { %>
-                                        <span class="cat-badge cat-recherche">&#128270; Recherche</span>
-                                    <% } else if (pdf.category === 'brisantes') { %>
+                                    <% if (pdf.category === 'brisantes') { %>
                                         <span class="cat-badge cat-brisantes">&#128293; Brisantes</span>
                                     <% } else { %>
-                                        <span class="cat-badge cat-tagesbericht">&#128196; Tagesbericht</span>
+                                        <span class="cat-badge cat-recherche">&#128270; Recherche</span>
                                     <% } %>
                                 </div>
                                 <h3 style="font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= pdf.title %></h3>

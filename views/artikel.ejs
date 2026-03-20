@@ -16,7 +16,6 @@
         .rating-avg .stars-display { color: #F59E0B; font-size: 18px; letter-spacing: 1px; }
         .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; }
         .cat-recherche { background: #EEF2FF; color: #4338CA; }
-        .cat-tagesbericht { background: #F0FDF4; color: #16A34A; }
         .cat-brisantes { background: #FEF2F2; color: #DC2626; }
         .pdf-page-container { margin: 32px 0; }
         .pdf-page { width: 100%; margin-bottom: 2px; display: block; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
@@ -29,12 +28,10 @@
     <a href="/archiv/<%= pdf.theme_slug %>" style="font-size: 14px; color: var(--c-muted);">&larr; Zur&uuml;ck zu <%= themeName %></a>
 
     <div style="margin-top: 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <% if (pdf.category === 'recherche') { %>
-            <span class="cat-badge cat-recherche">&#128270; Recherche</span>
-        <% } else if (pdf.category === 'brisantes') { %>
+        <% if (pdf.category === 'brisantes') { %>
             <span class="cat-badge cat-brisantes">&#128293; Brisantes</span>
         <% } else { %>
-            <span class="cat-badge cat-tagesbericht">&#128196; Tagesbericht</span>
+            <span class="cat-badge cat-recherche">&#128270; Recherche</span>
         <% } %>
         <span style="font-size: 13px; color: var(--c-muted);"><%= themeName %> &bull; <%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
     </div>

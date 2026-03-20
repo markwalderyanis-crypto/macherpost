@@ -321,15 +321,31 @@
         </div>
     </div>
 
-    <!-- All Themes Overview -->
+    <!-- All Themes Overview with View Stats -->
+    <%
+      const totalViewsAll = themeStats.reduce((s, ts) => s + ts.views, 0);
+      const themeViewMap = {};
+      const themeCountMap = {};
+      for (const ts of themeStats) { themeViewMap[ts.slug] = ts.views; themeCountMap[ts.slug] = ts.count; }
+    %>
     <div class="dash-section">
-        <h2>Alle Themen (<%= themes.length %>)</h2>
+        <h2>Alle Themen (<%= themes.length %>) &mdash; <span style="font-weight: 400; font-size: 14px;"><%= totalViewsAll %> Views gesamt</span></h2>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
             <% for (const t of themes) { %>
-                <div class="dash-card" style="padding: 16px; text-align: center;">
-                    <div style="font-size: 14px; font-weight: 700; color: var(--c-dark); margin-bottom: 4px;"><%= t.name %></div>
-                    <div style="font-size: 11px; color: var(--c-muted);"><%= t.slug %></div>
-                </div>
+                <% const tv = themeViewMap[t.slug] || 0; const tc = themeCountMap[t.slug] || 0; const pct = totalViewsAll > 0 ? Math.round(tv / totalViewsAll * 100) : 0; %>
+                <a href="/admin/thema/<%= t.slug %>" class="dash-card" style="padding: 16px; text-decoration: none; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    <div style="font-size: 14px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= t.name %></div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <div style="flex: 1; background: var(--c-section-alt); border-radius: 4px; height: 6px; overflow: hidden;">
+                            <div style="height: 100%; background: var(--c-accent); border-radius: 4px; width: <%= pct %>%; min-width: <%= tv > 0 ? '3px' : '0' %>;"></div>
+                        </div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--c-accent);"><%= pct %>%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--c-muted);">
+                        <span><%= tc %> Artikel</span>
+                        <span><%= tv %> Views</span>
+                    </div>
+                </a>
             <% } %>
         </div>
     </div>

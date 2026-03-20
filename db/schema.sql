@@ -37,7 +37,8 @@ CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
 CREATE TABLE IF NOT EXISTS pdfs (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     theme_slug      TEXT NOT NULL,
-    category        TEXT NOT NULL DEFAULT 'tagesbericht',
+    category        TEXT NOT NULL DEFAULT 'recherche',
+    views           INTEGER NOT NULL DEFAULT 0,
     title           TEXT NOT NULL,
     description     TEXT,
     filename        TEXT NOT NULL,
