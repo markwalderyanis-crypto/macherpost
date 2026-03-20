@@ -4,6 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const { getDb } = require('../db/init');
 const { isAdmin } = require('../middleware/auth');
+const { THEMES } = require('../config/themes');
 
 // Multer config for PDF uploads
 const storage = multer.diskStorage({
@@ -27,38 +28,69 @@ router.use(isAdmin);
 // Dashboard
 router.get('/', (req, res) => {
   const db = getDb();
+
+  const cnt = (sql) => { const r = db.get(sql, []); return r ? (r.c || 0) : 0; };
   const stats = {
-    users: db.get('SELECT COUNT(*) as c FROM users', []).c,
-    subscriptions: db.get("SELECT COUNT(*) as c FROM subscriptions WHERE status = 'active'", []).c,
-    pdfs: db.get('SELECT COUNT(*) as c FROM pdfs', []).c,
-    published: db.get("SELECT COUNT(*) as c FROM pdfs WHERE status = 'published'", []).c,
-    scheduled: db.get("SELECT COUNT(*) as c FROM pdfs WHERE status = 'scheduled'", []).c,
-    drafts: db.get("SELECT COUNT(*) as c FROM pdfs WHERE status = 'draft'", []).c,
-    comments: db.get('SELECT COUNT(*) as c FROM comments', []).c
+    users: cnt('SELECT COUNT(*) as c FROM users'),
+    subscriptions: cnt("SELECT COUNT(*) as c FROM subscriptions WHERE status = 'active'"),
+    pdfs: cnt('SELECT COUNT(*) as c FROM pdfs'),
+    published: cnt("SELECT COUNT(*) as c FROM pdfs WHERE status = 'published'"),
+    scheduled: cnt("SELECT COUNT(*) as c FROM pdfs WHERE status = 'scheduled'"),
+    drafts: cnt("SELECT COUNT(*) as c FROM pdfs WHERE status = 'draft'"),
+    comments: cnt('SELECT COUNT(*) as c FROM comments'),
+    ratings: cnt('SELECT COUNT(*) as c FROM ratings'),
+    avgRating: (db.get('SELECT AVG(stars) as avg FROM ratings', []) || {}).avg || 0
   };
+
+  // Revenue estimate
+  const monthlyRow = db.get("SELECT COUNT(*) as c FROM subscriptions WHERE status = 'active' AND billing_interval = 'monthly'", []);
+  const yearlyRow = db.get("SELECT COUNT(*) as c FROM subscriptions WHERE status = 'active' AND billing_interval = 'yearly'", []);
+  const monthlySubs = monthlyRow ? monthlyRow.c : 0;
+  const yearlySubs = yearlyRow ? yearlyRow.c : 0;
+  stats.monthlyRevenue = (monthlySubs * 19.99) + (yearlySubs * (149.99 / 12));
+
+  // PDFs per theme
+  const themeCounts = db.all(
+    "SELECT theme_slug, COUNT(*) as c FROM pdfs GROUP BY theme_slug ORDER BY c DESC", []
+  );
+  const themeStats = themeCounts.map(tc => {
+    const theme = THEMES.find(t => t.slug === tc.theme_slug);
+    return { slug: tc.theme_slug, name: theme ? theme.name : tc.theme_slug, count: tc.c };
+  });
+
+  // Recent PDFs
   const recentPdfs = db.all('SELECT * FROM pdfs ORDER BY created_at DESC LIMIT 5', []);
+
+  // Recent comments
   const recentComments = db.all(
     `SELECT c.*, u.name as user_name, p.title as pdf_title
      FROM comments c JOIN users u ON c.user_id = u.id JOIN pdfs p ON c.pdf_id = p.id
      ORDER BY c.created_at DESC LIMIT 10`, []
   );
 
-  res.render('admin/dashboard', { stats, recentPdfs, recentComments });
+  // Recent users
+  const recentUsers = db.all('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC LIMIT 10', []);
+
+  // Recent ratings
+  const recentRatings = db.all(
+    `SELECT r.stars, r.created_at, u.name as user_name, p.title as pdf_title
+     FROM ratings r JOIN users u ON r.user_id = u.id JOIN pdfs p ON r.pdf_id = p.id
+     ORDER BY r.created_at DESC LIMIT 10`, []
+  );
+
+  res.render('admin/dashboard', { stats, recentPdfs, recentComments, recentUsers, recentRatings, themeStats, themes: THEMES });
 });
 
 // PDF list
 router.get('/pdfs', (req, res) => {
   const db = getDb();
   const pdfs = db.all('SELECT * FROM pdfs ORDER BY created_at DESC', []);
-  const themes = db.all("SELECT slug, name FROM products WHERE type = 'theme' ORDER BY name", []);
-  res.render('admin/pdfs', { pdfs, themes });
+  res.render('admin/pdfs', { pdfs, themes: THEMES });
 });
 
 // New PDF form
 router.get('/pdfs/new', (req, res) => {
-  const db = getDb();
-  const themes = db.all("SELECT slug, name FROM products WHERE type = 'theme' ORDER BY name", []);
-  res.render('admin/pdf-edit', { pdf: null, themes });
+  res.render('admin/pdf-edit', { pdf: null, themes: THEMES });
 });
 
 // Edit PDF form
@@ -66,8 +98,7 @@ router.get('/pdfs/:id/edit', (req, res) => {
   const db = getDb();
   const pdf = db.get('SELECT * FROM pdfs WHERE id = ?', [req.params.id]);
   if (!pdf) return res.status(404).render('error', { title: '404', message: 'PDF nicht gefunden' });
-  const themes = db.all("SELECT slug, name FROM products WHERE type = 'theme' ORDER BY name", []);
-  res.render('admin/pdf-edit', { pdf, themes });
+  res.render('admin/pdf-edit', { pdf, themes: THEMES });
 });
 
 // Create PDF

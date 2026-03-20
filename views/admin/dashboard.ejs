@@ -2,68 +2,254 @@
 <html lang="de">
 <head>
     <%- include('../partials/head') %>
-    <title>Admin — MacherPost</title>
+    <title>Admin Dashboard — MacherPost</title>
+    <style>
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        .dash-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 24px; }
+        .dash-card-label { font-size: 13px; color: var(--c-muted); margin-bottom: 4px; }
+        .dash-card-value { font-size: 32px; font-weight: 800; color: var(--c-dark); line-height: 1.2; }
+        .dash-card-sub { font-size: 12px; color: var(--c-muted); margin-top: 4px; }
+        .dash-card.accent .dash-card-value { color: var(--c-accent); }
+        .dash-card.green .dash-card-value { color: var(--c-green); }
+
+        .dash-section { margin-bottom: 40px; }
+        .dash-section h2 { font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--c-border); }
+
+        .dash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .dash-cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+
+        .dash-table { width: 100%; border-collapse: collapse; }
+        .dash-table th { text-align: left; font-size: 12px; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 2px solid var(--c-border); }
+        .dash-table td { padding: 10px 12px; font-size: 14px; border-bottom: 1px solid var(--c-border); }
+        .dash-table tr:hover { background: var(--c-section-alt); }
+
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .status-dot.published { background: var(--c-green); }
+        .status-dot.scheduled { background: #F59E0B; }
+        .status-dot.draft { background: var(--c-muted); }
+
+        .theme-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .theme-bar-name { font-size: 13px; font-weight: 600; width: 160px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .theme-bar-fill { height: 20px; background: var(--c-accent); border-radius: 4px; min-width: 2px; transition: width 0.3s; }
+        .theme-bar-count { font-size: 12px; color: var(--c-muted); flex-shrink: 0; }
+
+        .star { color: #F59E0B; }
+        .quick-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+
+        @media (max-width: 900px) {
+            .dash-grid { grid-template-columns: 1fr 1fr; }
+            .dash-cols, .dash-cols-3 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .dash-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 <%- include('../partials/nav') %>
 
 <main class="content" style="max-width: var(--max-w);">
-    <h1>Admin Dashboard</h1>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <h1 style="margin: 0;">Admin Dashboard</h1>
+        <div style="font-size: 13px; color: var(--c-muted);"><%= new Date().toLocaleDateString('de-CH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></div>
+    </div>
 
-    <div class="grid-4" style="margin-bottom: 40px;">
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 32px; font-weight: 800; color: var(--c-accent);"><%= stats.users %></div>
-            <div style="font-size: 13px; color: var(--c-muted);">Benutzer</div>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="/admin/pdfs/new" class="btn btn-primary">+ Neues PDF hochladen</a>
+        <a href="/admin/pdfs" class="btn btn-outline">PDFs verwalten</a>
+        <a href="/archiv" class="btn btn-outline">Archiv ansehen</a>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="dash-grid">
+        <div class="dash-card">
+            <div class="dash-card-label">Benutzer</div>
+            <div class="dash-card-value"><%= stats.users %></div>
         </div>
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 32px; font-weight: 800; color: var(--c-green);"><%= stats.subscriptions %></div>
-            <div style="font-size: 13px; color: var(--c-muted);">Aktive Abos</div>
+        <div class="dash-card green">
+            <div class="dash-card-label">Aktive Abos</div>
+            <div class="dash-card-value"><%= stats.subscriptions %></div>
+            <div class="dash-card-sub">Conversion: <%= stats.users > 0 ? Math.round(stats.subscriptions / stats.users * 100) : 0 %>%</div>
         </div>
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 32px; font-weight: 800; color: var(--c-dark);"><%= stats.pdfs %></div>
-            <div style="font-size: 13px; color: var(--c-muted);">PDFs gesamt</div>
+        <div class="dash-card accent">
+            <div class="dash-card-label">Gesch. Monatsumsatz</div>
+            <div class="dash-card-value">CHF <%= stats.monthlyRevenue.toFixed(0) %></div>
+            <div class="dash-card-sub">~CHF <%= (stats.monthlyRevenue * 12).toFixed(0) %>/Jahr</div>
         </div>
-        <div class="card" style="text-align: center;">
-            <div style="font-size: 32px; font-weight: 800; color: var(--c-muted);"><%= stats.comments %></div>
-            <div style="font-size: 13px; color: var(--c-muted);">Kommentare</div>
+        <div class="dash-card">
+            <div class="dash-card-label">Durchschn. Bewertung</div>
+            <div class="dash-card-value"><%= stats.avgRating > 0 ? stats.avgRating.toFixed(1) : '—' %> <span class="star" style="font-size: 20px;">&#9733;</span></div>
+            <div class="dash-card-sub"><%= stats.ratings %> Bewertungen</div>
         </div>
     </div>
 
-    <div style="display: flex; gap: 12px; margin-bottom: 40px;">
-        <a href="/admin/pdfs" class="btn btn-primary">PDFs verwalten</a>
-        <a href="/admin/pdfs/new" class="btn btn-outline">Neues PDF hochladen</a>
+    <!-- PDF Stats -->
+    <div class="dash-grid">
+        <div class="dash-card">
+            <div class="dash-card-label">PDFs gesamt</div>
+            <div class="dash-card-value"><%= stats.pdfs %></div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label"><span class="status-dot published"></span> Ver&ouml;ffentlicht</div>
+            <div class="dash-card-value"><%= stats.published %></div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label"><span class="status-dot scheduled"></span> Geplant</div>
+            <div class="dash-card-value"><%= stats.scheduled %></div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label"><span class="status-dot draft"></span> Entw&uuml;rfe</div>
+            <div class="dash-card-value"><%= stats.drafts %></div>
+        </div>
     </div>
 
-    <h2>PDF-Status</h2>
-    <div class="grid-3" style="margin-bottom: 40px;">
-        <div class="card">
-            <span class="badge badge-active">Ver&ouml;ffentlicht</span>
-            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.published %></div>
-        </div>
-        <div class="card">
-            <span class="badge badge-scheduled">Geplant</span>
-            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.scheduled %></div>
-        </div>
-        <div class="card">
-            <span class="badge badge-draft">Entwurf</span>
-            <div style="font-size: 24px; font-weight: 800; margin-top: 8px;"><%= stats.drafts %></div>
-        </div>
-    </div>
-
-    <% if (recentComments.length > 0) { %>
-        <h2>Letzte Kommentare</h2>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            <% for (const c of recentComments) { %>
-                <div class="card" style="padding: 16px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--c-muted); margin-bottom: 6px;">
-                        <strong><%= c.user_name %></strong>
-                        <span>zu &laquo;<%= c.pdf_title %>&raquo;</span>
+    <!-- Theme Distribution + Recent PDFs -->
+    <div class="dash-cols">
+        <!-- Theme distribution -->
+        <div class="dash-section">
+            <h2>Artikel pro Thema</h2>
+            <div class="dash-card" style="padding: 20px;">
+                <% const maxCount = themeStats.length > 0 ? themeStats[0].count : 1; %>
+                <% for (const ts of themeStats) { %>
+                    <div class="theme-bar">
+                        <div class="theme-bar-name"><%= ts.name %></div>
+                        <div style="flex: 1; background: var(--c-section-alt); border-radius: 4px; overflow: hidden;">
+                            <div class="theme-bar-fill" style="width: <%= Math.round(ts.count / maxCount * 100) %>%;"></div>
+                        </div>
+                        <div class="theme-bar-count"><%= ts.count %></div>
                     </div>
-                    <p style="font-size: 14px; margin: 0;"><%= c.content.substring(0, 150) %><%= c.content.length > 150 ? '...' : '' %></p>
+                <% } %>
+                <% if (themeStats.length === 0) { %>
+                    <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 20px;">Noch keine PDFs hochgeladen.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Recent PDFs -->
+        <div class="dash-section">
+            <h2>Letzte PDFs</h2>
+            <div class="dash-card" style="padding: 0; overflow: hidden;">
+                <% if (recentPdfs.length > 0) { %>
+                <table class="dash-table">
+                    <thead><tr><th>Titel</th><th>Status</th><th>Datum</th></tr></thead>
+                    <tbody>
+                    <% for (const p of recentPdfs) { %>
+                        <tr>
+                            <td>
+                                <a href="/admin/pdfs/<%= p.id %>/edit" style="color: var(--c-dark); font-weight: 600;"><%= p.title.length > 35 ? p.title.substring(0, 35) + '...' : p.title %></a>
+                            </td>
+                            <td><span class="status-dot <%= p.status %>"></span><%= p.status === 'published' ? 'Live' : p.status === 'scheduled' ? 'Geplant' : 'Entwurf' %></td>
+                            <td style="font-size: 13px; color: var(--c-muted);"><%= p.publish_date ? p.publish_date.substring(0, 10) : '—' %></td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 24px;">Noch keine PDFs.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users + Comments + Ratings -->
+    <div class="dash-cols-3">
+        <!-- Recent Users -->
+        <div class="dash-section">
+            <h2>Neue Benutzer</h2>
+            <div class="dash-card" style="padding: 0; overflow: hidden;">
+                <% if (recentUsers.length > 0) { %>
+                <table class="dash-table">
+                    <thead><tr><th>Name</th><th>Rolle</th></tr></thead>
+                    <tbody>
+                    <% for (const u of recentUsers) { %>
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; font-size: 13px;"><%= u.name || 'Kein Name' %></div>
+                                <div style="font-size: 11px; color: var(--c-muted);"><%= u.email %></div>
+                            </td>
+                            <td>
+                                <% if (u.role === 'admin') { %>
+                                    <span class="badge badge-active">Admin</span>
+                                <% } else { %>
+                                    <span style="font-size: 12px; color: var(--c-muted);">User</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 24px;">Keine Benutzer.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Recent Comments -->
+        <div class="dash-section">
+            <h2>Letzte Kommentare</h2>
+            <div class="dash-card" style="padding: 0; overflow: hidden;">
+                <% if (recentComments.length > 0) { %>
+                <table class="dash-table">
+                    <thead><tr><th>Kommentar</th></tr></thead>
+                    <tbody>
+                    <% for (const c of recentComments.slice(0, 5)) { %>
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600; font-size: 12px; color: var(--c-accent);"><%= c.user_name %></div>
+                                <div style="font-size: 13px; margin: 2px 0;"><%= c.content.substring(0, 80) %><%= c.content.length > 80 ? '...' : '' %></div>
+                                <div style="font-size: 11px; color: var(--c-muted);">zu &laquo;<%= c.pdf_title.substring(0, 30) %>&raquo;</div>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 24px;">Keine Kommentare.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Recent Ratings -->
+        <div class="dash-section">
+            <h2>Letzte Bewertungen</h2>
+            <div class="dash-card" style="padding: 0; overflow: hidden;">
+                <% if (recentRatings.length > 0) { %>
+                <table class="dash-table">
+                    <thead><tr><th>Bewertung</th></tr></thead>
+                    <tbody>
+                    <% for (const r of recentRatings.slice(0, 5)) { %>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <span class="star"><% for (let i = 0; i < r.stars; i++) { %>&#9733;<% } %></span>
+                                    <span style="font-size: 12px; color: var(--c-muted);"><%= r.stars %>/5</span>
+                                </div>
+                                <div style="font-size: 12px; margin-top: 2px;"><strong><%= r.user_name %></strong> &mdash; <%= r.pdf_title.substring(0, 30) %></div>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <p style="color: var(--c-muted); font-size: 14px; text-align: center; padding: 24px;">Keine Bewertungen.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Themes Overview -->
+    <div class="dash-section">
+        <h2>Alle Themen (<%= themes.length %>)</h2>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+            <% for (const t of themes) { %>
+                <div class="dash-card" style="padding: 16px; text-align: center;">
+                    <div style="font-size: 14px; font-weight: 700; color: var(--c-dark); margin-bottom: 4px;"><%= t.name %></div>
+                    <div style="font-size: 11px; color: var(--c-muted);"><%= t.slug %></div>
                 </div>
             <% } %>
         </div>
-    <% } %>
+    </div>
 </main>
 
 <%- include('../partials/footer') %>

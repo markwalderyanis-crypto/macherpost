@@ -14,11 +14,10 @@
 
     <div class="grid-3">
         <% for (const theme of themes) { %>
-            <% const hasAccess = userThemes.has(theme.slug); %>
             <a href="/archiv/<%= theme.slug %>" class="card" style="text-decoration: none; transition: all 0.2s; position: relative;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                     <h3 style="font-size: 16px; font-weight: 700; color: var(--c-dark);"><%= theme.name %></h3>
-                    <% if (hasAccess) { %>
+                    <% if (hasPaidAccess) { %>
                         <span class="badge badge-active" style="font-size: 10px; padding: 2px 8px;">Abo</span>
                     <% } %>
                 </div>
@@ -32,7 +31,7 @@
     <div style="margin-top: 48px; padding: 32px; background: var(--c-accent-light); border-radius: var(--radius); text-align: center;">
         <h2 style="margin: 0 0 12px;">Alle Ausgaben lesen?</h2>
         <p style="color: var(--c-muted); margin-bottom: 20px;">Mit einem Abo erh&auml;ltst du t&auml;glich Zugang zu allen Beitr&auml;gen — nicht nur dienstags.</p>
-        <a href="/pakete/komplett.html" class="btn btn-primary">Pakete entdecken</a>
+        <a href="/abo" class="btn btn-primary">Jetzt abonnieren</a>
     </div>
 </main>
 

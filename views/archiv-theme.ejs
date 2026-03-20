@@ -31,7 +31,7 @@
         <div class="alert" style="background: #FFF7ED; color: #EA580C; border: 1px solid #FED7AA; text-align: center; padding: 32px;">
             <h2 style="margin: 0 0 12px;">Kein Zugriff</h2>
             <p style="margin-bottom: 20px;">Du hast kein aktives Abo f&uuml;r dieses Thema.</p>
-            <a href="/warenkorb/add?slug=<%= theme.slug %>" class="btn btn-primary">Jetzt abonnieren — CHF <%= (theme.price_monthly / 100).toFixed(2) %>/Mt.</a>
+            <a href="/abo" class="btn btn-primary">Jetzt abonnieren — CHF 19.99/Mt.</a>
         </div>
     <% } else { %>
         <!-- Kategorie-Tabs -->
@@ -52,7 +52,7 @@
 
         <% if (!hasPaidAccess) { %>
         <div style="background: #FFF7ED; border: 1px solid #FED7AA; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #EA580C;">
-            &#128274; Du siehst nur die kostenlosen Dienstags-Ausgaben. <a href="/warenkorb/add?slug=<%= theme.slug %>" style="font-weight: 700; text-decoration: underline;">Abonnieren</a> f&uuml;r vollen Zugang.
+            &#128274; Du siehst nur die kostenlosen Dienstags-Ausgaben. <a href="/abo" style="font-weight: 700; text-decoration: underline;">Abonnieren</a> f&uuml;r vollen Zugang.
         </div>
         <% } %>
 
