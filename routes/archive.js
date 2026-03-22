@@ -91,26 +91,81 @@ function loadComments(db, pdfId, currentUser) {
   return { comments, commentLikes };
 }
 
-// Archive overview (accessible without login)
+// Archive overview — newspaper-style layout
 router.get('/archiv', (req, res) => {
   const db = getDb();
   const isAdmin = req.user && req.user.role === 'admin';
   const hasPaid = isAdmin || (req.user && hasActiveSubscription(req.user.id));
 
-  // Count published PDFs per theme
-  const pdfCounts = {};
-  const counts = db.all(
-    "SELECT theme_slug, COUNT(*) as c FROM pdfs WHERE status = 'published' GROUP BY theme_slug", []
+  // Get all published articles, newest first
+  let allPdfs = db.all(
+    "SELECT * FROM pdfs WHERE status = 'published' ORDER BY publish_date DESC", []
   );
-  for (const row of counts) pdfCounts[row.theme_slug] = row.c;
 
-  // Build themes list with counts
-  const themes = THEMES.map(t => ({
-    ...t,
-    pdfCount: pdfCounts[t.slug] || 0
-  }));
+  // Free users: only Tuesday articles
+  if (!hasPaid) {
+    allPdfs = allPdfs.filter(p => isTuesday(p.publish_date));
+  }
 
-  res.render('archiv', { themes, hasPaidAccess: hasPaid, pdfCounts });
+  // Get unique dates for date filter
+  const dates = [...new Set(allPdfs.map(p => p.publish_date ? p.publish_date.split('T')[0] : ''))].filter(Boolean).sort().reverse();
+
+  // Date filter from query
+  const filterDate = req.query.date || '';
+  const filterSearch = req.query.q || '';
+
+  let filteredPdfs = allPdfs;
+  if (filterDate) {
+    filteredPdfs = filteredPdfs.filter(p => p.publish_date && p.publish_date.startsWith(filterDate));
+  }
+  if (filterSearch) {
+    const q = filterSearch.toLowerCase();
+    filteredPdfs = filteredPdfs.filter(p =>
+      (p.title || '').toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.theme_slug || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Get ratings for displayed articles
+  const pdfRatings = {};
+  const pdfReadingTime = {};
+  for (const p of filteredPdfs.slice(0, 50)) {
+    const r = db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [p.id]);
+    pdfRatings[p.id] = { avg: r ? Math.round((r.avg || 0) * 10) / 10 : 0, count: r ? r.count : 0 };
+    pdfReadingTime[p.id] = readingTime(p.html_content || p.description || '');
+  }
+
+  // Find latest daily reports (today + yesterday) and latest big report
+  // Daily = category matches theme slug (normal articles), Big = word count > 5000 or category = 'big'
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+  const todayArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(today));
+  const yesterdayArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(yesterday));
+
+  // If no today articles, use the two most recent dates
+  let latestArticles = todayArticles;
+  let prevArticles = yesterdayArticles;
+  if (latestArticles.length === 0 && allPdfs.length > 0) {
+    const latestDate = dates[0];
+    const prevDate = dates[1] || '';
+    latestArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(latestDate));
+    prevArticles = prevDate ? allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(prevDate)) : [];
+  }
+
+  res.render('archiv', {
+    themes: THEMES,
+    hasPaidAccess: hasPaid,
+    allPdfs: filteredPdfs,
+    latestArticles,
+    prevArticles,
+    pdfRatings,
+    pdfReadingTime,
+    dates,
+    filterDate,
+    filterSearch,
+  });
 });
 
 // Theme archive (accessible without login, but content limited for free users)
