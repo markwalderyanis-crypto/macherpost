@@ -93,6 +93,56 @@ const PORT = process.env.PORT || 3457;
     res.render('newsletter-abmelden', { done: true });
   });
 
+  // Internal reimport API (called by cron, no session needed, secret-based auth)
+  app.get('/internal/reimport/:date', (req, res) => {
+    const secret = req.query.secret;
+    if (secret !== (process.env.REIMPORT_SECRET || 'macherpost-reimport-2026')) {
+      return res.status(403).json({ error: 'Invalid secret' });
+    }
+    const { date } = req.params;
+    const db = getDb();
+    const outputDir = require('path').join(__dirname, 'pipeline', 'output', date);
+    const pdfDir = require('path').join(__dirname, 'content', 'pdfs');
+
+    if (!require('fs').existsSync(outputDir)) {
+      return res.json({ ok: true, message: 'No output for ' + date, inserted: 0 });
+    }
+
+    const themes = require('fs').readdirSync(outputDir).filter(f =>
+      require('fs').statSync(require('path').join(outputDir, f)).isDirectory()
+    );
+
+    let count = 0;
+    for (const slug of themes) {
+      const mdPath = require('path').join(outputDir, slug, 'bericht.md');
+      const metaPath = require('path').join(outputDir, slug, 'meta.json');
+      if (!require('fs').existsSync(mdPath) || !require('fs').existsSync(metaPath)) continue;
+
+      const md = require('fs').readFileSync(mdPath, 'utf8');
+      const meta = JSON.parse(require('fs').readFileSync(metaPath, 'utf8'));
+      const titleMatch = md.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1] : meta.themeName;
+
+      const pdfFiles = require('fs').readdirSync(pdfDir).filter(f => f.includes(slug) && f.includes(date));
+      if (!pdfFiles[0]) continue;
+
+      const exists = db.get('SELECT id FROM pdfs WHERE filename = ?', [pdfFiles[0]]);
+      if (exists) continue;
+
+      const desc = meta.themeName + ' \u2014 ' + (meta.wordCount || 0) + ' W\u00f6rter';
+      db.run(
+        `INSERT INTO pdfs (title, description, filename, theme_slug, category, status, publish_date, html_content, review_status, views)
+         VALUES (?, ?, ?, ?, ?, 'published', ?, ?, 'approved', 0)`,
+        [title, desc, pdfFiles[0], slug, slug, date + 'T06:30', md]
+      );
+      count++;
+      console.log('[Reimport] Imported:', title);
+    }
+
+    console.log('[Reimport] ' + date + ': ' + count + ' inserted');
+    res.json({ ok: true, date, inserted: count });
+  });
+
   // Push notification API
   app.get('/api/vapid-key', (req, res) => {
     res.json({ key: process.env.VAPID_PUBLIC_KEY || '' });
