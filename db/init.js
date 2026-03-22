@@ -98,6 +98,16 @@ async function initDb() {
   if (count === 0) seedProducts();
 
   setInterval(() => saveDb(), 30000);
+
+  // Graceful shutdown — save DB before process exits
+  const shutdown = () => {
+    console.log('[DB] Saving before exit...');
+    saveDb();
+    process.exit(0);
+  };
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+
   console.log('[DB] Initialized');
 }
 

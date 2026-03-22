@@ -675,4 +675,61 @@ router.post('/newsletter/:id/delete', (req, res) => {
   res.redirect('/admin/newsletter');
 });
 
+// ========== INTERNAL REIMPORT ==========
+
+// Reimport pipeline articles into the running in-memory DB
+// Called via: curl http://localhost:3457/admin/reimport/2026-03-22?secret=REIMPORT_SECRET
+router.get('/reimport/:date', (req, res) => {
+  const { date } = req.params;
+  // Simple secret check for cron access (no session needed)
+  const secret = req.query.secret;
+  if (secret !== (process.env.REIMPORT_SECRET || 'macherpost-reimport-2026')) {
+    return res.status(403).json({ error: 'Invalid secret' });
+  }
+
+  const db = getDb();
+  const outputDir = path.join(__dirname, '..', 'pipeline', 'output', date);
+  const pdfDir = path.join(__dirname, '..', 'content', 'pdfs');
+
+  if (!fs.existsSync(outputDir)) {
+    return res.json({ ok: true, message: 'No output directory for ' + date, inserted: 0 });
+  }
+
+  const themes = fs.readdirSync(outputDir).filter(f => {
+    return fs.statSync(path.join(outputDir, f)).isDirectory();
+  });
+
+  let count = 0;
+  for (const slug of themes) {
+    const mdPath = path.join(outputDir, slug, 'bericht.md');
+    const metaPath = path.join(outputDir, slug, 'meta.json');
+    if (!fs.existsSync(mdPath) || !fs.existsSync(metaPath)) continue;
+
+    const md = fs.readFileSync(mdPath, 'utf8');
+    const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    const titleMatch = md.match(/^#\s+(.+)$/m);
+    const title = titleMatch ? titleMatch[1] : meta.themeName;
+
+    const pdfFiles = fs.readdirSync(pdfDir).filter(f => f.includes(slug) && f.includes(date));
+    if (!pdfFiles[0]) continue;
+
+    const exists = db.get('SELECT id FROM pdfs WHERE filename = ?', [pdfFiles[0]]);
+    if (exists) continue;
+
+    const desc = meta.themeName + ' \u2014 ' + meta.wordCount + ' W\u00f6rter';
+    const publishDate = date + 'T06:30';
+
+    db.run(
+      `INSERT INTO pdfs (title, description, filename, theme_slug, category, status, publish_date, html_content, review_status, views)
+       VALUES (?, ?, ?, ?, ?, 'published', ?, ?, 'approved', 0)`,
+      [title, desc, pdfFiles[0], slug, slug, publishDate, md]
+    );
+    count++;
+    console.log('[Reimport] Imported:', title);
+  }
+
+  console.log('[Reimport] Done for ' + date + ': inserted ' + count);
+  res.json({ ok: true, date, inserted: count });
+});
+
 module.exports = router;
