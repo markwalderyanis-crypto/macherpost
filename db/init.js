@@ -105,6 +105,12 @@ async function initDb() {
   const count = result.length > 0 ? result[0].values[0][0] : 0;
   if (count === 0) seedProducts();
 
+  // Auto-import pipeline articles on startup
+  autoImportArticles();
+
+  const c3 = db.exec('SELECT COUNT(*) FROM pdfs');
+  console.log('[DB] After auto-import:', c3.length ? c3[0].values[0][0] : 0, 'articles');
+
   setInterval(() => saveDb(), 30000);
 
   // Graceful shutdown — save DB before process exits
@@ -117,6 +123,60 @@ async function initDb() {
   process.on('SIGINT', shutdown);
 
   console.log('[DB] Initialized');
+}
+
+// Auto-import articles from pipeline output into in-memory DB on startup
+function autoImportArticles() {
+  const outputBase = path.join(__dirname, '..', 'pipeline', 'output');
+  const pdfDir = path.join(__dirname, '..', 'content', 'pdfs');
+
+  if (!fs.existsSync(outputBase)) return;
+
+  const dates = fs.readdirSync(outputBase).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+
+  let totalImported = 0;
+  for (const date of dates) {
+    const dateDir = path.join(outputBase, date);
+    if (!fs.statSync(dateDir).isDirectory()) continue;
+
+    const themes = fs.readdirSync(dateDir).filter(f =>
+      fs.statSync(path.join(dateDir, f)).isDirectory()
+    );
+
+    for (const slug of themes) {
+      const mdPath = path.join(dateDir, slug, 'bericht.md');
+      const metaPath = path.join(dateDir, slug, 'meta.json');
+      if (!fs.existsSync(mdPath) || !fs.existsSync(metaPath)) continue;
+
+      if (!fs.existsSync(pdfDir)) continue;
+      const pdfFiles = fs.readdirSync(pdfDir).filter(f => f.includes(slug) && f.includes(date));
+      if (!pdfFiles[0]) continue;
+
+      // Check if already in DB
+      const existing = db.exec("SELECT id FROM pdfs WHERE filename = '" + pdfFiles[0].replace(/'/g, "''") + "'");
+      if (existing.length > 0 && existing[0].values.length > 0) continue;
+
+      const md = fs.readFileSync(mdPath, 'utf8');
+      const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+      const titleMatch = md.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1] : meta.themeName;
+      const desc = meta.themeName + ' \u2014 ' + (meta.wordCount || 0) + ' W\u00f6rter';
+      const publishDate = date + 'T06:30';
+
+      db.run(
+        "INSERT INTO pdfs (title, description, filename, theme_slug, category, status, publish_date, html_content, review_status, views) VALUES (?, ?, ?, ?, ?, 'published', ?, ?, 'approved', 0)",
+        [title, desc, pdfFiles[0], slug, slug, publishDate, md]
+      );
+      totalImported++;
+    }
+  }
+
+  if (totalImported > 0) {
+    console.log('[DB] Auto-imported', totalImported, 'articles from pipeline output');
+    // Save immediately after import
+    const data = db.export();
+    fs.writeFileSync(dbPath, Buffer.from(data));
+  }
 }
 
 function saveDb() {
