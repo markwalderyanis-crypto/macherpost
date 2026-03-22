@@ -118,8 +118,11 @@ function saveDb() {
     const r = db.exec('SELECT COUNT(*) FROM pdfs');
     const count = r.length > 0 ? r[0].values[0][0] : '?';
     const data = db.export();
-    fs.writeFileSync(dbPath, Buffer.from(data));
-    console.log('[DB] Saved (' + count + ' articles, ' + data.length + ' bytes)');
+    const buf = Buffer.from(data);
+    fs.writeFileSync(dbPath, buf);
+    // Verify write
+    const stat = fs.statSync(dbPath);
+    console.log('[DB] Saved (' + count + ' articles, ' + buf.length + ' bytes, file=' + stat.size + ' bytes, path=' + dbPath + ')');
   } catch (e) { console.error('[DB] Save error:', e.message); }
 }
 
