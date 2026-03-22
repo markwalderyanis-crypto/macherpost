@@ -91,7 +91,7 @@ function loadComments(db, pdfId, currentUser) {
   return { comments, commentLikes };
 }
 
-// Archive overview — newspaper-style layout
+// Archive overview — editions grouped by date
 router.get('/archiv', (req, res) => {
   const db = getDb();
   const isAdmin = req.user && req.user.role === 'admin';
@@ -107,64 +107,117 @@ router.get('/archiv', (req, res) => {
     allPdfs = allPdfs.filter(p => isTuesday(p.publish_date));
   }
 
-  // Get unique dates for date filter
-  const dates = [...new Set(allPdfs.map(p => p.publish_date ? p.publish_date.split('T')[0] : ''))].filter(Boolean).sort().reverse();
-
-  // Date filter from query
-  const filterDate = req.query.date || '';
-  const filterSearch = req.query.q || '';
-
-  let filteredPdfs = allPdfs;
-  if (filterDate) {
-    filteredPdfs = filteredPdfs.filter(p => p.publish_date && p.publish_date.startsWith(filterDate));
+  // Group articles by date → editions
+  const editionMap = {};
+  for (const p of allPdfs) {
+    const date = p.publish_date ? p.publish_date.split('T')[0] : '';
+    if (!date) continue;
+    if (!editionMap[date]) editionMap[date] = [];
+    editionMap[date].push(p);
   }
+
+  // Build editions array sorted by date desc
+  const editions = Object.keys(editionMap).sort().reverse().map(date => {
+    const articles = editionMap[date];
+    const themeNames = articles.map(a => {
+      const t = getThemeBySlug(a.theme_slug);
+      return t ? t.name : a.theme_slug;
+    });
+    const totalWords = articles.reduce((sum, a) => {
+      const text = a.html_content || a.description || '';
+      return sum + text.replace(/<[^>]+>/g, '').split(/\s+/).filter(w => w.length > 0).length;
+    }, 0);
+    const totalReadingTime = Math.max(1, Math.round(totalWords / 200));
+
+    return {
+      date,
+      articleCount: articles.length,
+      themeNames,
+      totalReadingTime,
+      articles,
+    };
+  });
+
+  // Search filter
+  const filterSearch = req.query.q || '';
+  let filteredEditions = editions;
   if (filterSearch) {
     const q = filterSearch.toLowerCase();
-    filteredPdfs = filteredPdfs.filter(p =>
-      (p.title || '').toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q) ||
-      (p.theme_slug || '').toLowerCase().includes(q)
+    filteredEditions = editions.filter(ed =>
+      ed.articles.some(a =>
+        (a.title || '').toLowerCase().includes(q) ||
+        (a.description || '').toLowerCase().includes(q) ||
+        (a.theme_slug || '').toLowerCase().includes(q)
+      )
     );
-  }
-
-  // Get ratings for displayed articles
-  const pdfRatings = {};
-  const pdfReadingTime = {};
-  for (const p of filteredPdfs.slice(0, 50)) {
-    const r = db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [p.id]);
-    pdfRatings[p.id] = { avg: r ? Math.round((r.avg || 0) * 10) / 10 : 0, count: r ? r.count : 0 };
-    pdfReadingTime[p.id] = readingTime(p.html_content || p.description || '');
-  }
-
-  // Find latest daily reports (today + yesterday) and latest big report
-  // Daily = category matches theme slug (normal articles), Big = word count > 5000 or category = 'big'
-  const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-  const todayArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(today));
-  const yesterdayArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(yesterday));
-
-  // If no today articles, use the two most recent dates
-  let latestArticles = todayArticles;
-  let prevArticles = yesterdayArticles;
-  if (latestArticles.length === 0 && allPdfs.length > 0) {
-    const latestDate = dates[0];
-    const prevDate = dates[1] || '';
-    latestArticles = allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(latestDate));
-    prevArticles = prevDate ? allPdfs.filter(p => p.publish_date && p.publish_date.startsWith(prevDate)) : [];
   }
 
   res.render('archiv', {
     themes: THEMES,
     hasPaidAccess: hasPaid,
-    allPdfs: filteredPdfs,
-    latestArticles,
-    prevArticles,
-    pdfRatings,
-    pdfReadingTime,
-    dates,
-    filterDate,
+    editions: filteredEditions,
     filterSearch,
+  });
+});
+
+// Single edition — all themes for one date as a newspaper
+router.get('/ausgabe/:date', (req, res) => {
+  const db = getDb();
+  const { date } = req.params;
+  const isAdmin = req.user && req.user.role === 'admin';
+  const hasPaid = isAdmin || (req.user && hasActiveSubscription(req.user.id));
+
+  // Get all articles for this date
+  let articles = db.all(
+    "SELECT * FROM pdfs WHERE status = 'published' AND publish_date LIKE ? ORDER BY publish_date ASC",
+    [date + '%']
+  );
+
+  if (articles.length === 0) {
+    return res.status(404).render('error', { title: '404', message: 'Keine Ausgabe für dieses Datum gefunden' });
+  }
+
+  // Free users: only Tuesday articles
+  const isFreeDay = isTuesday(date + 'T00:00');
+  if (!hasPaid && !isFreeDay) {
+    return res.status(403).render('error', { title: 'Kein Zugriff', message: 'Diese Ausgabe ist nur für Abonnenten verfügbar. Dienstags-Ausgaben sind kostenlos!' });
+  }
+
+  // Sort articles by theme order (matching THEMES array)
+  const themeOrder = {};
+  THEMES.forEach((t, i) => { themeOrder[t.slug] = i; });
+  articles.sort((a, b) => (themeOrder[a.theme_slug] ?? 99) - (themeOrder[b.theme_slug] ?? 99));
+
+  // Enrich with theme info, ratings, reading time
+  const enriched = articles.map(art => {
+    const theme = getThemeBySlug(art.theme_slug);
+    const ratingData = db.get('SELECT AVG(stars) as avg, COUNT(*) as count FROM ratings WHERE pdf_id = ?', [art.id]);
+    const userRating = req.user ? db.get('SELECT stars FROM ratings WHERE pdf_id = ? AND user_id = ?', [art.id, req.user.id]) : null;
+    return {
+      ...art,
+      themeName: theme ? theme.name : art.theme_slug,
+      themeIcon: theme ? theme.icon : '',
+      avgRating: ratingData ? Math.round((ratingData.avg || 0) * 10) / 10 : 0,
+      ratingCount: ratingData ? ratingData.count : 0,
+      userRating: userRating ? userRating.stars : 0,
+      readingMin: readingTime(art.html_content || art.description || ''),
+    };
+  });
+
+  // Total reading time
+  const totalReadingTime = enriched.reduce((sum, a) => sum + a.readingMin, 0);
+
+  // Track views for all articles
+  for (const art of articles) {
+    db.run('UPDATE pdfs SET views = views + 1 WHERE id = ?', [art.id]);
+  }
+
+  res.render('ausgabe', {
+    date,
+    articles: enriched,
+    totalReadingTime,
+    hasPaidAccess: hasPaid,
+    themes: THEMES,
   });
 });
 

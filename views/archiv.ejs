@@ -4,12 +4,12 @@
     <%- include('partials/head') %>
     <title>Archiv — MacherPost</title>
     <style>
-        /* ── Newspaper Layout ── */
+        /* ── Newspaper Header ── */
         .paper-header {
             text-align: center;
             padding: 32px 0 24px;
             border-bottom: 4px double var(--c-dark);
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
         .paper-header h1 {
             font-size: 42px;
@@ -19,7 +19,7 @@
             line-height: 1;
         }
         .paper-header h1 span { color: var(--c-accent); }
-        .paper-date {
+        .paper-subtitle {
             font-size: 13px;
             color: var(--c-muted);
             margin-top: 8px;
@@ -28,17 +28,15 @@
             letter-spacing: 1px;
         }
 
-        /* ── Search & Filter Bar ── */
-        .filter-bar {
+        /* ── Search Bar ── */
+        .search-bar {
             display: flex;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             align-items: center;
-            flex-wrap: wrap;
         }
-        .filter-bar .search-input {
+        .search-bar .search-input {
             flex: 1;
-            min-width: 200px;
             padding: 10px 16px 10px 40px;
             border: 1px solid var(--c-border);
             border-radius: 50px;
@@ -48,118 +46,136 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        .filter-bar .search-input:focus { border-color: var(--c-accent); }
-        .filter-bar select {
-            padding: 10px 14px;
-            border: 1px solid var(--c-border);
-            border-radius: 50px;
-            font-size: 13px;
-            font-family: inherit;
-            background: var(--c-white);
-            cursor: pointer;
-            font-weight: 600;
-        }
+        .search-bar .search-input:focus { border-color: var(--c-accent); }
 
-        /* ── Hero Grid ── */
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-        @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr; }
-        }
-
-        .hero-left {
+        /* ── Edition Cards ── */
+        .editions-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        /* ── Article Cards ── */
-        .article-hero {
+        .edition-card {
+            display: flex;
+            align-items: stretch;
             background: var(--c-white);
             border: 1px solid var(--c-border);
             border-radius: var(--radius);
             overflow: hidden;
             text-decoration: none;
             transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
         }
-        .article-hero:hover {
+        .edition-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             border-color: var(--c-accent);
         }
-        .article-hero.featured {
+        .edition-card.latest {
             border: 2px solid var(--c-accent);
         }
-        .article-hero-body {
-            padding: 20px;
-            flex: 1;
+
+        .edition-date-col {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            padding: 24px 20px;
+            background: var(--c-section-alt);
+            border-right: 1px solid var(--c-border);
         }
-        .article-hero .theme-badge {
+        .edition-card.latest .edition-date-col {
+            background: var(--c-accent);
+            border-right-color: var(--c-accent);
+        }
+        .edition-card.latest .edition-date-col * { color: white !important; }
+
+        .edition-day {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--c-dark);
+            line-height: 1;
+        }
+        .edition-month {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--c-muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .edition-weekday {
+            font-size: 11px;
+            color: var(--c-muted);
+            margin-top: 2px;
+        }
+
+        .edition-body {
+            flex: 1;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .edition-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--c-dark);
+            margin: 0 0 8px;
+        }
+        .edition-card.latest .edition-title::after {
+            content: 'NEU';
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            background: var(--c-accent);
+            color: white;
+            vertical-align: middle;
+        }
+        .edition-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--c-muted);
+            margin-bottom: 10px;
+        }
+        .edition-meta strong { color: var(--c-dark); }
+
+        .edition-themes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .edition-themes .theme-pill {
             display: inline-block;
             padding: 3px 10px;
             border-radius: 20px;
             font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: var(--c-accent-light);
-            color: var(--c-accent);
-            margin-bottom: 10px;
-            width: fit-content;
-        }
-        .article-hero h2 {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--c-dark);
-            margin: 0 0 8px;
-            line-height: 1.3;
-        }
-        .article-hero.small h2 { font-size: 16px; }
-        .article-hero .excerpt {
-            font-size: 14px;
-            color: var(--c-muted);
-            line-height: 1.5;
-            margin: 0 0 12px;
-            flex: 1;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .article-hero .meta-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 12px;
-            color: var(--c-muted);
-            margin-top: auto;
-        }
-        .article-hero .meta-row .stars { color: #F59E0B; letter-spacing: 1px; }
-        .label-today {
-            background: var(--c-accent);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        .label-yesterday {
+            font-weight: 700;
             background: var(--c-section-alt);
             color: var(--c-muted);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .edition-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 24px;
+            color: var(--c-border);
+        }
+        .edition-card:hover .edition-arrow { color: var(--c-accent); }
+
+        @media (max-width: 600px) {
+            .edition-date-col { min-width: 70px; padding: 16px 12px; }
+            .edition-day { font-size: 28px; }
+            .edition-body { padding: 14px 16px; }
+            .edition-title { font-size: 15px; }
+            .edition-meta { gap: 10px; font-size: 12px; }
+            .edition-arrow { padding: 0 12px; font-size: 20px; }
         }
 
         /* ── Section Divider ── */
@@ -167,7 +183,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            margin: 32px 0 20px;
+            margin: 0 0 20px;
         }
         .section-divider h2 {
             font-size: 18px;
@@ -183,66 +199,7 @@
             background: var(--c-border);
         }
 
-        /* ── All Articles Grid ── */
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        }
-        @media (max-width: 900px) { .articles-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 560px) { .articles-grid { grid-template-columns: 1fr; } }
-
-        .article-card {
-            background: var(--c-white);
-            border: 1px solid var(--c-border);
-            border-radius: var(--radius);
-            padding: 18px;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        .article-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            border-color: var(--c-accent);
-        }
-        .article-card .theme-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: var(--c-section-alt);
-            color: var(--c-muted);
-            margin-bottom: 8px;
-            width: fit-content;
-        }
-        .article-card h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--c-dark);
-            margin: 0 0 6px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .article-card .meta-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 11px;
-            color: var(--c-muted);
-            margin-top: auto;
-            padding-top: 8px;
-        }
-        .article-card .meta-row .stars { color: #F59E0B; }
-
-        /* ── CTA Banner (non-subscribers only) ── */
+        /* ── CTA Banner ── */
         .cta-banner {
             background: linear-gradient(135deg, #FFF7ED 0%, #FFF1E6 100%);
             border: 2px solid var(--c-accent);
@@ -252,7 +209,6 @@
             margin-top: 40px;
         }
 
-        /* ── No results ── */
         .no-results {
             text-align: center;
             padding: 60px 20px;
@@ -268,162 +224,72 @@
     <!-- ═══ NEWSPAPER HEADER ═══ -->
     <div class="paper-header">
         <h1>Macher<span>Post</span></h1>
-        <div class="paper-date">
-            Das Schweizer Briefing f&uuml;r Macher &mdash;
-            <%= new Date().toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %>
+        <div class="paper-subtitle">
+            Das Schweizer Briefing f&uuml;r Macher &mdash; Alle Ausgaben
         </div>
     </div>
 
-    <!-- ═══ SEARCH & DATE FILTER ═══ -->
-    <form class="filter-bar" method="GET" action="/archiv" id="filterForm">
-        <input type="text" name="q" class="search-input" placeholder="Artikel durchsuchen..."
+    <!-- ═══ SEARCH ═══ -->
+    <form class="search-bar" method="GET" action="/archiv">
+        <input type="text" name="q" class="search-input" placeholder="Ausgaben durchsuchen..."
             value="<%= filterSearch %>" autocomplete="off">
-        <select name="date" onchange="document.getElementById('filterForm').submit();">
-            <option value="">Alle Daten</option>
-            <% for (const d of dates) { %>
-                <option value="<%= d %>" <%= filterDate === d ? 'selected' : '' %>>
-                    <%= new Date(d + 'T00:00').toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) %>
-                </option>
-            <% } %>
-        </select>
         <button type="submit" class="btn btn-sm btn-primary" style="border-radius:50px; padding:10px 20px;">Suchen</button>
-        <% if (filterDate || filterSearch) { %>
-            <a href="/archiv" style="font-size:12px; font-weight:700; color:var(--c-accent);">Filter l&ouml;schen</a>
+        <% if (filterSearch) { %>
+            <a href="/archiv" style="font-size:12px; font-weight:700; color:var(--c-accent);">Zur&uuml;cksetzen</a>
         <% } %>
     </form>
 
-    <% if (!filterDate && !filterSearch) { %>
-    <!-- ═══ HERO SECTION (only on unfiltered view) ═══ -->
-    <% if (latestArticles.length > 0 || prevArticles.length > 0) { %>
-    <div class="hero-grid">
-        <!-- LEFT: Latest daily reports -->
-        <div class="hero-left">
-            <% if (latestArticles.length > 0) { %>
-                <% const hero = latestArticles[0]; %>
-                <% const heroTheme = themes.find(t => t.slug === hero.theme_slug); %>
-                <a href="/artikel/<%= hero.id %><%= hero.html_content ? '/web' : '' %>" class="article-hero featured">
-                    <div class="article-hero-body">
-                        <span class="label-today">Aktuell</span>
-                        <span class="theme-badge"><%= heroTheme ? heroTheme.name : hero.theme_slug %></span>
-                        <h2><%= hero.title %></h2>
-                        <p class="excerpt"><%= hero.description || '' %></p>
-                        <div class="meta-row">
-                            <span><%= new Date(hero.publish_date).toLocaleDateString('de-CH') %></span>
-                            <% if (pdfReadingTime[hero.id]) { %><span>~<%= pdfReadingTime[hero.id] %> Min.</span><% } %>
-                            <% if (pdfRatings[hero.id] && pdfRatings[hero.id].count > 0) { %>
-                                <span class="stars"><% for (let i=1;i<=5;i++) { %><%= i<=Math.round(pdfRatings[hero.id].avg)?'★':'☆' %><% } %></span>
-                            <% } %>
-                        </div>
-                    </div>
-                </a>
-                <% if (latestArticles.length > 1) { %>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <% latestArticles.slice(1, 3).forEach(art => { %>
-                        <% const artTheme = themes.find(t => t.slug === art.theme_slug); %>
-                        <a href="/artikel/<%= art.id %><%= art.html_content ? '/web' : '' %>" class="article-hero small">
-                            <div class="article-hero-body">
-                                <span class="theme-badge"><%= artTheme ? artTheme.name : art.theme_slug %></span>
-                                <h2><%= art.title %></h2>
-                                <div class="meta-row">
-                                    <% if (pdfReadingTime[art.id]) { %><span>~<%= pdfReadingTime[art.id] %> Min.</span><% } %>
-                                </div>
-                            </div>
-                        </a>
-                    <% }); %>
-                </div>
-                <% } %>
-            <% } %>
-
-            <% if (prevArticles.length > 0) { %>
-                <% const prev = prevArticles[0]; %>
-                <% const prevTheme = themes.find(t => t.slug === prev.theme_slug); %>
-                <a href="/artikel/<%= prev.id %><%= prev.html_content ? '/web' : '' %>" class="article-hero small">
-                    <div class="article-hero-body">
-                        <span class="label-yesterday">Vortag</span>
-                        <span class="theme-badge"><%= prevTheme ? prevTheme.name : prev.theme_slug %></span>
-                        <h2><%= prev.title %></h2>
-                        <div class="meta-row">
-                            <span><%= new Date(prev.publish_date).toLocaleDateString('de-CH') %></span>
-                            <% if (pdfReadingTime[prev.id]) { %><span>~<%= pdfReadingTime[prev.id] %> Min.</span><% } %>
-                        </div>
-                    </div>
-                </a>
-            <% } %>
-        </div>
-
-        <!-- RIGHT: More latest articles -->
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <% const rightArticles = latestArticles.slice(3, 8); %>
-            <% if (rightArticles.length > 0) { %>
-                <% rightArticles.forEach(art => { %>
-                    <% const artTheme = themes.find(t => t.slug === art.theme_slug); %>
-                    <a href="/artikel/<%= art.id %><%= art.html_content ? '/web' : '' %>" class="article-hero small">
-                        <div class="article-hero-body" style="padding:14px 18px;">
-                            <span class="theme-badge"><%= artTheme ? artTheme.name : art.theme_slug %></span>
-                            <h2><%= art.title %></h2>
-                            <div class="meta-row">
-                                <% if (pdfReadingTime[art.id]) { %><span>~<%= pdfReadingTime[art.id] %> Min.</span><% } %>
-                                <% if (pdfRatings[art.id] && pdfRatings[art.id].count > 0) { %>
-                                    <span class="stars"><% for (let i=1;i<=5;i++) { %><%= i<=Math.round(pdfRatings[art.id].avg)?'★':'☆' %><% } %></span>
-                                <% } %>
-                            </div>
-                        </div>
-                    </a>
-                <% }); %>
-            <% } else if (prevArticles.length > 1) { %>
-                <% prevArticles.slice(1, 5).forEach(art => { %>
-                    <% const artTheme = themes.find(t => t.slug === art.theme_slug); %>
-                    <a href="/artikel/<%= art.id %><%= art.html_content ? '/web' : '' %>" class="article-hero small">
-                        <div class="article-hero-body" style="padding:14px 18px;">
-                            <span class="label-yesterday">Vortag</span>
-                            <span class="theme-badge"><%= artTheme ? artTheme.name : art.theme_slug %></span>
-                            <h2><%= art.title %></h2>
-                            <div class="meta-row">
-                                <span><%= new Date(art.publish_date).toLocaleDateString('de-CH') %></span>
-                            </div>
-                        </div>
-                    </a>
-                <% }); %>
-            <% } %>
-        </div>
-    </div>
-    <% } %>
-    <% } %>
-
-    <!-- ═══ ALL ARTICLES ═══ -->
+    <!-- ═══ EDITIONS LIST ═══ -->
     <div class="section-divider">
         <h2>
-            <% if (filterDate || filterSearch) { %>
-                <%= allPdfs.length %> Ergebnis<%= allPdfs.length !== 1 ? 'se' : '' %>
-                <% if (filterSearch) { %> f&uuml;r &laquo;<%= filterSearch %>&raquo;<% } %>
-                <% if (filterDate) { %> am <%= new Date(filterDate + 'T00:00').toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }) %><% } %>
+            <% if (filterSearch) { %>
+                <%= editions.length %> Ausgabe<%= editions.length !== 1 ? 'n' : '' %> f&uuml;r &laquo;<%= filterSearch %>&raquo;
             <% } else { %>
-                Alle Ausgaben
+                <%= editions.length %> Ausgabe<%= editions.length !== 1 ? 'n' : '' %>
             <% } %>
         </h2>
     </div>
 
-    <% if (allPdfs.length === 0) { %>
+    <% if (editions.length === 0) { %>
         <div class="no-results">
             <div style="font-size:48px; margin-bottom:16px;">&#128270;</div>
-            <h3 style="margin:0 0 8px;">Keine Artikel gefunden</h3>
-            <p>Versuche einen anderen Suchbegriff oder ein anderes Datum.</p>
+            <h3 style="margin:0 0 8px;">Keine Ausgaben gefunden</h3>
+            <p>Versuche einen anderen Suchbegriff.</p>
         </div>
     <% } else { %>
-        <div class="articles-grid">
-            <% const skipIds = (!filterDate && !filterSearch) ? [...latestArticles.slice(0,8).map(a=>a.id), ...prevArticles.slice(0,1).map(a=>a.id)] : []; %>
-            <% allPdfs.filter(p => !skipIds.includes(p.id)).forEach(pdf => { %>
-                <% const pdfTheme = themes.find(t => t.slug === pdf.theme_slug); %>
-                <a href="/artikel/<%= pdf.id %><%= pdf.html_content ? '/web' : '' %>" class="article-card">
-                    <span class="theme-badge"><%= pdfTheme ? pdfTheme.name : pdf.theme_slug %></span>
-                    <h3><%= pdf.title %></h3>
-                    <div class="meta-row">
-                        <span><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
-                        <% if (pdfReadingTime[pdf.id]) { %><span>~<%= pdfReadingTime[pdf.id] %> Min.</span><% } %>
-                        <% if (pdfRatings[pdf.id] && pdfRatings[pdf.id].count > 0) { %>
-                            <span class="stars"><% for (let i=1;i<=5;i++) { %><%= i<=Math.round(pdfRatings[pdf.id].avg)?'★':'☆' %><% } %></span>
-                        <% } %>
+        <div class="editions-list">
+            <% editions.forEach((ed, idx) => { %>
+                <%
+                    const d = new Date(ed.date + 'T00:00');
+                    const dayNum = d.getDate();
+                    const monthName = d.toLocaleDateString('de-CH', { month: 'short' });
+                    const yearNum = d.getFullYear();
+                    const weekday = d.toLocaleDateString('de-CH', { weekday: 'long' });
+                    const isLatest = idx === 0 && !filterSearch;
+                    const fullDate = d.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                %>
+                <a href="/ausgabe/<%= ed.date %>" class="edition-card<%= isLatest ? ' latest' : '' %>">
+                    <div class="edition-date-col">
+                        <div class="edition-day"><%= dayNum %></div>
+                        <div class="edition-month"><%= monthName %> <%= yearNum %></div>
+                        <div class="edition-weekday"><%= weekday %></div>
                     </div>
+                    <div class="edition-body">
+                        <h3 class="edition-title">MacherPost &mdash; <%= fullDate %></h3>
+                        <div class="edition-meta">
+                            <span><strong><%= ed.articleCount %></strong> Artikel</span>
+                            <span>~<%= ed.totalReadingTime %> Min. Lesezeit</span>
+                        </div>
+                        <div class="edition-themes">
+                            <% ed.themeNames.slice(0, 8).forEach(name => { %>
+                                <span class="theme-pill"><%= name %></span>
+                            <% }); %>
+                            <% if (ed.themeNames.length > 8) { %>
+                                <span class="theme-pill">+<%= ed.themeNames.length - 8 %> mehr</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="edition-arrow">&rarr;</div>
                 </a>
             <% }); %>
         </div>
