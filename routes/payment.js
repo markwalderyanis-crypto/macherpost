@@ -24,41 +24,71 @@ router.get('/abo', (req, res) => {
   res.render('abo', { interval });
 });
 
-// Create Stripe Checkout Session — single subscription
+// Create Stripe Checkout Session — uses pre-created Stripe products via lookup_keys
 router.post('/api/checkout', isAuthenticated, (req, res, next) => {
   (async () => {
-    const db = getDb();
     const interval = req.body.interval === 'yearly' ? 'yearly' : 'monthly';
-    const product = db.get("SELECT * FROM products WHERE slug = 'komplett'");
+    const lookupKey = interval === 'yearly' ? 'macherpost_yearly' : 'macherpost_monthly';
 
-    if (!product) return res.redirect('/');
-
-    const amount = interval === 'yearly' ? product.price_yearly : product.price_monthly;
-
-    const lineItems = [{
-      price_data: {
-        currency: 'chf',
-        product_data: { name: 'MacherPost Abo' },
-        unit_amount: amount,
-        recurring: { interval: interval === 'yearly' ? 'year' : 'month' }
-      },
-      quantity: 1
-    }];
-
-    const session = await stripe.checkout.sessions.create({
-      customer_email: req.user.email,
-      payment_method_types: ['card'],
-      mode: 'subscription',
-      line_items: lineItems,
-      success_url: `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/checkout/cancel`,
-      metadata: {
-        user_id: String(req.user.id),
-        product_slug: 'komplett',
-        interval: interval
-      }
+    // Find price by lookup_key (set in Stripe Dashboard)
+    const prices = await stripe.prices.list({
+      lookup_keys: [lookupKey],
+      expand: ['data.product'],
     });
 
+    let priceId;
+    if (prices.data.length > 0) {
+      // Use pre-created Stripe price
+      priceId = prices.data[0].id;
+    } else {
+      // Fallback: create price inline (for initial setup before lookup_keys are configured)
+      const amount = interval === 'yearly' ? 14999 : 1999;
+      const session = await stripe.checkout.sessions.create({
+        customer_email: req.user.email,
+        payment_method_types: ['card'],
+        mode: 'subscription',
+        line_items: [{
+          price_data: {
+            currency: 'chf',
+            product_data: {
+              name: interval === 'yearly' ? 'MacherPost Jährlich' : 'MacherPost Monatlich',
+              description: 'Alle 16 Themen, täglich neue Berichte, PDF-Download, Archiv-Zugang',
+            },
+            unit_amount: amount,
+            recurring: { interval: interval === 'yearly' ? 'year' : 'month' }
+          },
+          quantity: 1
+        }],
+        success_url: `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.BASE_URL}/checkout/cancel`,
+        metadata: { user_id: String(req.user.id), product_slug: 'komplett', interval }
+      });
+      return res.redirect(303, session.url);
+    }
+
+    // Check if user is already a Stripe customer
+    const db = getDb();
+    const existingSub = db.get(
+      "SELECT stripe_customer_id FROM subscriptions WHERE user_id = ? AND stripe_customer_id IS NOT NULL",
+      [req.user.id]
+    );
+
+    const sessionParams = {
+      mode: 'subscription',
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${process.env.BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/checkout/cancel`,
+      metadata: { user_id: String(req.user.id), product_slug: 'komplett', interval }
+    };
+
+    // Reuse existing Stripe customer if available
+    if (existingSub && existingSub.stripe_customer_id) {
+      sessionParams.customer = existingSub.stripe_customer_id;
+    } else {
+      sessionParams.customer_email = req.user.email;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
     res.redirect(303, session.url);
   })().catch(next);
 });
@@ -106,6 +136,28 @@ router.get('/checkout/success', isAuthenticated, async (req, res, next) => {
 // Cancel page
 router.get('/checkout/cancel', (req, res) => {
   res.render('checkout-cancel');
+});
+
+// Stripe Customer Portal — manage billing, cancel, update payment method
+router.post('/api/billing-portal', isAuthenticated, (req, res, next) => {
+  (async () => {
+    const db = getDb();
+    const sub = db.get(
+      "SELECT stripe_customer_id FROM subscriptions WHERE user_id = ? AND stripe_customer_id IS NOT NULL",
+      [req.user.id]
+    );
+
+    if (!sub || !sub.stripe_customer_id) {
+      return res.redirect('/konto');
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${process.env.BASE_URL}/konto`,
+    });
+
+    res.redirect(303, session.url);
+  })().catch(next);
 });
 
 // Webhook handler (called from server.js with raw body)

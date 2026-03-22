@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title>Pipeline — Admin — MacherPost</title>
+    <style>
+        /* ── Layout ── */
+        .pipe-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        @media (max-width: 768px) { .pipe-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .pipe-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; }
+        .pipe-card-label { font-size: 12px; color: var(--c-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pipe-card-value { font-size: 28px; font-weight: 800; color: var(--c-dark); }
+        .pipe-card.green .pipe-card-value { color: var(--c-green); }
+        .pipe-card.accent .pipe-card-value { color: var(--c-accent); }
+        .pipe-card.red .pipe-card-value { color: #EF4444; }
+
+        /* ── Sections ── */
+        .pipe-section { margin-bottom: 40px; }
+        .pipe-section h2 { font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--c-border); display: flex; align-items: center; gap: 10px; }
+
+        /* ── Badges ── */
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-badge.active { background: #D1FAE5; color: #065F46; }
+        .status-badge.inactive { background: #FEE2E2; color: #991B1B; }
+        .status-badge.running { background: #DBEAFE; color: #1E40AF; animation: pulse 1.5s infinite; }
+        .status-badge.ready { background: #FEF3C7; color: #92400E; }
+        .status-badge.published { background: #D1FAE5; color: #065F46; }
+        .status-badge.error { background: #FEE2E2; color: #991B1B; }
+        .status-badge.pending { background: #F3F4F6; color: #6B7280; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+        /* ── Tables ── */
+        .pipe-table { width: 100%; border-collapse: collapse; }
+        .pipe-table th { text-align: left; font-size: 11px; font-weight: 700; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 2px solid var(--c-border); }
+        .pipe-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--c-border); }
+        .pipe-table tr:hover { background: var(--c-section-alt); }
+
+        /* ── Keys ── */
+        .api-key-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .key-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .key-dot.ok { background: #10B981; }
+        .key-dot.missing { background: #EF4444; }
+        .key-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: var(--c-card); border: 1px solid var(--c-border); }
+
+        /* ── Tabs ── */
+        .tab-nav { display: flex; gap: 0; border-bottom: 2px solid var(--c-border); margin-bottom: 24px; }
+        .tab-btn { padding: 12px 24px; font-size: 14px; font-weight: 700; color: var(--c-muted); cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .tab-btn:hover { color: var(--c-dark); }
+        .tab-btn.active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Schedule Visual ── */
+        .schedule-timeline { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+        .timeline-row { display: flex; align-items: center; gap: 0; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); overflow: hidden; }
+        .timeline-label { width: 100px; padding: 14px 16px; font-weight: 700; font-size: 13px; background: var(--c-section-alt); flex-shrink: 0; text-align: center; }
+        .timeline-step { flex: 1; padding: 14px 16px; text-align: center; font-size: 12px; position: relative; border-left: 1px solid var(--c-border); }
+        .timeline-step .step-time { font-weight: 800; font-size: 16px; color: var(--c-dark); display: block; }
+        .timeline-step .step-label { color: var(--c-muted); margin-top: 2px; }
+        .timeline-step.step-research { background: #EFF6FF; }
+        .timeline-step.step-review { background: #FFF7ED; }
+        .timeline-step.step-publish { background: #ECFDF5; }
+        .timeline-arrow { position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--c-muted); z-index: 1; }
+        @media (max-width: 600px) {
+            .timeline-label { width: 60px; font-size: 11px; padding: 10px 8px; }
+            .timeline-step { padding: 10px 8px; }
+            .timeline-step .step-time { font-size: 13px; }
+        }
+
+        /* ── Action area ── */
+        .action-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
+        .run-form select { padding: 8px 12px; border-radius: var(--radius); border: 1px solid var(--c-border); font-size: 13px; }
+
+        /* ── Mode Switch ── */
+        .mode-switch { display: flex; background: var(--c-card); border: 2px solid var(--c-border); border-radius: 50px; overflow: hidden; margin-bottom: 20px; max-width: 420px; }
+        .mode-switch label { flex: 1; text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .mode-switch label span.mode-desc { display: block; font-size: 10px; font-weight: 400; color: var(--c-muted); margin-top: 2px; }
+        .mode-switch input[type="radio"] { display: none; }
+        .mode-switch input[type="radio"]:checked + label { background: var(--c-accent); color: #fff; }
+        .mode-switch input[type="radio"]:checked + label span.mode-desc { color: rgba(255,255,255,0.8); }
+
+        /* ── Grids ── */
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .template-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 16px; }
+        .template-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+        .template-status { font-size: 12px; margin-bottom: 8px; }
+        .template-status.has-template { color: var(--c-green); }
+        .template-status.no-template { color: var(--c-muted); }
+
+        /* ── Review card ── */
+        .review-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: border-color 0.2s; }
+        .review-card:hover { border-color: var(--c-accent); }
+        .review-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+        /* ── Collapsible ── */
+        .collapse-toggle { cursor: pointer; user-select: none; }
+        .collapse-toggle::after { content: ' +'; font-weight: 400; color: var(--c-muted); }
+        .collapse-toggle.open::after { content: ' -'; }
+        .collapse-content { display: none; }
+        .collapse-content.open { display: block; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/nav') %>
+    <main class="content" style="max-width:1100px;">
+
+        <!-- ═══ HEADER ═══ -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <div>
+                <h1 style="font-size:24px; font-weight:800; margin:0;">Pipeline</h1>
+                <p style="font-size:13px; color:var(--c-muted); margin:4px 0 0;">Automatische Beitragserstellung mit KI</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a href="/admin/newsletter" class="btn btn-sm" style="font-size:13px;">Newsletter</a>
+                <a href="/admin" class="btn btn-sm" style="font-size:13px;">Dashboard</a>
+            </div>
+        </div>
+
+        <!-- ═══ API STATUS (compact) ═══ -->
+        <div class="api-key-row">
+            <div class="key-chip">
+                <span class="key-dot <%= hasAnthropicKey ? 'ok' : 'missing' %>"></span>
+                Claude
+            </div>
+            <div class="key-chip">
+                <span class="key-dot <%= hasKimiKey ? 'ok' : 'missing' %>"></span>
+                Kimi
+            </div>
+            <div class="key-chip">
+                <span class="key-dot <%= hasGeminiKey ? 'ok' : 'missing' %>"></span>
+                Gemini
+            </div>
+            <div class="key-chip">
+                <span class="key-dot <%= hasImageKey ? 'ok' : 'missing' %>"></span>
+                Bilder (<%= imageProvider %>)
+            </div>
+            <div class="key-chip" style="background:var(--c-section-alt);">
+                Text: <strong style="margin-left:4px;"><%= textProvider %></strong>
+            </div>
+        </div>
+
+        <!-- ═══ STATS ═══ -->
+        <div class="pipe-grid">
+            <div class="pipe-card">
+                <div class="pipe-card-label">Total Runs</div>
+                <div class="pipe-card-value"><%= pipelineStats.totalRuns %></div>
+            </div>
+            <div class="pipe-card green">
+                <div class="pipe-card-label">Erfolgreich</div>
+                <div class="pipe-card-value"><%= pipelineStats.successRuns %></div>
+            </div>
+            <div class="pipe-card red">
+                <div class="pipe-card-label">Fehler</div>
+                <div class="pipe-card-value"><%= pipelineStats.errorRuns %></div>
+            </div>
+            <div class="pipe-card accent">
+                <div class="pipe-card-label">Generierte Wörter</div>
+                <div class="pipe-card-value"><%= pipelineStats.totalWords.toLocaleString('de-CH') %></div>
+            </div>
+        </div>
+
+        <!-- ═══ TABS ═══ -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="steuerung">Steuerung</button>
+            <button class="tab-btn" data-tab="review">
+                Review
+                <% const pendingCount = typeof pendingReviews !== 'undefined' ? pendingReviews.length : 0; %>
+                <% if (pendingCount > 0) { %>
+                    <span class="status-badge running" style="margin-left:6px;"><%= pendingCount %></span>
+                <% } %>
+            </button>
+            <button class="tab-btn" data-tab="prompts">Prompts</button>
+            <button class="tab-btn" data-tab="vorlagen">PDF-Vorlagen</button>
+            <button class="tab-btn" data-tab="verlauf">Verlauf</button>
+        </div>
+
+        <!-- ═══ TAB: STEUERUNG ═══ -->
+        <div class="tab-panel active" id="tab-steuerung">
+
+            <!-- Schedule Visual Timeline -->
+            <div class="pipe-section">
+                <h2>Zeitplan
+                    <span class="status-badge <%= schedulerStatus.schedulerActive ? 'active' : 'inactive' %>">
+                        <%= schedulerStatus.schedulerActive ? 'Aktiv' : 'Inaktiv' %>
+                    </span>
+                    <% if (schedulerStatus.isRunning) { %>
+                        <span class="status-badge running">Generiert...</span>
+                    <% } %>
+                </h2>
+
+                <div class="schedule-timeline">
+                    <div class="timeline-row">
+                        <div class="timeline-label">Mo — So</div>
+                        <div class="timeline-step step-research">
+                            <span class="step-time">03:20</span>
+                            <span class="step-label">16 Tagesberichte (×10min)</span>
+                            <span class="timeline-arrow">&#10140;</span>
+                        </div>
+                        <div class="timeline-step step-review">
+                            <span class="step-time">~06:00</span>
+                            <span class="step-label">Review bereit</span>
+                            <span class="timeline-arrow">&#10140;</span>
+                        </div>
+                        <div class="timeline-step step-publish">
+                            <span class="step-time">06:30</span>
+                            <span class="step-label">Auto-Publish</span>
+                        </div>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-label" style="background:#FFF7ED; font-weight:800;">+ Montag</div>
+                        <div class="timeline-step step-research">
+                            <span class="step-time">So 22:00</span>
+                            <span class="step-label">16 Grosse Reports (×30min)</span>
+                            <span class="timeline-arrow">&#10140;</span>
+                        </div>
+                        <div class="timeline-step step-review">
+                            <span class="step-time">~Mo 06:00</span>
+                            <span class="step-label">Review bereit</span>
+                            <span class="timeline-arrow">&#10140;</span>
+                        </div>
+                        <div class="timeline-step step-publish">
+                            <span class="step-time">07:00</span>
+                            <span class="step-label">Auto-Publish</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <form method="POST" action="/admin/pipeline/scheduler/toggle" style="display:inline;">
+                        <button type="submit" class="btn btn-sm <%= schedulerStatus.schedulerActive ? 'btn-danger' : 'btn-primary' %>">
+                            <%= schedulerStatus.schedulerActive ? 'Scheduler stoppen' : 'Scheduler starten' %>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Manual Run -->
+            <div class="pipe-section">
+                <h2>Manuell generieren</h2>
+
+                <div class="mode-switch">
+                    <input type="radio" name="mode_display" id="mode_daily" value="daily" checked>
+                    <label for="mode_daily">
+                        Tagesbericht
+                        <span class="mode-desc">~1.500 Wörter</span>
+                    </label>
+                    <input type="radio" name="mode_display" id="mode_big" value="big">
+                    <label for="mode_big">
+                        Grosser Report
+                        <span class="mode-desc">~10.000 Wörter</span>
+                    </label>
+                </div>
+
+                <form method="POST" action="/admin/pipeline/run" id="runForm" style="display:flex; flex-direction:column; gap:12px;">
+                    <input type="hidden" name="report_mode" id="report_mode_input" value="daily">
+
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <select name="text_provider" style="padding:8px 12px; border-radius:var(--radius); border:1px solid var(--c-border); font-size:13px;">
+                            <option value="claude" <%= textProvider === 'claude' ? 'selected' : '' %>>Claude (Anthropic)</option>
+                            <option value="kimi" <%= textProvider === 'kimi' ? 'selected' : '' %>>Kimi (Moonshot)</option>
+                        </select>
+                        <select name="theme_slugs" style="padding:8px 12px; border-radius:var(--radius); border:1px solid var(--c-border); font-size:13px;">
+                            <option value="all">Alle 16 Themen</option>
+                            <% themes.forEach(t => { %>
+                                <option value="<%= t.slug %>"><%= t.name %></option>
+                            <% }); %>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary" <%= (!hasAnthropicKey && !hasKimiKey) ? 'disabled title="API Key fehlt"' : '' %>>
+                            Jetzt generieren
+                        </button>
+                    </div>
+
+                    <!-- Custom topic fields -->
+                    <div style="margin-top:8px;">
+                        <div style="font-size:12px; font-weight:700; color:var(--c-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">
+                            Eigene Themen / Leitfragen (optional)
+                        </div>
+                        <p style="font-size:11px; color:var(--c-muted); margin-bottom:10px;">
+                            Hier kannst du bis zu 4 eigene Themen oder kritische Fragen vorgeben. Diese werden zusätzlich zum gewählten Thema in den Bericht aufgenommen.
+                        </p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <input type="text" name="custom_topic_1" placeholder="z.B. Warum steigt der Franken trotz SNB-Intervention?"
+                                style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
+                            <input type="text" name="custom_topic_2" placeholder="z.B. Bargeld-Initiative — wer profitiert wirklich?"
+                                style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
+                            <input type="text" name="custom_topic_3" placeholder="z.B. Kimi vs. Claude — welches Modell schreibt besser?"
+                                style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
+                            <input type="text" name="custom_topic_4" placeholder="z.B. Fachkräftemangel — echtes Problem oder Lobby-Argument?"
+                                style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
+                        </div>
+                    </div>
+                </form>
+
+                <script>
+                    document.querySelectorAll('input[name="mode_display"]').forEach(radio => {
+                        radio.addEventListener('change', (e) => {
+                            document.getElementById('report_mode_input').value = e.target.value;
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: REVIEW ═══ -->
+        <div class="tab-panel" id="tab-review">
+            <div class="pipe-section">
+                <h2>Ausstehende Reviews
+                    <% if (pendingCount > 0) { %>
+                        <span class="status-badge running"><%= pendingCount %> ausstehend</span>
+                    <% } %>
+                </h2>
+
+                <% if (typeof pendingReviews !== 'undefined' && pendingReviews.length > 0) { %>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <% pendingReviews.forEach(pdf => { %>
+                            <div class="review-card">
+                                <div style="flex:1; min-width:0;">
+                                    <div style="font-weight:700; font-size:15px; margin-bottom:4px;">
+                                        <%= pdf.title %>
+                                    </div>
+                                    <div style="font-size:12px; color:var(--c-muted);">
+                                        <% const th = themes.find(t => t.slug === pdf.theme_slug); %>
+                                        <%= th ? th.name : pdf.theme_slug %>
+                                        <% if (pdf.description) { %> &mdash; <%= pdf.description %><% } %>
+                                    </div>
+                                </div>
+                                <div class="review-actions">
+                                    <% if (pdf.html_content) { %>
+                                        <a href="/artikel/<%= pdf.id %>/web" target="_blank" class="btn btn-sm" style="font-size:12px;">Vorschau</a>
+                                    <% } %>
+                                    <form method="POST" action="/admin/pipeline/review/<%= pdf.id %>/approve" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-primary" style="font-size:18px; padding:6px 18px; line-height:1;" title="Genehmigen">&#10003;</button>
+                                    </form>
+                                    <button type="button" class="btn btn-sm btn-danger" style="font-size:18px; padding:6px 18px; line-height:1;"
+                                        title="Ablehnen" onclick="this.nextElementSibling.style.display='flex'; this.style.display='none';">&#10007;</button>
+                                    <div style="display:none; gap:8px; align-items:center;">
+                                        <form method="POST" action="/admin/pipeline/review/<%= pdf.id %>/reject" style="display:inline-flex; gap:6px; align-items:center;">
+                                            <input type="text" name="note" placeholder="Grund (optional)" style="padding:6px 10px; font-size:12px; border:1px solid var(--c-border); border-radius:var(--radius); width:200px;">
+                                            <button type="submit" class="btn btn-sm btn-danger" style="font-size:12px;">Ablehnen</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <div style="margin-top:20px;">
+                        <form method="POST" action="/admin/pipeline/review/approve-all">
+                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Alle <%= pendingCount %> Berichte genehmigen?')">
+                                Alle genehmigen
+                            </button>
+                        </form>
+                    </div>
+                <% } else { %>
+                    <div style="text-align:center; padding:48px 20px; color:var(--c-muted);">
+                        <div style="font-size:48px; margin-bottom:12px;">&#9745;</div>
+                        <p style="font-size:15px; font-weight:600;">Keine ausstehenden Reviews</p>
+                        <p style="font-size:13px;">Berichte erscheinen hier nach der KI-Recherche (~06:00 Uhr).</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: PROMPTS ═══ -->
+        <div class="tab-panel" id="tab-prompts">
+            <div class="pipe-section">
+                <h2>Master-Prompt</h2>
+                <p style="font-size:12px; color:var(--c-muted); margin-bottom:12px;">
+                    Gilt für alle Themen. Definiert Stil, Sprache und Formatierung.
+                </p>
+                <form method="POST" action="/admin/pipeline/prompt/master">
+                    <textarea name="master_prompt" rows="12" style="width:100%; font-family:monospace; font-size:12px; padding:12px; border:1px solid var(--c-border); border-radius:var(--radius); resize:vertical; line-height:1.6;"><%= masterPrompt %></textarea>
+                    <div style="display:flex; gap:8px; margin-top:8px;">
+                        <button type="submit" class="btn btn-sm btn-primary">Speichern</button>
+                        <form method="POST" action="/admin/pipeline/prompt/reset" style="display:inline;">
+                            <input type="hidden" name="key" value="master_prompt">
+                            <button type="submit" class="btn btn-sm" onclick="return confirm('Zurücksetzen?')">Zurücksetzen</button>
+                        </form>
+                    </div>
+                </form>
+            </div>
+
+            <div class="pipe-section">
+                <h2>Themen-Prompts</h2>
+                <p style="font-size:12px; color:var(--c-muted); margin-bottom:16px;">
+                    Individuelle Anweisungen pro Thema — was soll recherchiert werden?
+                </p>
+                <div class="template-grid">
+                    <% themes.forEach(t => { %>
+                        <div class="template-card">
+                            <h4><%= t.name %></h4>
+                            <form method="POST" action="/admin/pipeline/prompt/theme">
+                                <input type="hidden" name="theme_slug" value="<%= t.slug %>">
+                                <textarea name="theme_prompt" rows="4" style="width:100%; font-size:11px; padding:8px; border:1px solid var(--c-border); border-radius:var(--radius); resize:vertical; margin-bottom:6px; font-family:monospace;"><%= themePrompts[t.slug] || '' %></textarea>
+                                <div style="display:flex; gap:4px;">
+                                    <button type="submit" class="btn btn-sm btn-primary" style="font-size:11px; flex:1;">Speichern</button>
+                                    <form method="POST" action="/admin/pipeline/prompt/reset" style="flex-shrink:0;">
+                                        <input type="hidden" name="key" value="theme_prompt_<%= t.slug %>">
+                                        <button type="submit" class="btn btn-sm" style="font-size:11px;" onclick="return confirm('Zurücksetzen?')">Reset</button>
+                                    </form>
+                                </div>
+                            </form>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: PDF-VORLAGEN ═══ -->
+        <div class="tab-panel" id="tab-vorlagen">
+            <div class="pipe-section">
+                <h2>PDF-Vorlagen</h2>
+                <p style="font-size:13px; color:var(--c-muted); margin-bottom:16px;">
+                    Hintergrund-Vorlage pro Thema (Logo, Layout). Die Pipeline schreibt den Text darüber.
+                </p>
+                <div class="template-grid">
+                    <% themes.forEach(t => { %>
+                        <div class="template-card">
+                            <h4><%= t.name %></h4>
+                            <% if (templateMap[t.slug]) { %>
+                                <div class="template-status has-template">&#9679; Vorlage vorhanden</div>
+                                <div style="font-size:11px; color:var(--c-muted); margin-bottom:8px;">
+                                    <%= templateMap[t.slug].source === 'generated' ? 'Generiert' : 'Hochgeladen' %>: <%= templateMap[t.slug].uploaded_at %>
+                                </div>
+                                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                                    <a href="/admin/pipeline/template/<%= t.slug %>/preview" target="_blank" class="btn btn-sm btn-primary" style="font-size:11px; flex:1; text-align:center;">Vorschau</a>
+                                    <form method="POST" action="/admin/pipeline/template/<%= t.slug %>/delete" style="flex-shrink:0;">
+                                        <button type="submit" class="btn btn-sm btn-danger" style="font-size:11px;" onclick="return confirm('Vorlage löschen?')">&#10005;</button>
+                                    </form>
+                                </div>
+                                <form method="POST" action="/admin/pipeline/template" enctype="multipart/form-data">
+                                    <input type="hidden" name="theme_slug" value="<%= t.slug %>">
+                                    <input type="file" name="template_file" accept=".pdf" style="font-size:11px; width:100%; margin-bottom:6px;">
+                                    <button type="submit" class="btn btn-sm" style="font-size:11px; width:100%;">Ersetzen</button>
+                                </form>
+                            <% } else { %>
+                                <div class="template-status no-template">&#9675; Keine Vorlage</div>
+                                <form method="POST" action="/admin/pipeline/template" enctype="multipart/form-data">
+                                    <input type="hidden" name="theme_slug" value="<%= t.slug %>">
+                                    <input type="file" name="template_file" accept=".pdf" style="font-size:11px; width:100%; margin-bottom:6px;">
+                                    <button type="submit" class="btn btn-sm btn-primary" style="font-size:11px; width:100%;">Hochladen</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB: VERLAUF ═══ -->
+        <div class="tab-panel" id="tab-verlauf">
+            <div class="pipe-section">
+                <h2>Letzte Durchläufe</h2>
+                <% if (recentRuns.length > 0) { %>
+                    <table class="pipe-table">
+                        <thead>
+                            <tr>
+                                <th>Thema</th>
+                                <th>Status</th>
+                                <th>Wörter</th>
+                                <th>Bilder</th>
+                                <th>Gestartet</th>
+                                <th>Dauer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentRuns.forEach(run => { %>
+                                <tr>
+                                    <td style="font-weight:600;">
+                                        <% const t = themes.find(th => th.slug === run.theme_slug); %>
+                                        <%= t ? t.name : run.theme_slug %>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge <%= run.status %>"><%= run.status %></span>
+                                    </td>
+                                    <td><%= run.word_count ? run.word_count.toLocaleString('de-CH') : '—' %></td>
+                                    <td><%= run.image_count || '—' %></td>
+                                    <td style="font-size:12px;"><%= run.started_at %></td>
+                                    <td style="font-size:12px;">
+                                        <% if (run.finished_at && run.started_at) {
+                                            const dur = Math.round((new Date(run.finished_at) - new Date(run.started_at)) / 1000);
+                                            const min = Math.floor(dur / 60);
+                                            const sec = dur % 60;
+                                        %>
+                                            <%= min > 0 ? min + 'min ' : '' %><%= sec %>s
+                                        <% } else if (run.status === 'running') { %>
+                                            <span class="status-badge running">...</span>
+                                        <% } else { %>
+                                            —
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% if (run.error) { %>
+                                    <tr>
+                                        <td colspan="6" style="background:#FEF2F2; color:#991B1B; font-size:12px; padding:6px 12px;">
+                                            Fehler: <%= run.error %>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <div style="text-align:center; padding:48px 20px; color:var(--c-muted);">
+                        <p style="font-size:15px; font-weight:600;">Noch keine Durchläufe</p>
+                        <p style="font-size:13px;">Starte den Scheduler oder generiere manuell.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ═══ TAB LOGIC ═══ -->
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Auto-open review tab if there are pending reviews
+        <% if (pendingCount > 0) { %>
+        document.querySelector('[data-tab="review"]').click();
+        <% } %>
+    </script>
+</body>
+</html>

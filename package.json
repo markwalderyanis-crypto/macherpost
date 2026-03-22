@@ -5,10 +5,29 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "seed-admin": "node db/seed-admin.js"
+    "seed-admin": "node db/seed-admin.js",
+    "pipeline": "node pipeline/run.js",
+    "pipeline:list": "node pipeline/run.js --list",
+    "pipeline:handwerk": "node pipeline/run.js handwerk",
+    "pipeline:selbstaendigkeit": "node pipeline/run.js selbstaendigkeit",
+    "pipeline:fuehrungskompetenzen": "node pipeline/run.js fuehrungskompetenzen",
+    "pipeline:abrechnung": "node pipeline/run.js abrechnung-operativ",
+    "pipeline:aktien": "node pipeline/run.js aktien-maerkte",
+    "pipeline:krypto": "node pipeline/run.js krypto",
+    "pipeline:makro": "node pipeline/run.js makrooekonomie",
+    "pipeline:ch-politik": "node pipeline/run.js schweizer-politik",
+    "pipeline:eu-politik": "node pipeline/run.js europaeische-politik",
+    "pipeline:weltpolitik": "node pipeline/run.js weltpolitik",
+    "pipeline:ki": "node pipeline/run.js ki",
+    "pipeline:ki-auto": "node pipeline/run.js ki-automatisierung",
+    "pipeline:robotik": "node pipeline/run.js robotik",
+    "pipeline:technik": "node pipeline/run.js technik",
+    "pipeline:sport": "node pipeline/run.js sport",
+    "pipeline:enthuellung": "node pipeline/run.js enthuellung"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "docx": "^9.6.1",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
@@ -16,12 +35,15 @@
     "express-session": "^1.18.1",
     "helmet": "^8.0.0",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^8.0.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
+    "pdf-lib": "^1.17.1",
     "session-file-store": "^1.5.0",
     "sql.js": "^1.11.0",
-    "stripe": "^17.5.0"
+    "stripe": "^17.5.0",
+    "web-push": "^3.6.7"
   }
 }

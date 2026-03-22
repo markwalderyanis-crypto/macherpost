@@ -46,7 +46,7 @@
         <% } else { %>
             <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 8px;">
                 <% for (const pdf of pdfs) { %>
-                    <a href="/artikel/<%= pdf.id %>" class="card pdf-card" style="text-decoration: none;">
+                    <a href="/artikel/<%= pdf.id %><%= pdf.html_content ? '/web' : '' %>" class="card pdf-card" style="text-decoration: none;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
                             <div style="flex: 1;">
                                 <h3 style="font-size: 18px; font-weight: 700; color: var(--c-dark); margin-bottom: 6px;"><%= pdf.title %></h3>
@@ -58,7 +58,12 @@
                                     <span class="stars-muted">(<%= pdfRatings[pdf.id].avg %> / <%= pdfRatings[pdf.id].count %>)</span>
                                 <% } %>
                             </div>
-                            <span style="font-size: 13px; color: var(--c-muted); white-space: nowrap;"><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
+                            <div style="text-align: right; white-space: nowrap;">
+                                <span style="font-size: 13px; color: var(--c-muted);"><%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
+                                <% if (typeof pdfReadingTime !== 'undefined' && pdfReadingTime[pdf.id] > 0) { %>
+                                    <br><span style="font-size: 12px; color: var(--c-muted);">~<%= pdfReadingTime[pdf.id] %> Min.</span>
+                                <% } %>
+                            </div>
                         </div>
                     </a>
                 <% } %>

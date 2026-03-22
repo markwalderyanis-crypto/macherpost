@@ -80,6 +80,48 @@ const PORT = process.env.PORT || 3457;
   // Payment routes (page routes, not webhook)
   app.use('/', paymentRoutes.router);
 
+  // Newsletter unsubscribe (public, no login required)
+  app.get('/newsletter/abmelden', (req, res) => {
+    res.render('newsletter-abmelden', { done: false });
+  });
+  app.post('/newsletter/abmelden', (req, res) => {
+    const { email } = req.body;
+    if (email) {
+      const db = getDb();
+      db.run("UPDATE users SET newsletter_unsubscribed = 1 WHERE email = ?", [email]);
+    }
+    res.render('newsletter-abmelden', { done: true });
+  });
+
+  // Push notification API
+  app.get('/api/vapid-key', (req, res) => {
+    res.json({ key: process.env.VAPID_PUBLIC_KEY || '' });
+  });
+
+  app.post('/api/push/subscribe', (req, res) => {
+    const { endpoint, keys } = req.body;
+    if (!endpoint || !keys) return res.status(400).json({ error: 'Missing data' });
+    const db = getDb();
+    const userId = req.user ? req.user.id : null;
+    try {
+      db.run(
+        "INSERT OR REPLACE INTO push_subscriptions (user_id, endpoint, keys_p256dh, keys_auth) VALUES (?, ?, ?, ?)",
+        [userId, endpoint, keys.p256dh, keys.auth]
+      );
+      res.json({ ok: true });
+    } catch (e) {
+      res.json({ ok: true }); // Already subscribed
+    }
+  });
+
+  app.post('/api/push/unsubscribe', (req, res) => {
+    const { endpoint } = req.body;
+    if (!endpoint) return res.status(400).json({ error: 'Missing endpoint' });
+    const db = getDb();
+    db.run('DELETE FROM push_subscriptions WHERE endpoint = ?', [endpoint]);
+    res.json({ ok: true });
+  });
+
   // Admin routes
   app.use('/admin', require('./routes/admin'));
 
@@ -112,6 +154,14 @@ const PORT = process.env.PORT || 3457;
       // DB might not be ready yet
     }
   }, 60_000);
+
+  // Start pipeline scheduler if API keys are configured
+  if (process.env.ANTHROPIC_API_KEY || process.env.KIMI_API_KEY) {
+    const { startScheduler } = require('./pipeline/scheduler');
+    startScheduler(getDb());
+  } else {
+    console.log('[Pipeline] Kein API Key konfiguriert — Scheduler deaktiviert');
+  }
 
   app.listen(PORT, () => {
     console.log(`MacherPost running at http://localhost:${PORT}`);

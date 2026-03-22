@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <%- include('../partials/head') %>
+    <title>Newsletter — Admin — MacherPost</title>
+    <style>
+        .nl-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+        .nl-card h3 { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+        .nl-meta { font-size: 12px; color: var(--c-muted); margin-bottom: 12px; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-badge.pending { background: #FEF3C7; color: #92400E; }
+        .status-badge.sent { background: #D1FAE5; color: #065F46; }
+        .status-badge.rejected { background: #FEE2E2; color: #991B1B; }
+        .status-badge.draft { background: #F3F4F6; color: #6B7280; }
+        .nl-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/nav') %>
+    <main class="content" style="max-width:900px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h1 style="font-size:24px; font-weight:800;">Newsletter</h1>
+            <div style="display:flex; gap:12px;">
+                <a href="/admin/pipeline" class="btn btn-sm" style="font-size:13px;">Pipeline</a>
+                <a href="/admin" class="btn btn-sm" style="font-size:13px;">Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:var(--radius); padding:16px; margin-bottom:24px; font-size:13px; color:#1E40AF; line-height:1.6;">
+            <strong>Ablauf:</strong> Newsletter generieren aus heutigen Artikeln → Vorschau prüfen → Mit &#10003; genehmigen und versenden oder mit &#10007; ablehnen.<br>
+            <strong>Empfänger:</strong> <%= subscriberCount %> registrierte Benutzer
+        </div>
+
+        <!-- Generate -->
+        <div style="margin-bottom:32px;">
+            <form method="POST" action="/admin/newsletter/generate" style="display:inline;">
+                <button type="submit" class="btn btn-primary">Newsletter aus heutigen Artikeln generieren</button>
+            </form>
+        </div>
+
+        <!-- Newsletter List -->
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--c-border);">Newsletter-Warteschlange</h2>
+
+        <% if (newsletters.length === 0) { %>
+            <p style="color:var(--c-muted); font-size:14px;">Noch keine Newsletter erstellt. Klicke "Generieren" um den ersten zu erstellen.</p>
+        <% } else { %>
+            <% newsletters.forEach(nl => { %>
+                <div class="nl-card">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+                        <div style="flex:1;">
+                            <h3><%= nl.subject %></h3>
+                            <div class="nl-meta">
+                                Erstellt: <%= nl.created_at %>
+                                <% if (nl.sent_at) { %> &bull; Versendet: <%= nl.sent_at %><% } %>
+                                &bull; <span class="status-badge <%= nl.review_status %>"><%= nl.review_status %></span>
+                            </div>
+                        </div>
+                        <div class="nl-actions">
+                            <a href="/admin/newsletter/<%= nl.id %>/preview" target="_blank" class="btn btn-sm" style="font-size:12px;">Vorschau</a>
+                            <% if (nl.review_status === 'pending') { %>
+                                <form method="POST" action="/admin/newsletter/<%= nl.id %>/approve" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-primary" style="font-size:16px; padding:6px 16px;" title="Genehmigen & Versenden" onclick="return confirm('Newsletter an <%= subscriberCount %> Empfänger versenden?')">&#10003;</button>
+                                </form>
+                                <form method="POST" action="/admin/newsletter/<%= nl.id %>/reject" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" style="font-size:16px; padding:6px 16px;" title="Ablehnen">&#10007;</button>
+                                </form>
+                            <% } %>
+                            <form method="POST" action="/admin/newsletter/<%= nl.id %>/delete" style="display:inline;">
+                                <button type="submit" class="btn btn-sm" style="font-size:11px; color:#991B1B;" onclick="return confirm('Newsletter löschen?')">Löschen</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </main>
+</body>
+</html>

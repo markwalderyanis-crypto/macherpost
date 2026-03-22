@@ -5,111 +5,132 @@
     <title><%= pdf.title %> — MacherPost</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
     <style>
-        .rating-section { margin: 24px 0 32px; padding: 20px 24px; background: var(--c-section-alt); border-radius: var(--radius); }
-        .rating-stars { display: inline-flex; gap: 4px; }
-        .rating-stars label { cursor: pointer; font-size: 28px; color: #D1D5DB; transition: color 0.15s; }
-        .rating-stars label:hover, .rating-stars label:hover ~ label { color: #F59E0B; }
-        .rating-stars input:checked ~ label { color: #F59E0B; }
-        .rating-stars input { display: none; }
-        .rating-stars { direction: rtl; }
-        .rating-avg { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--c-muted); }
-        .rating-avg .stars-display { color: #F59E0B; font-size: 18px; letter-spacing: 1px; }
-        .cat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; }
-        .cat-recherche { background: #EEF2FF; color: #4338CA; }
+        .article-wrapper { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+
+        /* ── MacherPost Header ── */
+        .mp-article-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0; border-bottom: 3px solid #F97316; margin-bottom: 32px;
+        }
+        .mp-logo { font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+        .mp-logo-macher { color: #1a1a1e; }
+        .mp-logo-post { color: #F97316; }
+        .mp-theme-name { font-size: 14px; font-weight: 700; color: #F97316; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── Rating ── */
+        .rating-section { margin: 32px 0; padding: 24px; background: var(--c-section-alt); border-radius: var(--radius); }
+        .star-rating { display: inline-flex; gap: 2px; }
+        .star-rating .star { font-size: 28px; cursor: pointer; color: #D1D5DB; transition: color 0.15s; user-select: none; }
+        .star-rating .star:hover, .star-rating .star.hovered { color: #F59E0B; }
+        .star-rating .star.active { color: #F59E0B; }
+        .rating-avg { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--c-muted); }
+        .rating-avg .stars-filled { color: #F59E0B; font-size: 16px; letter-spacing: 1px; }
+
+        /* ── PDF pages ── */
         .pdf-page-container { margin: 32px 0; }
         .pdf-page { width: 100%; margin-bottom: 2px; display: block; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+        /* ── MacherPost Footer ── */
+        .mp-article-footer {
+            margin-top: 48px; padding: 24px 0; border-top: 3px solid #F97316;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+        }
+        .mp-footer-left { font-size: 12px; color: var(--c-dark); }
+        .mp-footer-url { font-size: 13px; font-weight: 700; color: #F97316; text-decoration: none; }
+        .mp-footer-url:hover { text-decoration: underline; }
+        .mp-footer-disclaimer { font-size: 11px; color: var(--c-muted); text-align: center; margin-top: 12px; width: 100%; }
     </style>
 </head>
 <body>
 <%- include('partials/nav') %>
 
-<main class="content">
-    <a href="/archiv/<%= pdf.theme_slug %>" style="font-size: 14px; color: var(--c-muted);">&larr; Zur&uuml;ck zu <%= themeName %></a>
+<main class="content" style="margin: 40px auto;">
+    <div class="article-wrapper">
 
-    <div style="margin-top: 16px;">
-        <span style="font-size: 13px; color: var(--c-muted);"><%= themeName %> &bull; <%= new Date(pdf.publish_date).toLocaleDateString('de-CH') %></span>
-    </div>
-
-    <h1 style="margin-top: 12px;"><%= pdf.title %></h1>
-
-    <% if (pdf.description) { %>
-        <p style="margin-top: 12px; font-size: 17px; line-height: 1.7; color: var(--c-text);"><%= pdf.description %></p>
-    <% } %>
-
-    <!-- Durchschnittliche Bewertung -->
-    <% if (ratingCount > 0) { %>
-    <div class="rating-avg" style="margin-top: 12px;">
-        <span class="stars-display"><% for (let i = 1; i <= 5; i++) { %><%= i <= Math.round(avgRating) ? '★' : '☆' %><% } %></span>
-        <span><%= avgRating %> von 5 &bull; <%= ratingCount %> Bewertung<%= ratingCount !== 1 ? 'en' : '' %></span>
-    </div>
-    <% } %>
-
-    <!-- PDF als Seiten (kein iframe, volle Höhe) -->
-    <div class="pdf-page-container" id="pdf-container">
-        <div style="text-align: center; padding: 48px; color: var(--c-muted);">
-            <p>PDF wird geladen...</p>
+        <!-- ═══ MACHERPOST HEADER ═══ -->
+        <div class="mp-article-header">
+            <div class="mp-logo">
+                <span class="mp-logo-macher">Macher</span><span class="mp-logo-post">Post</span>
+            </div>
+            <div class="mp-theme-name"><%= themeName %></div>
         </div>
-    </div>
 
-    <div style="text-align: center; margin-bottom: 32px;">
-        <a href="/pdf/<%= pdf.id %>/download" class="btn btn-outline btn-sm">&#8681; PDF herunterladen</a>
-    </div>
+        <a href="/archiv/<%= pdf.theme_slug %>" style="font-size: 13px; color: var(--c-muted); text-decoration: none;">&larr; Zur&uuml;ck zu <%= themeName %></a>
 
-    <!-- Bewertung -->
-    <% if (user) { %>
-    <div class="rating-section">
-        <h3 style="margin: 0 0 12px; font-size: 16px;">Wie hat dir dieser Beitrag gefallen?</h3>
-        <form method="POST" action="/api/rate" id="rating-form">
-            <input type="hidden" name="pdf_id" value="<%= pdf.id %>">
-            <div class="rating-stars">
-                <% for (let i = 5; i >= 1; i--) { %>
-                    <input type="radio" name="stars" value="<%= i %>" id="star<%= i %>" <%= userRating === i ? 'checked' : '' %>>
-                    <label for="star<%= i %>" title="<%= i %> Stern<%= i > 1 ? 'e' : '' %>">★</label>
+        <div style="margin-top: 20px;">
+            <div style="font-size: 13px; color: var(--c-muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span><%= new Date(pdf.publish_date).toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+                <% if (typeof readingMin !== 'undefined' && readingMin > 0) { %>
+                    <span>&bull;</span>
+                    <span>~<%= readingMin %> Min. Lesezeit</span>
+                <% } %>
+                <% if (ratingCount > 0) { %>
+                    <span>&bull;</span>
+                    <span class="rating-avg">
+                        <span class="stars-filled"><% for (let i = 1; i <= 5; i++) { %><%= i <= Math.round(avgRating) ? '\u2605' : '\u2606' %><% } %></span>
+                        <span><%= avgRating %> (<%= ratingCount %>)</span>
+                    </span>
                 <% } %>
             </div>
-            <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 12px;">Bewerten</button>
-            <% if (userRating > 0) { %>
-                <span style="font-size: 13px; color: var(--c-muted); margin-left: 12px;">Du hast <%= userRating %> Stern<%= userRating > 1 ? 'e' : '' %> gegeben</span>
-            <% } %>
-        </form>
-    </div>
-    <% } %>
 
-    <!-- Kommentare -->
-    <h2 style="margin-top: 32px;">Kommentare (<%= comments.length %>)</h2>
-
-    <% if (user) { %>
-    <form method="POST" action="/api/comments" style="margin: 24px 0;">
-        <input type="hidden" name="pdf_id" value="<%= pdf.id %>">
-        <div class="form-group">
-            <textarea name="content" placeholder="Schreibe einen Kommentar..." required maxlength="2000" style="min-height: 80px;"></textarea>
+            <h1 style="font-size: 32px; font-weight: 800; line-height: 1.25; margin: 12px 0 0;"><%= pdf.title %></h1>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm">Kommentar senden</button>
-    </form>
-    <% } else { %>
-    <p style="color: var(--c-muted); margin: 24px 0; font-size: 14px;"><a href="/login" style="color: var(--c-accent); font-weight: 600;">Anmelden</a> um zu kommentieren und bewerten.</p>
-    <% } %>
 
-    <% if (comments.length === 0) { %>
-        <p style="color: var(--c-muted); font-style: italic;">Noch keine Kommentare. Sei der Erste!</p>
-    <% } else { %>
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-            <% for (const c of comments) { %>
-                <div class="card" style="padding: 16px 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <strong style="font-size: 14px; color: var(--c-dark);"><%= c.user_name %></strong>
-                        <span style="font-size: 12px; color: var(--c-muted);"><%= new Date(c.created_at).toLocaleDateString('de-CH') %></span>
-                    </div>
-                    <p style="font-size: 14px; margin: 0; white-space: pre-wrap;"><%= c.content %></p>
-                    <% if (user && user.role === 'admin') { %>
-                        <form method="POST" action="/api/comments/<%= c.id %>/delete" style="margin-top: 8px;">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Kommentar l&ouml;schen?')">L&ouml;schen</button>
-                        </form>
+        <div style="display:flex; gap:12px; margin:24px 0 32px; align-items:center; flex-wrap:wrap;">
+            <% if (pdf.html_content) { %>
+                <a href="/artikel/<%= pdf.id %>/web" class="btn btn-sm btn-primary" style="font-size:13px;">Textansicht</a>
+            <% } %>
+            <a href="/pdf/<%= pdf.id %>/download" class="btn btn-sm btn-outline" style="font-size:13px;">&#8681; PDF herunterladen</a>
+        </div>
+
+        <!-- PDF pages rendered by pdf.js -->
+        <div class="pdf-page-container" id="pdf-container">
+            <div style="text-align: center; padding: 48px; color: var(--c-muted);">
+                <p>PDF wird geladen...</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 32px;">
+            <a href="/pdf/<%= pdf.id %>/download" class="btn btn-outline btn-sm" style="font-size:13px;">&#8681; PDF herunterladen</a>
+        </div>
+
+        <!-- ═══ MACHERPOST FOOTER ═══ -->
+        <div class="mp-article-footer">
+            <div class="mp-footer-left">
+                <span class="mp-logo" style="font-size: 18px;">
+                    <span class="mp-logo-macher">Macher</span><span class="mp-logo-post">Post</span>
+                </span>
+            </div>
+            <a href="https://macherpost.com" class="mp-footer-url">www.macherpost.com</a>
+            <div class="mp-footer-disclaimer">
+                Dieser Bericht wurde mit Unterst&uuml;tzung von KI erstellt und redaktionell gepr&uuml;ft.
+            </div>
+        </div>
+
+        <!-- ═══ RATING ═══ -->
+        <% if (user) { %>
+        <div class="rating-section">
+            <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700;">Wie hat dir dieser Beitrag gefallen?</h3>
+            <form method="POST" action="/api/rate" id="rating-form">
+                <input type="hidden" name="pdf_id" value="<%= pdf.id %>">
+                <input type="hidden" name="stars" id="rating-value" value="<%= userRating %>">
+                <div class="star-rating" id="star-rating">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <span class="star <%= i <= userRating ? 'active' : '' %>" data-value="<%= i %>">&#9733;</span>
                     <% } %>
                 </div>
-            <% } %>
+                <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 12px;">Bewerten</button>
+                <% if (userRating > 0) { %>
+                    <span style="font-size: 13px; color: var(--c-muted); margin-left: 12px;">Du hast <%= userRating %> Stern<%= userRating > 1 ? 'e' : '' %> gegeben</span>
+                <% } %>
+            </form>
         </div>
-    <% } %>
+        <% } %>
+
+        <!-- ═══ COMMENTS ═══ -->
+        <%- include('partials/comments') %>
+
+    </div>
 </main>
 
 <%- include('partials/footer') %>
@@ -140,6 +161,39 @@
       '<p>PDF konnte nicht geladen werden.</p>' +
       '<a href="/pdf/<%= pdf.id %>/download" class="btn btn-primary btn-sm">PDF herunterladen</a></div>';
   }
+</script>
+
+<script>
+// Star rating interaction
+const stars = document.querySelectorAll('#star-rating .star');
+const ratingInput = document.getElementById('rating-value');
+
+if (stars.length) {
+    stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+            const val = parseInt(star.dataset.value);
+            stars.forEach(s => {
+                s.classList.toggle('hovered', parseInt(s.dataset.value) <= val);
+            });
+        });
+
+        star.addEventListener('click', () => {
+            const val = parseInt(star.dataset.value);
+            ratingInput.value = val;
+            stars.forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.value) <= val);
+            });
+        });
+    });
+
+    document.getElementById('star-rating').addEventListener('mouseleave', () => {
+        const current = parseInt(ratingInput.value) || 0;
+        stars.forEach(s => {
+            s.classList.remove('hovered');
+            s.classList.toggle('active', parseInt(s.dataset.value) <= current);
+        });
+    });
+}
 </script>
 </body>
 </html>

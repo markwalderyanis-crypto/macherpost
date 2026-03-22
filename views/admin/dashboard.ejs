@@ -34,7 +34,23 @@
         .theme-bar-count { font-size: 12px; color: var(--c-muted); flex-shrink: 0; }
 
         .star { color: #F59E0B; }
-        .quick-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+
+        /* Quick Actions — redesigned */
+        .quick-actions { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 32px; }
+        .qa-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px 12px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); text-decoration: none; color: var(--c-dark); transition: all 0.2s; text-align: center; }
+        .qa-btn:hover { border-color: var(--c-accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .qa-icon { font-size: 24px; line-height: 1; }
+        .qa-label { font-size: 12px; font-weight: 700; }
+        .qa-btn.highlight { border-color: var(--c-accent); background: #FFF7ED; }
+
+        /* Pipeline Status Banner */
+        .pipeline-banner { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; font-size: 13px; }
+        .pipeline-banner.ok { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+        .pipeline-banner.warn { background: #FFF7ED; border: 1px solid #FED7AA; color: #9A3412; }
+        .pipeline-banner .pb-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .pipeline-banner.ok .pb-dot { background: #10B981; animation: blink 2s infinite; }
+        .pipeline-banner.warn .pb-dot { background: #F59E0B; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
         /* Charts */
         .chart-container { position: relative; padding: 20px; }
@@ -56,9 +72,11 @@
         @media (max-width: 900px) {
             .dash-grid { grid-template-columns: 1fr 1fr; }
             .dash-cols, .dash-cols-3 { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 640px) {
             .dash-grid { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
             .chart-bars { gap: 3px; }
             .chart-bar-label { font-size: 8px; }
         }
@@ -68,19 +86,53 @@
 <%- include('../partials/nav') %>
 
 <main class="content" style="max-width: var(--max-w);">
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
-        <h1 style="margin: 0;">Admin Dashboard</h1>
-        <div style="font-size: 13px; color: var(--c-muted);"><%= new Date().toLocaleDateString('de-CH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></div>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div>
+            <h1 style="margin: 0;">Dashboard</h1>
+            <p style="font-size: 13px; color: var(--c-muted); margin: 4px 0 0;"><%= new Date().toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+        </div>
+    </div>
+
+    <!-- Pipeline Status Banner -->
+    <% const hasReviews = stats.pendingReviews > 0; %>
+    <div class="pipeline-banner <%= hasReviews ? 'warn' : 'ok' %>">
+        <div class="pb-dot"></div>
+        <div style="flex:1;">
+            <% if (hasReviews) { %>
+                <strong><%= stats.pendingReviews %> Beitr&auml;ge warten auf Review</strong> &mdash;
+                <a href="/admin/pipeline" style="color: inherit; font-weight: 700; text-decoration: underline;">Jetzt reviewen</a>
+            <% } else { %>
+                <strong>Pipeline l&auml;uft</strong> &mdash; N&auml;chste Generierung morgen um 05:00 Uhr (Zeitzone: Z&uuml;rich)
+            <% } %>
+        </div>
+        <a href="/admin/pipeline" style="color: inherit; font-weight: 600; font-size: 12px; text-decoration: none; white-space: nowrap;">Pipeline &rarr;</a>
     </div>
 
     <!-- Quick Actions -->
     <div class="quick-actions">
-        <a href="/admin/pdfs/new" class="btn btn-primary">+ Neues PDF hochladen</a>
-        <a href="/admin/pdfs" class="btn btn-outline">PDFs verwalten</a>
-        <a href="/archiv" class="btn btn-outline">Archiv ansehen</a>
+        <a href="/admin/pipeline" class="qa-btn highlight">
+            <span class="qa-icon">&#9881;</span>
+            <span class="qa-label">Pipeline</span>
+        </a>
+        <a href="/admin/newsletter" class="qa-btn">
+            <span class="qa-icon">&#9993;</span>
+            <span class="qa-label">Newsletter</span>
+        </a>
+        <a href="/admin/pdfs/new" class="qa-btn">
+            <span class="qa-icon">&#10010;</span>
+            <span class="qa-label">PDF hochladen</span>
+        </a>
+        <a href="/admin/pdfs" class="qa-btn">
+            <span class="qa-icon">&#9776;</span>
+            <span class="qa-label">PDFs verwalten</span>
+        </a>
+        <a href="/archiv" class="qa-btn">
+            <span class="qa-icon">&#128196;</span>
+            <span class="qa-label">Archiv</span>
+        </a>
     </div>
 
-    <!-- Key Metrics -->
+    <!-- Key Metrics — Row 1: Business -->
     <div class="dash-grid">
         <div class="dash-card">
             <div class="dash-card-label">Benutzer</div>
@@ -92,34 +144,44 @@
             <div class="dash-card-sub">Conversion: <%= stats.users > 0 ? Math.round(stats.subscriptions / stats.users * 100) : 0 %>%</div>
         </div>
         <div class="dash-card accent">
-            <div class="dash-card-label">Gesch. Monatsumsatz</div>
+            <div class="dash-card-label">Monatsumsatz</div>
             <div class="dash-card-value">CHF <%= stats.monthlyRevenue.toFixed(0) %></div>
             <div class="dash-card-sub">~CHF <%= (stats.monthlyRevenue * 12).toFixed(0) %>/Jahr</div>
         </div>
         <div class="dash-card">
-            <div class="dash-card-label">Durchschn. Bewertung</div>
+            <div class="dash-card-label">Bewertung</div>
             <div class="dash-card-value"><%= stats.avgRating > 0 ? stats.avgRating.toFixed(1) : '—' %> <span class="star" style="font-size: 20px;">&#9733;</span></div>
             <div class="dash-card-sub"><%= stats.ratings %> Bewertungen</div>
         </div>
     </div>
 
-    <!-- PDF Stats -->
+    <!-- Key Metrics — Row 2: Content & Reach -->
     <div class="dash-grid">
         <div class="dash-card">
-            <div class="dash-card-label">PDFs gesamt</div>
+            <div class="dash-card-label">Beitr&auml;ge</div>
             <div class="dash-card-value"><%= stats.pdfs %></div>
+            <div class="dash-card-sub">
+                <span class="status-dot published"></span><%= stats.published %> Live
+                &bull; <span class="status-dot scheduled"></span><%= stats.scheduled %> Geplant
+                &bull; <span class="status-dot draft"></span><%= stats.drafts %> Entwurf
+            </div>
         </div>
         <div class="dash-card">
-            <div class="dash-card-label"><span class="status-dot published"></span> Ver&ouml;ffentlicht</div>
-            <div class="dash-card-value"><%= stats.published %></div>
+            <div class="dash-card-label">Aufrufe gesamt</div>
+            <div class="dash-card-value"><%= stats.totalViews.toLocaleString('de-CH') %></div>
+            <% if (stats.topArticle) { %>
+                <div class="dash-card-sub">Top: &laquo;<%= stats.topArticle.substring(0, 25) %>&raquo; (<%= stats.topArticleViews %>)</div>
+            <% } %>
         </div>
         <div class="dash-card">
-            <div class="dash-card-label"><span class="status-dot scheduled"></span> Geplant</div>
-            <div class="dash-card-value"><%= stats.scheduled %></div>
+            <div class="dash-card-label">Newsletter</div>
+            <div class="dash-card-value"><%= stats.newsletterSubscribers %></div>
+            <div class="dash-card-sub">Empf&auml;nger</div>
         </div>
         <div class="dash-card">
-            <div class="dash-card-label"><span class="status-dot draft"></span> Entw&uuml;rfe</div>
-            <div class="dash-card-value"><%= stats.drafts %></div>
+            <div class="dash-card-label">Push-Abos</div>
+            <div class="dash-card-value"><%= stats.pushSubscribers %></div>
+            <div class="dash-card-sub">Browser-Benachrichtigungen</div>
         </div>
     </div>
 
