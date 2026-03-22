@@ -11,13 +11,21 @@ async function initDb() {
 
   if (fs.existsSync(dbPath)) {
     const buffer = fs.readFileSync(dbPath);
+    console.log('[DB] Loading file:', dbPath, '(' + buffer.length + ' bytes)');
     db = new SQL.Database(buffer);
   } else {
     db = new SQL.Database();
   }
 
+  const c1 = db.exec('SELECT COUNT(*) FROM pdfs');
+  console.log('[DB] After load:', c1.length ? c1[0].values[0][0] : 0, 'articles');
+
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  db.run(schema);
+  // Use exec() for multi-statement schema, not run()
+  db.exec(schema);
+
+  const c2 = db.exec('SELECT COUNT(*) FROM pdfs');
+  console.log('[DB] After schema:', c2.length ? c2[0].values[0][0] : 0, 'articles');
 
   // Migrate: add category column to pdfs if missing
   try { db.run("ALTER TABLE pdfs ADD COLUMN category TEXT NOT NULL DEFAULT 'recherche'"); } catch (e) { /* already exists */ }
