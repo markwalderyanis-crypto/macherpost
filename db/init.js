@@ -114,8 +114,12 @@ async function initDb() {
 function saveDb() {
   if (!db || !dbPath) return;
   try {
+    // Debug: log article count on each save
+    const r = db.exec('SELECT COUNT(*) FROM pdfs');
+    const count = r.length > 0 ? r[0].values[0][0] : '?';
     const data = db.export();
     fs.writeFileSync(dbPath, Buffer.from(data));
+    console.log('[DB] Saved (' + count + ' articles, ' + data.length + ' bytes)');
   } catch (e) { console.error('[DB] Save error:', e.message); }
 }
 
