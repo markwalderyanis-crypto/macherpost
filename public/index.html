@@ -2,9 +2,29 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MacherPost — Das Briefing für Macher:innen</title>
-    <meta name="description" content="Dein kompaktes Briefing zu Handwerk, Finanzen, KI, Politik und mehr. Jeden Tag um 06:30. Kostenlos starten oder Abo wählen.">
+    <link rel="manifest" href="/manifest.json">
+    <title>MacherPost — Das Schweizer Briefing für Unternehmer</title>
+    <meta name="description" content="5 Formate. T&auml;glich von 06:00 bis 19:00. Quellenbelegt und klar — f&uuml;r Schweizer Unternehmer.">
+    <meta property="og:title" content="MacherPost — Fakten. Nicht Meinungen.">
+    <meta property="og:description" content="5 Formate. T&auml;glich von 06:00 bis 19:00. F&uuml;r CEOs, Selbstst&auml;ndige und Investoren.">
+    <meta property="og:image" content="https://macherpost.com/images/og-preview.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://macherpost.com">
+    <meta property="og:locale" content="de_CH">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MacherPost — Fakten. Nicht Meinungen.">
+    <meta name="twitter:description" content="5 Formate. T&auml;glich von 06:00 bis 19:00. Quellenbelegt.">
+    <meta name="twitter:image" content="https://macherpost.com/images/og-preview.jpg">
+    <link rel="canonical" href="https://macherpost.com">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"NewsMediaOrganization","name":"MacherPost","url":"https://macherpost.com","description":"Das Schweizer Briefing für Unternehmer","logo":"https://macherpost.com/images/og-preview.jpg","sameAs":[]}
+    </script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -15,22 +35,24 @@
             --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
             --max-w: 1120px; --radius: 12px; --radius-sm: 8px;
         }
-        html { scroll-behavior: smooth; }
-        body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; max-width: 100vw; }
         a { color: inherit; text-decoration: none; }
         .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
         .icon { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
         .icon-lg { width: 32px; height: 32px; }
 
         /* Nav */
-        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,250,249,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--c-border); }
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; overflow: visible; background: rgba(250,250,249,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--c-border); }
         .nav-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
-        .nav-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-dark); }
+        .nav-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-dark); text-decoration: none; }
+        .nav-logo:hover { text-decoration: none; }
         .nav-logo span { color: var(--c-accent); }
         .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
-        .nav-links a { font-size: 14px; font-weight: 500; color: var(--c-muted); transition: color 0.2s; }
-        .nav-links a:hover { color: var(--c-dark); }
-        .nav-cta { display: inline-flex; padding: 10px 22px; background: var(--c-accent); color: white !important; font-weight: 600; font-size: 14px; border-radius: 50px; transition: background 0.2s; }
+        .nav-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; margin-right: 4px; }
+        .nav-links a { font-size: 14px; font-weight: 600; color: var(--c-muted); text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .nav-links a:hover { color: var(--c-accent); }
+        .nav-cta { display: inline-flex; padding: 10px 22px; background: var(--c-accent); color: white !important; font-weight: 700; font-size: 14px; border-radius: 50px; transition: background 0.2s; }
         .nav-cta:hover { background: var(--c-accent-hover); }
 
         /* Hero */
@@ -43,13 +65,7 @@
         .hero-sub { font-size: clamp(17px, 2.5vw, 21px); color: var(--c-muted); max-width: 620px; margin: 0 auto 40px; line-height: 1.5; }
 
         /* Form */
-        .signup-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto 20px; }
-        .signup-form input { flex: 1; padding: 16px 20px; border: 2px solid var(--c-border); border-radius: 50px; font-size: 16px; font-family: var(--font); background: var(--c-white); outline: none; transition: border-color 0.2s; }
-        .signup-form input:focus { border-color: var(--c-accent); }
-        .signup-form input::placeholder { color: #AAA; }
-        .btn-signup { padding: 16px 32px; background: var(--c-accent); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; font-family: var(--font); cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
-        .btn-signup:hover { background: var(--c-accent-hover); }
-        .btn-signup:active { transform: scale(0.98); }
+
         .hero-trust { font-size: 14px; color: var(--c-muted); }
         .hero-trust strong { color: var(--c-text); }
         .success-msg { display: none; text-align: center; padding: 24px; background: var(--c-green-light); border: 1px solid #BBF7D0; border-radius: var(--radius-sm); max-width: 480px; margin: 0 auto; }
@@ -72,13 +88,6 @@
         .section-desc { font-size: 18px; color: var(--c-muted); max-width: 600px; margin: 0 auto; }
 
         /* Topic Tags */
-        .topics-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 860px; margin: 0 auto; }
-        .topic-tag { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: 50px; font-size: 15px; font-weight: 600; color: var(--c-dark); transition: all 0.2s; cursor: pointer; }
-        .topic-tag:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); border-color: var(--c-accent); color: var(--c-accent); }
-        .topic-tag .ti { width: 22px; height: 22px; color: var(--c-accent); }
-        .topic-tag .ti svg { width: 22px; height: 22px; }
-        .topic-single-note { text-align: center; margin-top: 32px; padding: 16px 24px; background: var(--c-white); border: 1px solid var(--c-border); border-radius: var(--radius); display: inline-block; }
-        .topic-single-note strong { color: var(--c-accent); }
         .topics-note-wrap { text-align: center; }
 
         /* Compare */
@@ -181,9 +190,7 @@
         .cta-section { padding: 96px 0; background: var(--c-dark); text-align: center; }
         .cta-section h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 16px; }
         .cta-section .cta-desc { font-size: 18px; color: #999; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
-        .cta-section .signup-form input { background: #2A2A2A; border-color: #3A3A3A; color: white; }
-        .cta-section .signup-form input::placeholder { color: #777; }
-        .cta-section .signup-form input:focus { border-color: var(--c-accent); }
+
         .cta-section .hero-trust { color: #777; }
         .cta-section .hero-trust strong { color: #CCC; }
 
@@ -196,26 +203,85 @@
         .footer-links a { font-size: 14px; color: var(--c-muted); transition: color 0.2s; }
         .footer-links a:hover { color: var(--c-accent); }
 
+        /* Hamburger menu */
+        .nav-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--c-dark);
+        }
+        .nav-hamburger svg { display: block; }
+
         /* Responsive */
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
+            .nav-hamburger { display: block; }
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--c-bg);
+                flex-direction: column;
+                align-items: stretch;
+                padding: 24px;
+                gap: 0;
+                z-index: 999;
+                list-style: none;
+                border-top: 1px solid var(--c-border);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            }
+            .nav-links.open { display: flex; }
+            .nav-links li { list-style: none; }
+            .nav-links a { padding: 24px 20px; font-size: 20px; border-bottom: 1px solid var(--c-border); display: flex; align-items: center; gap: 10px; }
+            .nav-icon { width: 22px; height: 22px; }
+            .nav-links .nav-cta { display: inline-flex; margin-top: 16px; text-align: center; justify-content: center; padding: 18px 22px !important; font-size: 18px !important; }
+            #themen .container > div:nth-child(2) { grid-template-columns: repeat(2, 1fr) !important; }
             .testimonials-grid { grid-template-columns: 1fr 1fr; }
             .preview-grid, .compare-grid { grid-template-columns: 1fr; gap: 32px; }
-            .nav-links { display: none; }
         }
         @media (max-width: 640px) {
-            .hero { padding: 120px 20px 60px; }
-            .signup-form { flex-direction: column; }
-            .signup-form input, .btn-signup { width: 100%; text-align: center; }
-            .testimonials-grid, .stats-row { grid-template-columns: 1fr 1fr; }
+            #themen .container > div:nth-child(2) { grid-template-columns: 1fr !important; }
+            #werte .container > div:nth-child(2) { grid-template-columns: 1fr !important; }
+            .hero { padding: 100px 16px 48px; }
+
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr 1fr; gap: 16px; }
             .pricing-grid { grid-template-columns: 1fr; }
-            .section { padding: 64px 0; }
-            .nav-cta { display: none; }
+            .section { padding: 56px 0; }
             .einzelthema-banner { flex-direction: column; text-align: center; }
             .einzelthema-banner .eb-price { text-align: center; }
+            .container { padding: 0 16px; }
+            .section-title { font-size: 26px; }
+            .section-desc { font-size: 15px; }
+            .compare-card { padding: 28px 20px; }
+            .faq-question { font-size: 15px; padding: 18px 0; }
+            .stat-number { font-size: 26px; }
+        }
+        
+        @media (max-width: 768px) {
+            footer .container > div:first-child { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 480px) {
+            footer .container > div:first-child { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 380px) {
+            .stats-row { grid-template-columns: 1fr; }
         }
         .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-    </style>
+
+
+    /* Dark Mode: CTA section (always dark bg) */
+    /* Dark Mode: Pricing comparison */
+    /* Dark Mode: Footer */
+    /* Dark Mode: FAQ */
+    /* Dark Mode: Section headings */
+
+    /* Dark Mode: Nav colors */
+</style>
 </head>
 <body>
 
@@ -223,18 +289,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
     <!-- Handwerk: hammer -->
     <symbol id="i-handwerk" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
-    <!-- Selbständigkeit: rocket -->
-    <symbol id="i-selbst" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11.5a18.3 18.3 0 0 1-4 1.5z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
-    <!-- Führung: org chart people -->
-    <symbol id="i-fuehrung" viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M6 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="19" r="2.5"/><circle cx="12" cy="19" r="2.5"/></symbol>
+    <!-- Unternehmertum: rocket -->
+    <symbol id="i-unternehmertum" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11.5a18.3 18.3 0 0 1-4 1.5z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
     <!-- Aktien: candlestick chart -->
     <symbol id="i-aktien" viewBox="0 0 24 24"><path d="M6 4v4"/><rect x="4" y="8" width="4" height="6" rx="1"/><path d="M6 14v2"/><path d="M12 2v3"/><rect x="10" y="5" width="4" height="8" rx="1"/><path d="M12 13v3"/><path d="M18 6v4"/><rect x="16" y="10" width="4" height="6" rx="1"/><path d="M18 16v4"/></symbol>
-    <!-- Krypto: Bitcoin -->
+    <!-- Rohstoffe: Goldbarren/Oel -->
+    <symbol id="i-rohstoffe" viewBox="0 0 24 24"><path d="M3 21h18l-3-7H6L3 21z"/><path d="M6 14l2-5h8l2 5"/><path d="M8 9l1-3h6l1 3"/></symbol>
     <symbol id="i-krypto" viewBox="0 0 64 64"><path d="M41.9 29.2c.6-4-2.4-6.2-6.6-7.6l1.4-5.4-3.3-.8-1.3 5.3c-.9-.2-1.8-.4-2.6-.6l1.3-5.3-3.3-.8-1.4 5.4c-.7-.2-1.4-.3-2.1-.5l0 0-4.5-1.1-.9 3.5s2.4.6 2.4.6c1.3.3 1.6 1.2 1.5 1.9l-1.5 6.2c.1 0 .2 0 .3.1l-.3-.1-2.2 8.7c-.2.4-.6 1.1-1.5.8 0 0-2.4-.6-2.4-.6l-1.7 3.8 4.3 1.1c.8.2 1.6.4 2.4.6l-1.4 5.5 3.3.8 1.4-5.4c.9.2 1.8.5 2.6.7l-1.3 5.4 3.3.8 1.4-5.5c5.7 1.1 10 .7 11.8-4.5 1.5-4.2-.1-6.6-3.1-8.2 2.2-.5 3.9-2 4.3-5zm-7.7 10.8c-1 4.2-8.1 1.9-10.4 1.4l1.9-7.4c2.3.6 9.7 1.7 8.6 6zm1.1-10.9c-1 3.8-6.8 1.9-8.7 1.4l1.7-6.7c1.9.5 8.1 1.4 7 5.3z" fill="currentColor"/></symbol>
     <!-- Makro: Waage / Balance -->
-    <symbol id="i-makro" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M3 7l9-4 9 4"/><path d="M3 7l3 6h0a3 3 0 0 0 6 0h0l-3-6"/><path d="M15 7l-3 6h0a3 3 0 0 0 6 0h0l3-6"/><path d="M8 21h8"/></symbol>
+    <symbol id="i-makro" viewBox="0 0 24 24"><polyline points="3 18 8 13 12 15 21 6"/><polyline points="17 6 21 6 21 10"/><line x1="3" y1="21" x2="21" y2="21"/><rect x="4" y="17" width="3" height="4" rx="0.5"/><rect x="10" y="14" width="3" height="7" rx="0.5"/><rect x="16" y="10" width="3" height="11" rx="0.5"/></symbol>
     <!-- Abrechnung: calculator -->
-    <symbol id="i-abrechnung" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><rect x="7" y="5" width="10" height="4" rx="1"/><circle cx="8.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="8.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-abrechnung" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="28" rx="2"/><rect x="7" y="5" width="10" height="4" rx="1"/><circle cx="8.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="13" r=".8" fill="currentColor" stroke="none"/><circle cx="8.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="12" cy="16.5" r=".8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16.5" r=".8" fill="currentColor" stroke="none"/></symbol>
     <!-- Welt: globe lines -->
     <symbol id="i-welt" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 2c2.5 3.2 3.8 6.5 3.8 10s-1.3 6.8-3.8 10c-2.5-3.2-3.8-6.5-3.8-10S9.5 5.2 12 2z"/></symbol>
     <!-- Lokal: town hall -->
@@ -242,7 +307,7 @@
     <!-- Schweizer Politik: columns/parliament -->
     <symbol id="i-politik" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M12 2l9 5H3l9-5z"/><path d="M6 7v12"/><path d="M10 7v12"/><path d="M14 7v12"/><path d="M18 7v12"/><path d="M2 19h20"/></symbol>
     <!-- Europäische Politik: EU stars -->
-    <symbol id="i-europa" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 4l.6 1.8h1.9l-1.5 1.1.6 1.8L12 7.6l-1.6 1.1.6-1.8-1.5-1.1h1.9z"/><path d="M7.1 6.5l.6 1.8h1.9l-1.5 1.1.6 1.8-1.6-1.1-1.6 1.1.6-1.8L4.6 8.3h1.9z"/><path d="M5 12l.6 1.8h1.9l-1.5 1.1.6 1.8L5 15.6l-1.6 1.1.6-1.8-1.5-1.1h1.9z"/><path d="M7.1 17.5l.6 1.8h1.9l-1.5 1.1.6 1.8-1.6-1.1-1.6 1.1.6-1.8-1.5-1.1h1.9z"/><path d="M12 20l.6-1.8h1.9l-1.5-1.1.6-1.8-1.6 1.1-1.6-1.1.6 1.8-1.5 1.1h1.9z"/><path d="M16.9 17.5l.6 1.8h1.9l-1.5 1.1.6 1.8-1.6-1.1-1.6 1.1.6-1.8-1.5-1.1h1.9z"/><path d="M19 12l.6 1.8h1.9l-1.5 1.1.6 1.8-1.6-1.1-1.6 1.1.6-1.8-1.5-1.1h1.9z"/><path d="M16.9 6.5l.6 1.8h1.9l-1.5 1.1.6 1.8-1.6-1.1-1.6 1.1.6-1.8-1.5-1.1h1.9z"/></symbol>
+    <symbol id="i-europa" viewBox="0 0 24 24"><polygon fill="currentColor" stroke="none" points="12.0,1.5 12.9,4.3 15.8,4.3 13.4,6.0 14.4,8.7 12.0,7.0 9.6,8.7 10.6,6.0 8.2,4.3 11.1,4.3"/><polygon fill="currentColor" stroke="none" points="18.2,6.0 19.1,8.8 22.0,8.8 19.6,10.5 20.5,13.2 18.2,11.5 15.8,13.2 16.7,10.5 14.4,8.8 17.3,8.8"/><polygon fill="currentColor" stroke="none" points="15.8,13.3 16.7,16.0 19.6,16.0 17.3,17.7 18.2,20.5 15.8,18.8 13.5,20.5 14.4,17.7 12.0,16.0 14.9,16.0"/><polygon fill="currentColor" stroke="none" points="8.2,13.3 9.1,16.0 12.0,16.0 9.6,17.7 10.5,20.5 8.2,18.8 5.8,20.5 6.7,17.7 4.4,16.0 7.3,16.0"/><polygon fill="currentColor" stroke="none" points="5.8,6.0 6.7,8.8 9.6,8.8 7.3,10.5 8.2,13.2 5.8,11.5 3.5,13.2 4.4,10.5 2.0,8.8 4.9,8.8"/></symbol>
     <!-- Enthüllungen: eye -->
     <symbol id="i-enthuellung" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
     <!-- Sport: trophy -->
@@ -266,17 +331,22 @@
     <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 12a10 10 0 0 1 10-10"/><path d="M2 12a10 10 0 0 0 10 10"/><path d="M6 12a6 6 0 0 1 6-6"/><path d="M6 12a6 6 0 0 0 6 6"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-tagespuls" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 9v12"/><path d="M6 6h.01"/><path d="M12 13h5"/><path d="M12 17h5"/></symbol>
     <symbol id="i-komplett" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-prompting" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10l3 3-3 3"/><line x1="14" y1="16" x2="18" y2="16"/></symbol>
+    <symbol id="i-f1" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
 </svg>
 
 <!-- NAV -->
 <nav class="nav">
     <div class="nav-inner">
-        <a href="#" class="nav-logo">Macher<span>Post</span></a>
-        <ul class="nav-links">
-            <li><a href="#themen">Themen</a></li>
-            <li><a href="#preise">Preise</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#start" class="nav-cta">Newsletter abonnieren</a></li>
+        <a href="/" class="nav-logo">Macher<span>Post</span></a>
+        <button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='true' ? 'false' : 'true')" aria-label="Menu" aria-expanded="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <ul class="nav-links" id="nav-menu">
+            <li><a href="/archiv"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg> Archiv</a></li>
+            <li><a href="/abo"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Abo</a></li>
+            <li><a href="/login" class="nav-cta">Anmelden</a></li>
+            <!-- Dark Mode Toggle entfernt -->
         </ul>
     </div>
 </nav>
@@ -284,15 +354,14 @@
 <!-- HERO -->
 <section class="hero">
     <div class="container">
-        <div class="hero-badge reveal"><span class="hero-badge-dot"></span> Jetzt verfügbar</div>
-        <h1 class="reveal">Dein Briefing.<br>Dein <em>Vorsprung.</em></h1>
-        <p class="hero-sub reveal">Handwerk, Finanzen, KI, Politik, Technik und mehr — kompakt aufbereitet, jeden Tag um 06:30 in deinem Postfach.</p>
-        <form class="signup-form reveal" id="heroForm" onsubmit="return handleSignup(event, 'hero')">
-            <input type="email" placeholder="deine@email.de" required aria-label="E-Mail-Adresse">
-            <button type="submit" class="btn-signup">Newsletter abonnieren</button>
-        </form>
-        <div class="success-msg" id="heroSuccess"><h3>Du bist dabei!</h3><p>Wir benachrichtigen dich bei neuen Beitr&auml;gen.</p></div>
-        <p class="hero-trust reveal"><strong>Dienstags-Ausgaben kostenlos.</strong> Kein Spam. Jederzeit abbestellen.</p>
+        <div class="hero-badge reveal"><span class="hero-badge-dot"></span> Unabhängig. Werbefrei. Faktenbasiert.</div>
+        <h1 class="reveal">Fakten. Nicht <em>Meinungen.</em></h1>
+        <p class="hero-sub reveal">5 Formate. T&auml;glich von 06:00 bis 19:00. Quellenbelegt und klar — f&uuml;r Unternehmer die selbst urteilen.</p>
+        <div class="reveal" style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; max-width: 520px; margin: 0 auto 20px;">
+                <a href="/archiv" style="display: inline-flex; padding: 16px 32px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s; text-decoration: none;" onmouseover="this.style.background='var(--c-accent-hover)'" onmouseout="this.style.background='var(--c-accent)'">Gratis-Ausgabe lesen</a>
+                <a href="/abo" style="display: inline-flex; padding: 16px 32px; background: transparent; color: var(--c-dark); font-weight: 700; font-size: 16px; border-radius: 50px; border: 2px solid var(--c-border); transition: all 0.2s; text-decoration: none;" onmouseover="this.style.borderColor='var(--c-accent)';this.style.color='var(--c-accent)'" onmouseout="this.style.borderColor='var(--c-border)';this.style.color='var(--c-dark)'">Abo ab CHF 1.99</a>
+            </div>
+        <p class="hero-trust reveal"><strong>Keine Werbung. Keine Sponsoren.</strong> Erste 2 Themen jedes Formats gratis.</p>
     </div>
 </section>
 
@@ -300,10 +369,120 @@
 <section class="stats-bar">
     <div class="container">
         <div class="stats-row reveal">
-            <div><div class="stat-number">7x</div><div class="stat-label">Pro Woche (Täglich)</div></div>
-            <div><div class="stat-number">06:30</div><div class="stat-label">Pünktlich im Postfach</div></div>
-            <div><div class="stat-number">16</div><div class="stat-label">Themengebiete</div></div>
-            <div><div class="stat-number">100%</div><div class="stat-label">Praxisnah & umsetzbar</div></div>
+            <div><div class="stat-number">5</div><div class="stat-label">Formate</div></div>
+            <div><div class="stat-number">0</div><div class="stat-label">Werbeanzeigen</div></div>
+            <div><div class="stat-number">06&ndash;19h</div><div class="stat-label">T&auml;glich</div></div>
+            <div><div class="stat-number">100%</div><div class="stat-label">Quellenbelegt</div></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- UNSERE WERTE -->
+<section class="section" id="werte">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Unsere Werte</div>
+            <h2 class="section-title">Journalismus, dem du vertrauen kannst.</h2>
+            <p class="section-desc">MacherPost steht für eine klare Linie: Fakten vor Meinungen, Transparenz vor Sensation.</p>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:24px; max-width:800px; margin:0 auto;" class="reveal">
+            <div style="background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); padding:32px;">
+                <div style="margin-bottom:12px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 12l2.5-3h1l1 1.5L13 9h1l2.5 3"/><path d="M7 15h4"/><path d="M13 15h4"/><line x1="3" y1="21" x2="21" y2="3"/></svg></div>
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--c-dark);">Unabhängig</h3>
+                <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Keine Werbung, keine Sponsoren, keine bezahlten Inhalte. MacherPost finanziert sich ausschliesslich über Abonnements.</p>
+            </div>
+            <div style="background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); padding:32px;">
+                <div style="margin-bottom:12px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v16H4z"/><path d="M16 8h4v12H6"/><line x1="7" y1="8" x2="13" y2="8"/><line x1="7" y1="11" x2="13" y2="11"/><line x1="7" y1="14" x2="10" y2="14"/></svg></div>
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--c-dark);">Faktenbasiert</h3>
+                <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Jede Aussage mit Quelle belegt. Primär aus Fachbüchern und offiziellen Berichten — nicht aus Zeitungsartikeln.</p>
+            </div>
+            <div style="background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); padding:32px;">
+                <div style="margin-bottom:12px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="17"/><line x1="4.5" y1="7" x2="19.5" y2="7"/><polygon points="4.5,7 3,12 8,12 6.5,7" fill="none"/><polygon points="19.5,7 18,12 23,12 21.5,7" fill="none"/><path d="M3 12a3 3 0 0 0 5 0" fill="none"/><path d="M18 12a3 3 0 0 0 5 0" fill="none"/><circle cx="12" cy="2" r="1.2" fill="none"/><path d="M7 17h10v2H7z" fill="none"/><path d="M5 19h14v1.5H5z" fill="none"/><path d="M4 20.5h16v2H4z" fill="none"/></svg></div>
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--c-dark);">Neutral</h3>
+                <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Beide Seiten anhören, Behauptungen prüfen, dann klar einordnen. Wenn eine Seite falsch liegt, sagen wir es — mit Beweis.</p>
+            </div>
+            <div style="background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); padding:32px;">
+                <div style="margin-bottom:12px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18H5z"/><polyline points="8 9 9.5 10.5 12 8"/><line x1="14" y1="9" x2="17" y2="9"/><polyline points="8 13 9.5 14.5 12 12"/><line x1="14" y1="13" x2="17" y2="13"/><polyline points="8 17 9.5 18.5 12 16"/><line x1="14" y1="17" x2="17" y2="17"/></svg></div>
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:var(--c-dark);">Transparent</h3>
+                <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Wenn wir unsicher sind, sagen wir es. Wenn es unsere Einschätzung ist, kennzeichnen wir es. Keine versteckten Agenden.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SO ARBEITEN WIR -->
+<section class="section section-alt" id="methode">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">Unsere Methode</div>
+            <h2 class="section-title">SO ARBEITEN WIR.</h2>
+            <p class="section-desc">Jeder Bericht folgt 4 Schritten — egal ob Lagebericht, Hauptinhalt oder Abend-Briefing.</p>
+        </div>
+        <div style="max-width:700px; margin:0 auto;" class="reveal">
+            <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:32px;">
+                <div style="min-width:48px; height:48px; background:var(--c-accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--c-accent);">1</div>
+                <div>
+                    <h3 style="font-size:17px; font-weight:700; margin-bottom:4px; color:var(--c-dark);">Kritische Frage stellen</h3>
+                    <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Jeder Bericht beginnt mit provokanten Fragen. Nicht neutral, nicht langweilig — sondern die Fragen, die du dir selbst stellst.</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:32px;">
+                <div style="min-width:48px; height:48px; background:var(--c-accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--c-accent);">2</div>
+                <div>
+                    <h3 style="font-size:17px; font-weight:700; margin-bottom:4px; color:var(--c-dark);">Beide Seiten anhören</h3>
+                    <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Offizielle Aussagen beider Parteien aufnehmen. Was sagt Seite A? Was sagt Seite B? Ohne Vorverurteilung.</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:32px;">
+                <div style="min-width:48px; height:48px; background:var(--c-accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--c-accent);">3</div>
+                <div>
+                    <h3 style="font-size:17px; font-weight:700; margin-bottom:4px; color:var(--c-dark);">Faktencheck</h3>
+                    <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Jede Behauptung wird mit belegbaren Fakten konfrontiert. Quellen: Fachbücher, offizielle Berichte (BFS, SECO, SNB, Eurostat).</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:32px;">
+                <div style="min-width:48px; height:48px; background:var(--c-accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--c-accent);">4</div>
+                <div>
+                    <h3 style="font-size:17px; font-weight:700; margin-bottom:4px; color:var(--c-dark);">Klare Antwort geben</h3>
+                    <p style="font-size:15px; color:var(--c-muted); line-height:1.6;">Am Ende jedes Themas: eine klare, priorisierte Antwort. Kein «Es bleibt abzuwarten» — sondern eine fundierte Einordnung.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5 FORMATE -->
+<section class="section section-alt" id="formate">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-eyebrow">5 Formate</div>
+            <h2 class="section-title">5 Formate. Dein Tag.</h2>
+            <p class="section-desc">Von morgens bis abends — jedes Format hat eine klare Aufgabe und einen festen Zeitslot.</p>
+        </div>
+        <div class="reveal" style="max-width:720px; margin:0 auto;">
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:flex-start; gap:20px; padding:24px; background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); transition:all 0.2s;">
+                    <div style="text-align:center; min-width:60px;"><span style="font-size:24px; font-weight:800; color:#16A34A;">06:00</span></div>
+                    <div><h3 style="font-size:17px; font-weight:700; margin-bottom:4px;">Der Lagebericht</h3><p style="font-size:14px; color:var(--c-muted); line-height:1.6; margin:0;">600&ndash;1.200 W&ouml;rter. Kurz und kompakt zum Aufstehen. Top-Thema + 10-15 Kurzmeldungen aus allen Fachgebieten.</p></div>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:20px; padding:24px; background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); transition:all 0.2s;">
+                    <div style="text-align:center; min-width:60px;"><span style="font-size:24px; font-weight:800; color:var(--c-accent);">06:45</span><br><span style="font-size:10px; font-weight:700; color:var(--c-muted);">&#127911; AUDIO</span></div>
+                    <div><h3 style="font-size:17px; font-weight:700; margin-bottom:4px;">Macher-Ticker</h3><p style="font-size:14px; color:var(--c-muted); line-height:1.6; margin:0;">30 Minuten Audio-Podcast. Eigenst&auml;ndige Research-Basis &mdash; tiefer als der Lagebericht.</p></div>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:20px; padding:24px; background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); transition:all 0.2s;">
+                    <div style="text-align:center; min-width:60px;"><span style="font-size:24px; font-weight:800; color:#D97706;">12:00</span></div>
+                    <div><h3 style="font-size:17px; font-weight:700; margin-bottom:4px;">Mittags-Update</h3><p style="font-size:14px; color:var(--c-muted); line-height:1.6; margin:0;">Nur Delta seit 06:00. Null Wiederholungen. Direkter Einstieg.</p></div>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:20px; padding:24px; background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); transition:all 0.2s;">
+                    <div style="text-align:center; min-width:60px;"><span style="font-size:24px; font-weight:800; color:#7C3AED;">13:00</span><br><span style="font-size:10px; font-weight:700; color:var(--c-muted);">&#127911; AUDIO</span></div>
+                    <div><h3 style="font-size:17px; font-weight:700; margin-bottom:4px;">Der Hauptinhalt</h3><p style="font-size:14px; color:var(--c-muted); line-height:1.6; margin:0;">~7.000 W&ouml;rter Tiefe. Deep Dives, Interviews, Strategien &mdash; jeden Tag ein anderes Format.</p></div>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:20px; padding:24px; background:var(--c-white); border:1px solid var(--c-border); border-radius:var(--radius); transition:all 0.2s;">
+                    <div style="text-align:center; min-width:60px;"><span style="font-size:24px; font-weight:800; color:#2563EB;">19:00</span><br><span style="font-size:10px; font-weight:700; color:var(--c-muted);">&#127911; AUDIO</span></div>
+                    <div><h3 style="font-size:17px; font-weight:700; margin-bottom:4px;">Das Abend-Briefing</h3><p style="font-size:14px; color:var(--c-muted); line-height:1.6; margin:0;">Tages-Schlussstand. 3 Entscheidungen des Tages. Macher-Tipp. ~6 Minuten.</p></div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -313,66 +492,54 @@
     <div class="container">
         <div class="section-header reveal">
             <div class="section-eyebrow">Ein Abo. Alles drin.</div>
-            <h2 class="section-title">16 Themen. Ein Preis.<br>Keine Kompromisse.</h2>
-            <p class="section-desc">Alle Themen, Deep-Dives, Sonderausgaben und das volle Archiv — t&auml;glich um 06:30.</p>
+            <h2 class="section-title">5 Formate. Ein Preis.<br>Keine Kompromisse.</h2>
+            <p class="section-desc">Alle 5 Formate, ~84 Min Audio/Tag, Tacko-Radar und das volle Archiv — t&auml;glich von 06:00 bis 19:00.</p>
         </div>
-        <div class="reveal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto;">
-            <!-- Monatlich -->
-            <div style="background: var(--c-white); border: 2px solid var(--c-border); border-radius: var(--radius); padding: 36px 28px; text-align: center; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.06)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                <div style="font-size: 14px; font-weight: 600; color: var(--c-muted); margin-bottom: 12px;">Monatlich</div>
-                <div style="font-size: 48px; font-weight: 800; color: var(--c-dark); line-height: 1;">CHF 19.99</div>
-                <div style="font-size: 14px; color: var(--c-muted); margin-top: 4px; margin-bottom: 24px;">pro Monat &bull; jederzeit k&uuml;ndbar</div>
-                <a href="/abo?interval=monthly" style="display: block; padding: 14px; background: var(--c-accent); color: white; font-weight: 700; font-size: 15px; border-radius: 50px; transition: background 0.2s; text-decoration: none;">Jetzt abonnieren</a>
+        <div class="reveal" style="max-width: 480px; margin: 0 auto;">
+            <!-- Pricing Toggle -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 32px;">
+                <span id="hp-label-monthly" style="font-size: 15px; font-weight: 700; color: var(--c-dark); cursor: pointer;" onclick="hpToggle('monthly')">Monatlich</span>
+                <div id="hp-toggle" onclick="hpToggle()" style="width: 52px; height: 28px; background: var(--c-accent); border-radius: 50px; position: relative; cursor: pointer; transition: background 0.2s;">
+                    <div id="hp-toggle-dot" style="width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);"></div>
+                </div>
+                <span id="hp-label-yearly" style="font-size: 15px; font-weight: 600; color: var(--c-muted); cursor: pointer;" onclick="hpToggle('yearly')">J&auml;hrlich <span style="background: var(--c-accent); color: white; font-size: 11px; padding: 2px 8px; border-radius: 50px; margin-left: 4px; font-weight: 700;">-37%</span></span>
             </div>
-            <!-- Jährlich -->
-            <div style="background: var(--c-dark); border: 2px solid var(--c-accent); border-radius: var(--radius); padding: 36px 28px; text-align: center; position: relative; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-                <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 4px 16px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Spare CHF 89.89</div>
-                <div style="font-size: 14px; font-weight: 600; color: #999; margin-bottom: 12px;">J&auml;hrlich</div>
-                <div style="font-size: 22px; color: #666; text-decoration: line-through; margin-bottom: 4px;">CHF 239.88</div>
-                <div style="font-size: 48px; font-weight: 800; color: white; line-height: 1;">CHF 149.99</div>
-                <div style="font-size: 14px; color: #999; margin-top: 4px; margin-bottom: 24px;">pro Jahr &bull; entspricht CHF 12.50/Mt.</div>
-                <a href="/abo?interval=yearly" style="display: block; padding: 14px; background: var(--c-accent); color: white; font-weight: 700; font-size: 15px; border-radius: 50px; transition: background 0.2s; text-decoration: none;">Jetzt abonnieren</a>
-            </div>
-        </div>
-        <div class="reveal" style="text-align: center; margin-top: 24px;">
-            <p style="font-size: 14px; color: var(--c-muted);">Sichere Zahlung via Stripe &bull; Kreditkarte &bull; Jederzeit k&uuml;ndbar</p>
-        </div>
-    </div>
-</section>
 
-<!-- THEMEN -->
-<section class="section" id="themen">
-    <div class="container">
-        <div class="section-header reveal">
-            <div class="section-eyebrow">Themen</div>
-            <h2 class="section-title">Alles, was Macher:innen<br>wissen müssen.</h2>
-            <p class="section-desc">Von Handwerk bis Krypto, von Schweizer Politik bis Robotik — wähle die Themen, die zu dir passen.</p>
-        </div>
-        <div class="topics-grid reveal">
-            <!-- Wirtschaft & Beruf -->
-            <a href="themen/handwerk.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-handwerk"/></svg></span> Handwerk</a>
-            <a href="themen/selbstaendigkeit.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-selbst"/></svg></span> Selbst&auml;ndigkeit</a>
-            <a href="themen/fuehrungskompetenzen.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-fuehrung"/></svg></span> F&uuml;hrung</a>
-            <a href="themen/abrechnung-operativ.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-abrechnung"/></svg></span> Abrechnung</a>
-            <!-- Finanzen -->
-            <a href="themen/aktien-maerkte.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-aktien"/></svg></span> Aktien &amp; M&auml;rkte</a>
-            <a href="themen/krypto.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-krypto"/></svg></span> Krypto</a>
-            <a href="themen/makrooekonomie.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-makro"/></svg></span> Makro&ouml;konomie</a>
-            <!-- Politik -->
-            <a href="themen/schweizer-politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-lokal"/></svg></span> Schweizer Politik</a>
-            <a href="themen/europaeische-politik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-europa"/></svg></span> Europ&auml;ische Politik</a>
-            <a href="themen/weltpolitik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-politik"/></svg></span> Weltpolitik</a>
-            <!-- Technologie -->
-            <a href="themen/ki.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-ki"/></svg></span> KI</a>
-            <a href="themen/ki-automatisierung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-kiauto"/></svg></span> KI-Automatisierung</a>
-            <a href="themen/robotik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-robotik"/></svg></span> Robotik</a>
-            <a href="themen/technik.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-technik"/></svg></span> Technik</a>
-            <!-- Gesellschaft -->
-            <a href="themen/sport.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-sport"/></svg></span> Sport</a>
-            <a href="themen/enthuellung.html" class="topic-tag"><span class="ti"><svg class="icon"><use href="#i-enthuellung"/></svg></span> Enth&uuml;llungen</a>
-        </div>
-        <div class="topics-note-wrap reveal">
-            <div class="topic-single-note">Alle 16 Themen im Abo: <strong>CHF 19.99/Mt.</strong> oder <strong>CHF 149.99/Jahr</strong> &mdash; <a href="#preise" style="color: var(--c-accent); font-weight: 600;">Jetzt abonnieren</a></div>
+            <!-- Pricing Card -->
+            <div style="background: var(--c-white); border: 2px solid var(--c-accent); border-radius: var(--radius); padding: 40px 32px; text-align: center; position: relative;">
+                <div id="hp-badge" style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); padding: 5px 18px; background: var(--c-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; display: none;">Spare CHF 89.89</div>
+
+                <div id="hp-old-price" style="font-size: 18px; color: #999; text-decoration: line-through; margin-bottom: 4px; display: none;">CHF 239.88</div>
+                <div id="hp-price" style="font-size: 52px; font-weight: 800; color: var(--c-dark); line-height: 1;">CHF 19.99</div>
+                <div id="hp-period" style="font-size: 15px; color: var(--c-muted); margin-top: 6px; margin-bottom: 28px;">pro Monat &bull; jederzeit k&uuml;ndbar</div>
+
+                <ul style="list-style: none; text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; padding: 0;">
+                    <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;"><span style="color: var(--c-green); font-weight: 700;">&#10003;</span> Alle 5 Tagesformate inklusive</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;"><span style="color: var(--c-green); font-weight: 700;">&#10003;</span> T&auml;glich von 06:00 bis 19:00</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;"><span style="color: var(--c-green); font-weight: 700;">&#10003;</span> 30-Min Macher-Ticker Audio</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;"><span style="color: var(--c-green); font-weight: 700;">&#10003;</span> ~7.000 W Hauptinhalt t&auml;glich</li>
+                    <li style="display: flex; align-items: center; gap: 10px; font-size: 15px;"><span style="color: var(--c-green); font-weight: 700;">&#10003;</span> Jederzeit k&uuml;ndbar</li>
+                </ul>
+
+                <a id="hp-cta" href="/abo?interval=monthly" style="display: block; padding: 16px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s; text-decoration: none;" onmouseover="this.style.background='var(--c-accent-hover)'" onmouseout="this.style.background='var(--c-accent)'">Jetzt abonnieren</a>
+            </div>
+
+            <!-- Trial hint -->
+            <p style="text-align: center; margin-top: 16px; font-size: 14px; color: var(--c-muted);">
+                Oder <a href="/abo?interval=trial" style="color: var(--c-accent); font-weight: 600; text-decoration: underline;">1 Woche testen f&uuml;r CHF 1.99</a>
+            </p>
+
+            <!-- Payment methods -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                                <img src="/images/payments/visa.svg?v=15" alt="Visa" height="22" style="border-radius:4px;">
+                <img src="/images/payments/mastercard.svg?v=15" alt="Mastercard" height="22" style="border:1px solid #e0e0e0;border-radius:4px;">
+                <img src="/images/payments/applepay.svg?v=15" alt="Apple Pay" height="22" style="border:1px solid #e0e0e0;border-radius:4px;">
+                <img src="/images/payments/googlepay.svg?v=15" alt="Google Pay" height="22" style="border:1px solid #e0e0e0;border-radius:4px;">
+                <img src="/images/payments/amazonpay.svg?v=15" alt="Amazon Pay" height="22" style="border-radius:4px;">
+                <img src="/images/payments/klarna.svg?v=15" alt="Klarna" height="22" style="border-radius:4px;">
+                <img src="/images/payments/link.svg?v=15" alt="Link" height="22" style="border-radius:4px;">
+
+            </div>
         </div>
     </div>
 </section>
@@ -382,30 +549,30 @@
     <div class="container">
         <div class="section-header reveal">
             <div class="section-eyebrow">Free vs. Abo</div>
-            <h2 class="section-title">Dienstags kostenlos.<br>Jederzeit upgraden.</h2>
-            <p class="section-desc">Dienstags-Ausgaben sind kostenlos f&uuml;r alle. F&uuml;r t&auml;glichen Zugang gibt es das Abo.</p>
+            <h2 class="section-title">Immer informiert.<br>Jederzeit upgraden.</h2>
+            <p class="section-desc">Ohne Abo: Die ersten 2 Themen jedes Formats gratis. Hauptinhalt: 300 W&ouml;rter Preview. Kein Audio.</p>
         </div>
         <div class="compare-grid reveal">
             <div class="compare-card free">
                 <h3>Kostenlos</h3>
-                <div class="compare-price">CHF 0.&ndash; / Dienstags-Ausgabe</div>
+                <div class="compare-price">CHF 0.&ndash; / alle Ausgaben</div>
                 <ul class="compare-list">
-                    <li><span class="ci ci-yes">&#10003;</span> Dienstags-Ausgaben aller Themen</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Alle 5 Formate sichtbar</li>
                     <li><span class="ci ci-yes">&#10003;</span> Keine Anmeldung n&ouml;tig</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Newsletter bei neuen Beitr&auml;gen</li>
-                    <li><span class="ci ci-no">&#10005;</span> Kein Zugang an anderen Tagen</li>
-                    <li><span class="ci ci-no">&#10005;</span> Keine Recherchen &amp; Deep-Dives</li>
-                    <li><span class="ci ci-no">&#10005;</span> Kein Archiv-Zugang</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Erste 2 Themen pro Format gratis</li>
+                    <li><span class="ci ci-no">&#10005;</span> Hauptinhalt nur 300 W&ouml;rter</li>
+                    <li><span class="ci ci-no">&#10005;</span> Kein Audio</li>
+                    <li><span class="ci ci-no">&#10005;</span> Kein Tacko-Radar</li>
                 </ul>
             </div>
             <div class="compare-card pro">
                 <div class="compare-badge">Empfohlen</div>
                 <h3>MacherPost Abo</h3>
-                <div class="compare-price">CHF 19.99 / Monat oder CHF 149.99 / Jahr</div>
+                <div class="compare-price">Ab CHF 1.99 Probeabo &bull; CHF 19.99/Mt. &bull; CHF 149.99/Jahr</div>
                 <ul class="compare-list">
-                    <li><span class="ci ci-yes">&#10003;</span> Alle 16 Themen inklusive</li>
-                    <li><span class="ci ci-yes">&#10003;</span> T&auml;glich (Mo&ndash;So) um 06:30</li>
-                    <li><span class="ci ci-yes">&#10003;</span> Deep-Dives &amp; Montags-Analysen</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Alle 5 Formate inklusive</li>
+                    <li><span class="ci ci-yes">&#10003;</span> T&auml;glich von 06:00 bis 19:00</li>
+                    <li><span class="ci ci-yes">&#10003;</span> Deep-Dives &amp; Analysen</li>
                     <li><span class="ci ci-yes">&#10003;</span> Volles Archiv</li>
                     <li><span class="ci ci-yes">&#10003;</span> Jederzeit k&uuml;ndbar</li>
                     <li><span class="ci ci-yes">&#10003;</span> Jahresabo spart CHF 89.89</li>
@@ -422,27 +589,38 @@
         <div class="preview-grid">
             <div class="preview-text reveal">
                 <div class="section-eyebrow">So sieht's aus</div>
-                <h2>Jede Ausgabe liefert dir einen unfairen Vorteil.</h2>
-                <p>Kompakt, umsetzbar und auf den Punkt. Dienstags kostenlos, im Abo den vollen Umfang.</p>
+                <h2>So sieht eine Ausgabe aus.</h2>
+                <p>Neutral, faktenbasiert und quellenbelegt. Gratis lesbar, im Abo den vollen Umfang.</p>
                 <ul class="preview-list">
-                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Branchen-Update</strong> — was sich in deiner Welt bewegt</span></li>
-                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Praxis-Tipp</strong> — sofort umsetzbar</span></li>
-                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Markt & Zahlen</strong> — Kurse, Trends, Makro</span></li>
-                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Deep-Dive</strong> — vertiefte Analyse (nur im Abo)</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Faktencheck</strong> — jede Aussage quellenbelegt</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Einordnung</strong> — beide Seiten beleuchtet</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Neutral</strong> — keine Meinungen, nur Fakten</span></li>
+                    <li><span class="check"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span><span><strong>Deep Dives & Interviews</strong> — tiefgehende Analysen und Profile</span></li>
                 </ul>
             </div>
             <div class="preview-mockup reveal">
                 <div class="mockup-header"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-bar"></div></div>
                 <div class="mockup-body">
-                    <div class="mb-label">MacherPost #24 — Montag, 16. März</div>
-                    <h4>KI-Automatisierung: 3 Tools, die deinen Papierkram halbieren</h4>
-                    <p>Von der automatischen Rechnungserfassung bis zur KI-gestützten Angebotserstellung — diese drei Tools sind 2026 ein Gamechanger...</p>
+                    <div class="mb-label">MacherPost — Montag, 7. April 2026</div>
+                    <h4>Kupferpreis explodiert: Was das f&uuml;r Schweizer KMU bedeutet</h4>
+                    <p>Die Rohstoffpreise steigen seit Wochen. Eine Analyse der Auswirkungen auf die Schweizer Wirtschaft.</p>
                     <div class="mb-divider"></div>
-                    <div><span class="mb-tag">KI</span><span class="mb-tag">Automatisierung</span><span class="mb-tag">Handwerk</span></div>
-                    <div class="mb-locked">
+                    <div><span class="mb-tag">Lagebericht</span><span class="mb-tag">06:00</span><span class="mb-tag">Wirtschaft</span></div>
+                    <a href="/abo" id="preview-cta" class="mb-locked" style="text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        Deep-Dive freischalten mit einem Abo
-                    </div>
+                        <span id="preview-cta-text">Vollst&auml;ndigen Bericht lesen</span>
+                    </a>
+                    <script>
+                    fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(u){
+                        if(u){
+                            var el=document.getElementById('preview-cta');
+                            var txt=document.getElementById('preview-cta-text');
+                            el.href='/archiv';
+                            txt.textContent='Jetzt lesen';
+                            el.querySelector('svg').innerHTML='<path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>';
+                        }
+                    }).catch(function(){});
+                    </script>
                 </div>
             </div>
         </div>
@@ -452,38 +630,41 @@
 <!-- TESTIMONIALS -->
 <section class="section">
     <div class="container">
-        <div class="section-header reveal"><div class="section-eyebrow">Das sagen andere</div><h2 class="section-title">Macher:innen vertrauen uns.</h2></div>
+        <div class="section-header reveal"><div class="section-eyebrow">Das sagen andere</div><h2 class="section-title">Unsere Leser.</h2></div>
         <div class="testimonials-grid">
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;Endlich ein Briefing, das meine Realit&auml;t als Handwerker versteht. Jeden Morgen in 5 Minuten auf dem Laufenden.&raquo;</blockquote>
+                <blockquote>&laquo;5 Formate, quellenbelegt und jeden Tag p&uuml;nktlich. Von 06:00 bis 19:00 &mdash; und ohne Werbung.&raquo;</blockquote>
                 <div class="testimonial-author"><div class="testimonial-avatar">TM</div><div><div class="testimonial-name">Thomas M.</div><div class="testimonial-role">Schreinermeister, Z&uuml;rich</div></div></div>
             </div>
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;M&auml;rkte, Krypto und Makro — kompakter geht's nicht. Mein Morgen-Briefing vor der B&ouml;rse.&raquo;</blockquote>
+                <blockquote>&laquo;M&auml;rkte, Makro und Rohstoffe &mdash; kompakt und quellenbelegt. Mein t&auml;gliches Briefing vor der Arbeit.&raquo;</blockquote>
                 <div class="testimonial-author"><div class="testimonial-avatar">SK</div><div><div class="testimonial-name">Sandra K.</div><div class="testimonial-role">Privatinvestorin, Bern</div></div></div>
             </div>
             <div class="testimonial-card reveal">
                 <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <blockquote>&laquo;KI, Politik, Sport — alles in einem Briefing. Besser und g&uuml;nstiger als jede Zeitung.&raquo;</blockquote>
+                <blockquote>&laquo;Endlich Nachrichten ohne Meinungsmache. Fakten, Quellen, fertig. Genau das hat gefehlt.&raquo;</blockquote>
                 <div class="testimonial-author"><div class="testimonial-avatar">RF</div><div><div class="testimonial-name">Roman F.</div><div class="testimonial-role">Gesch&auml;ftsf&uuml;hrer, Winterthur</div></div></div>
             </div>
         </div>
     </div>
 </section>
 
+
 <!-- FAQ -->
 <section class="section section-alt" id="faq">
     <div class="container">
         <div class="section-header reveal"><div class="section-eyebrow">FAQ</div><h2 class="section-title">Häufige Fragen.</h2></div>
         <div class="faq-list reveal">
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Tag um 06:30 Uhr. P&uuml;nktlich zum Start in den Tag.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich kostenlos?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Jeden Dienstag erh&auml;ltst du kostenlose Ausgaben zu allen Themen &mdash; ohne Anmeldung. F&uuml;r den t&auml;glichen Zugang, Deep-Dives und das volle Archiv brauchst du das Abo.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist im Abo enthalten?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Alle 16 Themengebiete, t&auml;gliche Artikel, Montags-Deep-Dives, Sonderausgaben und das komplette Archiv. Ein Abo, alles drin.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie oft erscheint MacherPost?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">5 Formate, jeden Tag von 06:00 bis 19:00. Lagebericht zum Aufstehen, Abend-Briefing zum Feierabend.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was bekomme ich kostenlos?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Die ersten 2 Themen jedes Formats sind immer gratis. Beim Hauptinhalt (13:00) siehst du 300 W&ouml;rter Preview. Audio ist nur f&uuml;r Abonnenten. F&uuml;r den vollen Umfang gibt es das Abo.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist im Abo enthalten?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Alle 5 Formate (Lagebericht, Macher-Ticker, Mittags-Update, Hauptinhalt, Abend-Briefing), ~84 Min Audio/Tag, Tacko-Radar und das komplette Archiv. Ein Abo, alles drin.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Was ist das Probeabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">F&uuml;r CHF 1.99 kannst du MacherPost eine Woche lang testen. Danach wird automatisch das Monatsabo (CHF 19.99) aktiviert. Du kannst jederzeit vorher k&uuml;ndigen.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Lohnt sich das Jahresabo?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Ja &mdash; du sparst CHF 89.89 gegen&uuml;ber dem Monatspreis. Statt CHF 239.88 zahlst du nur CHF 149.99 pro Jahr.</div></div></div>
             <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Kann ich jederzeit k&uuml;ndigen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Nat&uuml;rlich. Ein Klick gen&uuml;gt &mdash; &uuml;ber dein Konto oder den Link in jeder Ausgabe. Kein Kleingedrucktes, kein Drama.</div></div></div>
-            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie kann ich bezahlen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Per Kreditkarte &uuml;ber Stripe &mdash; sicher, verschl&uuml;sselt und PCI-konform. Deine Zahlungsdaten werden nie bei uns gespeichert.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wird der Content von KI geschrieben?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">MacherPost nutzt KI-Technologie f&uuml;r Recherche und Textgeneration. Jeder Bericht wird redaktionell gepr&uuml;ft, ist faktenbasiert und quellenbelegt. Transparenz ist uns wichtig &mdash; deshalb steht am Ende jeder Ausgabe ein entsprechender Hinweis.</div></div></div>
+            <div class="faq-item"><button class="faq-question" onclick="toggleFaq(this)">Wie kann ich bezahlen?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Per Karte, Apple Pay, Google Pay, Amazon Pay, Klarna oder Link &uuml;ber Stripe &mdash; sicher, verschl&uuml;sselt und PCI-konform. Deine Zahlungsdaten werden nie bei uns gespeichert.</div></div></div>
         </div>
     </div>
 </section>
@@ -491,35 +672,115 @@
 <!-- CTA -->
 <section class="cta-section" id="start">
     <div class="container">
-        <h2 class="reveal">Bereit, besser informiert zu sein?</h2>
-        <p class="cta-desc reveal">Alle 16 Themen. T&auml;glich um 06:30. Dienstags kostenlos.</p>
-        <div class="reveal" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;">
-            <a href="/abo?interval=monthly" style="display: inline-flex; padding: 16px 36px; background: var(--c-accent); color: white; font-weight: 700; font-size: 16px; border-radius: 50px; transition: background 0.2s;">CHF 19.99/Mt. &mdash; Jetzt starten</a>
-            <a href="/abo?interval=yearly" style="display: inline-flex; padding: 16px 36px; background: transparent; color: white; font-weight: 700; font-size: 16px; border-radius: 50px; border: 2px solid #555; transition: border-color 0.2s;">CHF 149.99/Jahr &mdash; Spare 37%</a>
+        <h2 class="reveal">Morgen um 06:00 startet dein Tag mit MacherPost.</h2>
+        <p class="cta-desc reveal">5 Formate. T&auml;glich von 06:00 bis 19:00. Erste 2 Themen immer gratis.</p>
+        <div class="reveal" style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px;">
+            <a href="/abo?interval=yearly" style="display: inline-flex; padding: 18px 40px; background: var(--c-accent); color: white; font-weight: 700; font-size: 17px; border-radius: 50px; transition: background 0.2s; text-decoration: none;" onmouseover="this.style.background='var(--c-accent-hover)'" onmouseout="this.style.background='var(--c-accent)'">Jetzt abonnieren &mdash; ab CHF 12.50/Mt.</a>
+            <span style="font-size: 14px; color: #999;">Oder <a href="/abo?interval=trial" style="color: var(--c-accent); text-decoration: underline;">1 Woche testen f&uuml;r CHF 1.99</a> &bull; <a href="/abo?interval=monthly" style="color: #bbb; text-decoration: underline;">Monatlich CHF 19.99</a></span>
         </div>
-        <p class="hero-trust reveal"><strong>Dienstags-Ausgaben kostenlos.</strong> Kein Abo n&ouml;tig. Jederzeit k&uuml;ndbar.</p>
+        <p class="hero-trust reveal"><strong>Erste 2 Themen immer gratis.</strong> Kein Audio ohne Abo. Jederzeit k&uuml;ndbar.</p>
     </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
+<footer class="footer" style="padding: 48px 0 32px;">
     <div class="container">
-        <div class="footer-brand">Macher<span>Post</span></div>
-        <p>&copy; 2026 MacherPost. Alle Rechte vorbehalten.</p>
-        <div class="footer-links">
-            <a href="#themen">Themen</a><a href="#preise">Preise</a><a href="#faq">FAQ</a>
-            <a href="kontakt.html">Kontakt</a><a href="datenschutz.html">Datenschutz</a><a href="impressum.html">Impressum</a>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; text-align: left; margin-bottom: 32px;">
+            <div>
+                <div class="footer-brand" style="margin-bottom: 12px;">Macher<span>Post</span></div>
+                <p style="font-size: 14px; color: var(--c-muted); margin: 0 0 16px; line-height: 1.6;">Das Schweizer Briefing f&uuml;r Unternehmer. 5 Formate, t&auml;glich von 06:00 bis 19:00. Quellenbelegt und klar.</p>
+                <p style="font-size: 13px; color: var(--c-muted); margin: 0;">Burgstrasse 62, 8570 Weinfelden, Schweiz</p>
+            </div>
+            <div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--c-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;">Produkt</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="/archiv" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Archiv</a>
+                    <a href="/abo" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Abo</a>
+                    <a href="/#preise" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Preise</a>
+                    <a href="/#faq" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">FAQ</a>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--c-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;">Rechtliches</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="/kontakt" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Kontakt</a>
+                    <a href="/datenschutz" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Datenschutz</a>
+                    <a href="/agb" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">AGB</a>
+                    <a href="/impressum" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">Impressum</a>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--c-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;">Kontakt</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="mailto:info@macherpost.com" style="font-size: 14px; color: var(--c-muted); transition: color 0.2s;">info@macherpost.com</a>
+                </div>
+            </div>
+        </div>
+        <div style="border-top: 1px solid var(--c-border); padding-top: 20px; text-align: center;">
+            <p style="font-size: 13px; color: var(--c-muted); margin: 0;">&copy; 2026 MacherPost. Alle Rechte vorbehalten.</p>
         </div>
     </div>
 </footer>
 
 <script>
-    function handleSignup(e,id){e.preventDefault();const f=e.target,em=f.querySelector('input[type="email"]').value.trim();if(!em)return!1;f.style.display='none';const s=document.getElementById(id+'Success');if(s)s.classList.add('show');return!1}
     function toggleFaq(btn){const i=btn.parentElement,a=i.querySelector('.faq-answer'),o=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>{x.classList.remove('open');x.querySelector('.faq-answer').style.maxHeight=null});if(!o){i.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}}
     const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
     document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
+    // Homepage pricing toggle
+    var hpYearly = false;
+    function hpToggle(force) {
+        if (force === 'monthly') hpYearly = false;
+        else if (force === 'yearly') hpYearly = true;
+        else hpYearly = !hpYearly;
+
+        var dot = document.getElementById('hp-toggle-dot');
+        var price = document.getElementById('hp-price');
+        var period = document.getElementById('hp-period');
+        var badge = document.getElementById('hp-badge');
+        var oldP = document.getElementById('hp-old-price');
+        var cta = document.getElementById('hp-cta');
+        var lM = document.getElementById('hp-label-monthly');
+        var lY = document.getElementById('hp-label-yearly');
+
+        if (!dot) return;
+
+        if (hpYearly) {
+            dot.style.transform = 'translateX(24px)';
+            price.textContent = 'CHF 149.99';
+            period.innerHTML = 'pro Jahr &bull; entspricht CHF 12.50/Mt.';
+            badge.style.display = 'block';
+            oldP.style.display = 'block';
+            cta.href = '/abo?interval=yearly';
+            cta.textContent = 'Jetzt abonnieren — Beste Wahl';
+            lM.style.color = 'var(--c-muted)'; lM.style.fontWeight = '600';
+            lY.style.color = 'var(--c-dark)'; lY.style.fontWeight = '700';
+        } else {
+            dot.style.transform = 'translateX(0)';
+            price.textContent = 'CHF 19.99';
+            period.innerHTML = 'pro Monat &bull; jederzeit k\u00fcndbar';
+            badge.style.display = 'none';
+            oldP.style.display = 'none';
+            cta.href = '/abo?interval=monthly';
+            cta.textContent = 'Jetzt abonnieren';
+            lM.style.color = 'var(--c-dark)'; lM.style.fontWeight = '700';
+            lY.style.color = 'var(--c-muted)'; lY.style.fontWeight = '600';
+        }
+    }
+
 </script>
-<script src="/js/nav-auth.js"></script>
+<script src="/js/nav-auth.js?v=20260404d"></script>
+<script>
+document.addEventListener('click', function(e) {
+  var menu = document.querySelector('.nav-links');
+  var btn = document.querySelector('.nav-hamburger');
+  if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+});
+</script>
+
+<!-- Dark Mode JS entfernt -->
 </body>
 </html>
