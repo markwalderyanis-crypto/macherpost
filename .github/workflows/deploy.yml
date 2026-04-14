@@ -1,0 +1,65 @@
+name: Deploy macherpost
+
+# Deploys to the VPS on every push to main + on demand.
+# Set VPS_SSH_KEY secret (private key) in repo settings first.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-macherpost
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 76.13.8.194 >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Rsync to VPS
+        run: |
+          rsync -az --info=stats2 \
+            --exclude='node_modules/' \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.claude/' \
+            --exclude='db/sessions/' \
+            --exclude='db/*.db' \
+            --exclude='db/*.db-journal' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='content/pdfs/' \
+            --exclude='pipeline/output/' \
+            --exclude='templates/pdf/' \
+            -e 'ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new' \
+            ./ root@76.13.8.194:/var/www/macherpost/
+
+      - name: Install deps & restart pm2
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new root@76.13.8.194 <<'EOS'
+            set -e
+            cd /var/www/macherpost
+            npm install --omit=dev --silent 2>&1 | tail -5 || true
+            pm2 restart macherpost --update-env || pm2 start server.js --name macherpost
+            pm2 save
+            pm2 status macherpost
+          EOS
+
+      - name: Smoke test
+        run: |
+          sleep 3
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://macherpost.com/)
+          echo "macherpost.com → HTTP $code"
+          [ "$code" = "200" ] || (echo "Site not reachable" && exit 1)
