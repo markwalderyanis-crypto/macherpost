@@ -42,11 +42,17 @@ SSH Reverse Tunnel direkt auf deinem PC ab.
 Ollama ist auf deinem PC schon vorhanden. Nur das Modell ziehen (~8 GB):
 
 ```powershell
-ollama pull gemma3:12b
-ollama run gemma3:12b "Sag Hallo"   # Kurztest
+ollama pull gemma4:12b
+ollama run gemma4:12b "Sag Hallo"   # Kurztest
+ollama list                          # zeigt alle lokal vorhandenen Modelle
 ```
 
-Alternative falls 12B zu langsam: `gemma3:4b` oder `qwen2.5:14b`.
+Falls der genaue Tag-Name abweicht (z.B. `gemma4:13b` oder `gemma4:latest`) —
+einfach in `.env` `LOCAL_TEXT_MODEL=...` setzen oder per Env-Var beim Start
+des text_server.py: `set MACHERPOST_DEFAULT_MODEL=gemma4:latest`.
+
+Alternative falls 12B zu langsam: kleinere Variante (`gemma4:4b`) oder
+`qwen2.5:14b`.
 
 ### 2. Python-Pakete fuer Text-Server
 ```powershell

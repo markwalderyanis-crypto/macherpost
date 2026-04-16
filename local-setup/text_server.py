@@ -17,7 +17,7 @@ API:
 Start:
     python text_server.py
     # oder mit eigenem Modell:
-    set MACHERPOST_DEFAULT_MODEL=gemma3:12b
+    set MACHERPOST_DEFAULT_MODEL=gemma4:12b
     python text_server.py
 
 Dependencies:
@@ -32,7 +32,7 @@ import requests
 
 # ── Konfiguration ────────────────────────────────────────────────────────
 OLLAMA_URL      = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
-DEFAULT_MODEL   = os.environ.get("MACHERPOST_DEFAULT_MODEL", "gemma3:12b")
+DEFAULT_MODEL   = os.environ.get("MACHERPOST_DEFAULT_MODEL", "gemma4:12b")
 LISTEN_HOST     = os.environ.get("MACHERPOST_TEXT_HOST", "127.0.0.1")
 LISTEN_PORT     = int(os.environ.get("MACHERPOST_TEXT_PORT", "5578"))
 REQUEST_TIMEOUT = int(os.environ.get("MACHERPOST_TEXT_TIMEOUT", "1800"))  # 30 Min/Request

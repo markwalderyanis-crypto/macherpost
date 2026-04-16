@@ -42,7 +42,7 @@ const REPORT_CONFIG = {
 const LOCAL = {
   // Text-Server (text_server.py auf dem PC, Wrapper um Ollama)
   textBaseUrl: process.env.LOCAL_TEXT_URL || 'http://localhost:5578',
-  textModel: process.env.LOCAL_TEXT_MODEL || 'gemma3:12b',
+  textModel: process.env.LOCAL_TEXT_MODEL || 'gemma4:12b',
   textMaxTokens: parseInt(process.env.LOCAL_TEXT_MAX_TOKENS || '8192', 10),
 
   // Bild-Server (image_server.py auf dem PC, SDXL)

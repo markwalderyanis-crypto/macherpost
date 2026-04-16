@@ -68,7 +68,7 @@ sed -i -E '/^(ANTHROPIC_API_KEY|KIMI_API_KEY|KIMI_BASE_URL|KIMI_MODEL|GEMINI_API
 
 # Lokale Endpunkte hinzufuegen falls noch nicht da
 grep -q '^LOCAL_TEXT_URL='   "$ENV" || echo 'LOCAL_TEXT_URL=http://localhost:5578'  >> "$ENV"
-grep -q '^LOCAL_TEXT_MODEL=' "$ENV" || echo 'LOCAL_TEXT_MODEL=gemma3:12b'           >> "$ENV"
+grep -q '^LOCAL_TEXT_MODEL=' "$ENV" || echo 'LOCAL_TEXT_MODEL=gemma4:12b'           >> "$ENV"
 grep -q '^LOCAL_IMAGE_URL='  "$ENV" || echo 'LOCAL_IMAGE_URL=http://localhost:5577' >> "$ENV"
 grep -q '^LOCAL_IMAGE_TOKEN=' "$ENV" || echo 'LOCAL_IMAGE_TOKEN=mpost-img-2026'     >> "$ENV"
 

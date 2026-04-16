@@ -132,7 +132,7 @@ Optionen:
 
 Lokale Endpunkte (in .env konfigurierbar):
   LOCAL_TEXT_URL              Text-Server, Default http://localhost:5578
-  LOCAL_TEXT_MODEL            Ollama-Modell, Default gemma3:12b
+  LOCAL_TEXT_MODEL            Ollama-Modell, Default gemma4:12b
   LOCAL_IMAGE_URL             Bild-Server, Default http://localhost:5577
   LOCAL_IMAGE_TOKEN           Bearer-Token fuer Bild-Server
 `);

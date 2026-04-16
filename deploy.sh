@@ -66,7 +66,7 @@ SMTP_PASS=HIER_SMTP_PASSWORT_EINTRAGEN
 
 # ── Lokale KI-Endpunkte (vom PC via SSH Reverse Tunnel) ──
 LOCAL_TEXT_URL=http://localhost:5578
-LOCAL_TEXT_MODEL=gemma3:12b
+LOCAL_TEXT_MODEL=gemma4:12b
 LOCAL_IMAGE_URL=http://localhost:5577
 LOCAL_IMAGE_TOKEN=mpost-img-2026
 ENVEOF
