@@ -117,26 +117,18 @@
             </div>
         </div>
 
-        <!-- ═══ API STATUS (compact) ═══ -->
+        <!-- ═══ LOKALER STATUS (compact) ═══ -->
         <div class="api-key-row">
-            <div class="key-chip">
-                <span class="key-dot <%= hasAnthropicKey ? 'ok' : 'missing' %>"></span>
-                Claude
+            <div class="key-chip" title="<%= localStatus.text.baseUrl %><%= localStatus.text.error ? ' — ' + localStatus.text.error : '' %>">
+                <span class="key-dot <%= localStatus.text.ok ? 'ok' : 'missing' %>"></span>
+                Text-Server (<%= localStatus.text.model %>)
             </div>
-            <div class="key-chip">
-                <span class="key-dot <%= hasKimiKey ? 'ok' : 'missing' %>"></span>
-                Kimi
-            </div>
-            <div class="key-chip">
-                <span class="key-dot <%= hasGeminiKey ? 'ok' : 'missing' %>"></span>
-                Gemini
-            </div>
-            <div class="key-chip">
-                <span class="key-dot <%= hasImageKey ? 'ok' : 'missing' %>"></span>
-                Bilder (<%= imageProvider %>)
+            <div class="key-chip" title="<%= localStatus.image.baseUrl %><%= localStatus.image.error ? ' — ' + localStatus.image.error : '' %>">
+                <span class="key-dot <%= localStatus.image.ok ? 'ok' : 'missing' %>"></span>
+                Bild-Server<%= localStatus.image.model ? ' (' + localStatus.image.model + ')' : '' %>
             </div>
             <div class="key-chip" style="background:var(--c-section-alt);">
-                Text: <strong style="margin-left:4px;"><%= textProvider %></strong>
+                Modus: <strong style="margin-left:4px;">lokal</strong>
             </div>
         </div>
 
@@ -256,17 +248,13 @@
                     <input type="hidden" name="report_mode" id="report_mode_input" value="daily">
 
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        <select name="text_provider" style="padding:8px 12px; border-radius:var(--radius); border:1px solid var(--c-border); font-size:13px;">
-                            <option value="claude" <%= textProvider === 'claude' ? 'selected' : '' %>>Claude (Anthropic)</option>
-                            <option value="kimi" <%= textProvider === 'kimi' ? 'selected' : '' %>>Kimi (Moonshot)</option>
-                        </select>
                         <select name="theme_slugs" style="padding:8px 12px; border-radius:var(--radius); border:1px solid var(--c-border); font-size:13px;">
                             <option value="all">Alle 16 Themen</option>
                             <% themes.forEach(t => { %>
                                 <option value="<%= t.slug %>"><%= t.name %></option>
                             <% }); %>
                         </select>
-                        <button type="submit" class="btn btn-sm btn-primary" <%= (!hasAnthropicKey && !hasKimiKey) ? 'disabled title="API Key fehlt"' : '' %>>
+                        <button type="submit" class="btn btn-sm btn-primary" <%= !localStatus.text.ok ? 'disabled title="Lokaler Text-Server nicht erreichbar"' : '' %>>
                             Jetzt generieren
                         </button>
                     </div>
@@ -284,7 +272,7 @@
                                 style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
                             <input type="text" name="custom_topic_2" placeholder="z.B. Bargeld-Initiative — wer profitiert wirklich?"
                                 style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
-                            <input type="text" name="custom_topic_3" placeholder="z.B. Kimi vs. Claude — welches Modell schreibt besser?"
+                            <input type="text" name="custom_topic_3" placeholder="z.B. Lohnt sich ein eigener KI-Server fuer KMU?"
                                 style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">
                             <input type="text" name="custom_topic_4" placeholder="z.B. Fachkräftemangel — echtes Problem oder Lobby-Argument?"
                                 style="padding:8px 12px; border:1px solid var(--c-border); border-radius:var(--radius); font-size:12px; width:100%;">

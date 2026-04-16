@@ -205,12 +205,15 @@ const PORT = process.env.PORT || 3457;
     }
   }, 60_000);
 
-  // Start pipeline scheduler if API keys are configured
-  if (process.env.ANTHROPIC_API_KEY || process.env.KIMI_API_KEY) {
+  // Pipeline-Scheduler starten — Local-only.
+  // Es gibt keine Cloud-API-Keys mehr; die Pipeline ruft die lokalen Server
+  // auf dem PC ueber den SSH-Tunnel auf. Falls die Server zur Laufzeit nicht
+  // erreichbar sind, schlagen einzelne Runs fehl — der Scheduler selbst laeuft.
+  if (process.env.PIPELINE_SCHEDULER === 'off') {
+    console.log('[Pipeline] Scheduler explizit deaktiviert (PIPELINE_SCHEDULER=off)');
+  } else {
     const { startScheduler } = require('./pipeline/scheduler');
     startScheduler(getDb());
-  } else {
-    console.log('[Pipeline] Kein API Key konfiguriert — Scheduler deaktiviert');
   }
 
   app.listen(PORT, () => {
