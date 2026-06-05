@@ -1,9 +1,11 @@
-// Report generator — orchestrates research + text + images for a single theme
+// Report generator — orchestrates local research + text + images for a single theme.
+// Local-only: alle Generierungsschritte laufen ueber die lokalen Server auf dem PC.
 const fs = require('fs');
 const path = require('path');
-const { TEXT_PROVIDER, getTextProvider, REPORT_CONFIG, REPORT_MODES, PROVIDERS, getThemePrompt, getImagePrompt } = require('./config');
+const { REPORT_CONFIG, REPORT_MODES, getThemePrompt, getImagePrompt } = require('./config');
 const { generateText, generateLongReport } = require('./providers/text');
 const { generateImage } = require('./providers/images');
+const { runResearch } = require('./providers/local-agents');
 
 // Split text into sections by ## headings
 function splitSections(text) {
@@ -48,43 +50,35 @@ async function generateReport(theme, date = new Date(), db = null, mode = 'daily
   console.log(`  ${theme.name} — ${dateStr} (${reportMode.name}, ~${reportMode.targetWords} Wörter)`);
   console.log(`========================================`);
 
-  // Step 1: Research (SerpAPI + Gemini)
+  // Step 1: Lokale Vorab-Recherche (LLM-basiert, kein Web-Zugriff)
   let researchData = null;
-  const hasSerpAPI = !!process.env.SERPAPI_KEY;
-  const hasGemini = !!PROVIDERS.gemini.apiKey;
+  console.log(`\n[1/4] Lokale Recherche...`);
+  try {
+    const { getPrompts } = require('./config');
+    const { themePrompts } = getPrompts(db);
+    researchData = await runResearch(theme, date, themePrompts[theme.slug]);
 
-  if (hasSerpAPI || hasGemini) {
-    console.log(`\n[1/4] Recherche (${[hasSerpAPI && 'SerpAPI', hasGemini && 'Gemini'].filter(Boolean).join(' + ')})...`);
-    try {
-      const { runResearch } = require('./providers/research');
-      const { getPrompts } = require('./config');
-      const { themePrompts } = getPrompts(db);
-      researchData = await runResearch(theme, date, themePrompts[theme.slug]);
-
-      // Save research data
+    if (researchData) {
       const researchPath = path.join(reportDir, 'recherche.md');
       fs.writeFileSync(researchPath, researchData, 'utf8');
       console.log(`  Recherche gespeichert: ${researchPath}`);
-    } catch (err) {
-      console.error(`  Recherche fehlgeschlagen: ${err.message}`);
-      console.log(`  Fahre ohne Recherche-Daten fort...`);
     }
-  } else {
-    console.log(`\n[1/4] Recherche übersprungen (kein SerpAPI/Gemini Key)`);
+  } catch (err) {
+    console.error(`  Recherche fehlgeschlagen: ${err.message}`);
+    console.log(`  Fahre ohne Recherche-Daten fort...`);
   }
 
-  // Step 2: Generate text with Claude/Kimi (using research data)
-  const provider = getTextProvider(); // read at runtime so manual override works
-  console.log(`\n[2/4] Text generieren mit ${provider} (Ziel: ${reportMode.targetWords} Wörter)...`);
+  // Step 2: Text-Generierung (lokal via Ollama)
+  console.log(`\n[2/4] Text generieren lokal (Ziel: ${reportMode.targetWords} Wörter)...`);
   const { system, user } = getThemePrompt(theme, date, db, researchData, mode);
 
   let fullText;
   if (mode === 'daily') {
     // Daily: single call, 1500 words fits in one response — no looping
-    fullText = await generateText(provider, system, user, { maxTokens: 4096 });
+    fullText = await generateText(null, system, user, { maxTokens: 4096 });
   } else {
     // Big report: chain multiple calls to reach 10k words
-    fullText = await generateLongReport(provider, system, user, reportMode.targetWords);
+    fullText = await generateLongReport(null, system, user, reportMode.targetWords);
   }
 
   // Save raw markdown
@@ -131,8 +125,8 @@ async function generateReport(theme, date = new Date(), db = null, mode = 'daily
     theme: theme.slug,
     themeName: theme.name,
     date: dateStr,
-    textProvider: provider,
-    researchProvider: PROVIDERS.gemini.apiKey ? 'gemini' : 'none',
+    textProvider: 'local',
+    researchProvider: researchData ? 'local-agents' : 'none',
     wordCount: wordCount(fullText),
     sectionCount: sections.length,
     imageCount: images.length,
@@ -148,8 +142,8 @@ async function generateReport(theme, date = new Date(), db = null, mode = 'daily
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), 'utf8');
 
   console.log(`\n[4/4] Fertig!`);
-  console.log(`  Recherche: ${researchData ? 'Gemini' : 'Keine'}`);
-  console.log(`  Text: ${provider} (${meta.wordCount} Wörter, Modus: ${reportMode.name})`);
+  console.log(`  Recherche: ${researchData ? 'Lokal' : 'Keine'}`);
+  console.log(`  Text: lokal (${meta.wordCount} Wörter, Modus: ${reportMode.name})`);
   console.log(`  Sektionen: ${meta.sectionCount}`);
   console.log(`  Bilder: ${meta.imageCount}`);
   console.log(`  Ordner: ${reportDir}`);

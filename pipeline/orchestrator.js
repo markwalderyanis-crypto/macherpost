@@ -1,17 +1,19 @@
-// Big Report Orchestrator
-// Coordinates sub-bots (one per sub-topic) and a main bot (quality control)
+// Big Report Orchestrator — Local-only.
+// Coordinates sub-bots (one per sub-topic) and a main bot (quality control).
+// Alle Schritte laufen ueber das lokale Modell (Ollama via text_server.py).
 //
 // Flow:
-// 1. Gemini researches the full theme
-// 2. Sub-bots each write ~10,000-15,000 words on their sub-topic
+// 1. Lokale Vorab-Recherche (LLM-basiert, ohne Web-Zugriff)
+// 2. Sub-bots each write ~2'000 words on their sub-topic
 // 3. Main bot (orchestrator) reviews, removes duplicates, adds transitions, creates summary
-// 4. Final report: 60,000-100,000 words
+// 4. Final report: ~12'000-15'000 words
 
 const fs = require('fs');
 const path = require('path');
-const { TEXT_PROVIDER, REPORT_CONFIG, PROVIDERS, getThemePrompt, getOrchestratorPrompt, getBigReportSubTopics, getImagePrompt, getPrompts } = require('./config');
+const { REPORT_CONFIG, getOrchestratorPrompt, getBigReportSubTopics, getImagePrompt, getPrompts } = require('./config');
 const { generateLongReport } = require('./providers/text');
 const { generateImage } = require('./providers/images');
+const { runResearch } = require('./providers/local-agents');
 const { splitSections, wordCount } = require('./generate-report');
 
 async function generateBigReport(theme, date = new Date(), db = null) {
@@ -26,20 +28,17 @@ async function generateBigReport(theme, date = new Date(), db = null) {
   console.log(`  GROSSER REPORT: ${theme.name} — ${dateStr}`);
   console.log(`${'='.repeat(50)}`);
 
-  // Step 1: Gemini Research
+  // Step 1: Lokale Vorab-Recherche
   let researchData = null;
-  if (PROVIDERS.gemini.apiKey) {
-    console.log(`\n[1/5] Gemini-Recherche (umfassend)...`);
-    try {
-      const { runResearch } = require('./providers/research');
-      const { themePrompts } = getPrompts(db);
-      researchData = await runResearch(theme, date, themePrompts[theme.slug]);
+  console.log(`\n[1/5] Lokale Recherche (umfassend)...`);
+  try {
+    const { themePrompts } = getPrompts(db);
+    researchData = await runResearch(theme, date, themePrompts[theme.slug]);
+    if (researchData) {
       fs.writeFileSync(path.join(reportDir, 'recherche.md'), researchData, 'utf8');
-    } catch (err) {
-      console.error(`  Gemini-Recherche fehlgeschlagen: ${err.message}`);
     }
-  } else {
-    console.log(`\n[1/5] Gemini übersprungen (kein API Key)`);
+  } catch (err) {
+    console.error(`  Recherche fehlgeschlagen: ${err.message}`);
   }
 
   // Step 2: Sub-bots generate reports for each sub-topic
@@ -74,7 +73,7 @@ Beginne direkt mit ## ${subTopic}`
 
     try {
       const subText = await generateLongReport(
-        TEXT_PROVIDER,
+        null,
         subPrompt.system,
         subPrompt.user,
         2000 // ~2K words per sub-topic, 6 topics = ~12K total
@@ -104,7 +103,7 @@ Beginne direkt mit ## ${subTopic}`
   // 3a: Generate Executive Summary + combine first sections
   try {
     const summaryPrompt = `${orchUser}\n\nBEGINNE mit der Executive Summary und den ersten 3 Teilberichten. Entferne Doppelungen, schaffe Übergänge.`;
-    const part1 = await generateLongReport(TEXT_PROVIDER, orchSystem, summaryPrompt, 15000);
+    const part1 = await generateLongReport(null, orchSystem, summaryPrompt, 15000);
     finalReport += part1;
     console.log(`  Haupt-Bot Teil 1: ${wordCount(part1)} Wörter`);
   } catch (err) {
@@ -119,7 +118,7 @@ Beginne direkt mit ## ${subTopic}`
       const remainingReports = subReports.slice(3);
       const continuePrompt = `Fahre den Bericht fort. Hier sind die restlichen Teilberichte die du integrieren musst:\n\n${remainingReports.map((r, i) => `=== TEILBERICHT ${i + 4} ===\n${r}`).join('\n\n')}\n\nFüge diese nahtlos an den bisherigen Bericht an. Entferne Doppelungen. Füge am Ende das Gesamtfazit ein.`;
 
-      const part2 = await generateLongReport(TEXT_PROVIDER, orchSystem, continuePrompt, 15000);
+      const part2 = await generateLongReport(null, orchSystem, continuePrompt, 15000);
       finalReport += '\n\n' + part2;
       console.log(`  Haupt-Bot Teil 2: ${wordCount(part2)} Wörter`);
     } catch (err) {
@@ -169,8 +168,8 @@ Beginne direkt mit ## ${subTopic}`
     themeName: theme.name,
     date: dateStr,
     mode: 'big',
-    textProvider: TEXT_PROVIDER,
-    researchProvider: PROVIDERS.gemini.apiKey ? 'gemini' : 'none',
+    textProvider: 'local',
+    researchProvider: researchData ? 'local-agents' : 'none',
     subTopics: subTopics,
     subReportWords: subReports.map(r => wordCount(r)),
     wordCount: totalWords,

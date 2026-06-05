@@ -121,7 +121,7 @@ function createImageParagraph(imagePath) {
     if (ext === '.svg') {
       return new Paragraph({
         children: [new TextRun({
-          text: '[Bild-Platzhalter — nanobanana API Key für echte Bilder benötigt]',
+          text: '[Bild-Platzhalter — lokaler Bild-Server (image_server.py) nicht erreichbar]',
           italics: true,
           color: '888888',
           size: 18,

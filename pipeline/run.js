@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-// MacherPost Pipeline Runner
+// MacherPost Pipeline Runner — Local-only.
+// Alle Schritte (Recherche, Text, Bilder) laufen ueber die lokalen Server
+// auf dem PC (text_server.py / image_server.py), erreichbar vom VPS via SSH-Tunnel.
+//
 // Usage:
 //   node pipeline/run.js                     → Alle 16 Themen
 //   node pipeline/run.js handwerk            → Einzelnes Thema
 //   node pipeline/run.js handwerk krypto ki  → Mehrere Themen
-//   node pipeline/run.js --provider kimi     → Mit Kimi K2.5 statt Claude
 //   node pipeline/run.js --date 2026-03-20   → Für bestimmtes Datum
 //   node pipeline/run.js --list              → Themen auflisten
 
-const { THEMES, REPORT_CONFIG } = require('./config');
+const { THEMES, REPORT_CONFIG, LOCAL } = require('./config');
 const { generateReport } = require('./generate-report');
 const { createDocx } = require('./create-docx');
 
@@ -16,14 +18,11 @@ async function main() {
   const args = process.argv.slice(2);
 
   // Parse flags
-  let providerOverride = null;
   let dateOverride = null;
   const themeArgs = [];
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--provider' && args[i + 1]) {
-      providerOverride = args[++i];
-    } else if (args[i] === '--date' && args[i + 1]) {
+    if (args[i] === '--date' && args[i + 1]) {
       dateOverride = args[++i];
     } else if (args[i] === '--list') {
       console.log('\nVerfügbare Themen:');
@@ -37,13 +36,6 @@ async function main() {
     } else {
       themeArgs.push(args[i]);
     }
-  }
-
-  // Override provider if specified
-  if (providerOverride) {
-    process.env.TEXT_PROVIDER = providerOverride;
-    // Re-require config to pick up change
-    delete require.cache[require.resolve('./config')];
   }
 
   const date = dateOverride ? new Date(dateOverride + 'T00:00:00') : new Date();
@@ -69,8 +61,8 @@ async function main() {
   console.log(`╠══════════════════════════════════════════╣`);
   console.log(`║  Datum:    ${date.toISOString().split('T')[0].padEnd(29)}║`);
   console.log(`║  Themen:   ${String(selectedThemes.length).padEnd(29)}║`);
-  console.log(`║  Provider: ${(providerOverride || process.env.TEXT_PROVIDER || 'claude').padEnd(29)}║`);
-  console.log(`║  Bilder:   nanobanana 2                  ║`);
+  console.log(`║  Text:     ${('lokal — ' + LOCAL.textModel).padEnd(29)}║`);
+  console.log(`║  Bilder:   ${('lokal — SDXL').padEnd(29)}║`);
   console.log(`╚══════════════════════════════════════════╝`);
 
   const results = [];
@@ -121,7 +113,7 @@ async function main() {
 
 function printHelp() {
   console.log(`
-MacherPost Pipeline — Automatische Berichtsgenerierung
+MacherPost Pipeline — Lokale Berichtsgenerierung
 
 Verwendung:
   node pipeline/run.js [themen...] [optionen]
@@ -130,23 +122,19 @@ Beispiele:
   node pipeline/run.js                          Alle 16 Themen generieren
   node pipeline/run.js handwerk                 Nur Handwerk
   node pipeline/run.js krypto ki robotik        Mehrere Themen
-  node pipeline/run.js --provider kimi          Mit Kimi K2.5
   node pipeline/run.js --date 2026-03-20        Für bestimmtes Datum
   node pipeline/run.js --list                   Alle Themen auflisten
 
 Optionen:
-  --provider <claude|kimi>    Text-Provider wählen (Standard: claude)
   --date <YYYY-MM-DD>         Datum für Bericht (Standard: heute)
   --list                      Verfügbare Themen auflisten
   --help, -h                  Diese Hilfe anzeigen
 
-Umgebungsvariablen (.env):
-  ANTHROPIC_API_KEY            Für Claude Sonnet 4.6
-  KIMI_API_KEY                 Für Moonshot Kimi K2.5
-  KIMI_BASE_URL                Kimi API Base URL
-  NANOBANANA_API_KEY           Für nanobanana 2 Bildgenerierung
-  NANOBANANA_BASE_URL          nanobanana API Base URL
-  TEXT_PROVIDER                Standard Text-Provider (claude/kimi)
+Lokale Endpunkte (in .env konfigurierbar):
+  LOCAL_TEXT_URL              Text-Server, Default http://localhost:5578
+  LOCAL_TEXT_MODEL            Ollama-Modell, Default gemma4:12b
+  LOCAL_IMAGE_URL             Bild-Server, Default http://localhost:5577
+  LOCAL_IMAGE_TOKEN           Bearer-Token fuer Bild-Server
 `);
 }
 

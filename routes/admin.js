@@ -282,7 +282,7 @@ const templateUpload = multer({
 });
 
 // Pipeline dashboard
-router.get('/pipeline', (req, res) => {
+router.get('/pipeline', async (req, res) => {
   const db = getDb();
 
   // Get scheduler status
@@ -334,13 +334,19 @@ router.get('/pipeline', (req, res) => {
     totalWords: totalWords ? (totalWords.s || 0) : 0,
   };
 
-  // Check if API keys are configured
-  const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
-  const hasKimiKey = !!process.env.KIMI_API_KEY;
-  const hasGeminiKey = !!process.env.GEMINI_API_KEY;
-  const hasImageKey = !!(process.env.OPENAI_API_KEY || process.env.STABILITY_API_KEY);
-  const imageProvider = process.env.OPENAI_API_KEY ? 'DALL-E 3' : (process.env.STABILITY_API_KEY ? 'Stability' : 'Keine');
-  const textProvider = process.env.TEXT_PROVIDER || 'claude';
+  // Lokale Server pruefen (Text + Bilder ueber SSH-Tunnel)
+  const { checkHealth: checkTextHealth } = require('../pipeline/providers/text');
+  const { checkHealth: checkImageHealth } = require('../pipeline/providers/images');
+  const { LOCAL } = require('../pipeline/config');
+  const [textHealth, imageHealth] = await Promise.all([
+    checkTextHealth().catch(err => ({ ok: false, error: err.message })),
+    checkImageHealth().catch(err => ({ ok: false, error: err.message })),
+  ]);
+
+  const localStatus = {
+    text: { ok: !!textHealth.ok, baseUrl: LOCAL.textBaseUrl, model: LOCAL.textModel, error: textHealth.error || null },
+    image: { ok: !!imageHealth.ok, baseUrl: LOCAL.imageBaseUrl, model: imageHealth.model || null, error: imageHealth.error || null },
+  };
 
   // Pending reviews (drafts awaiting approval)
   const pendingReviews = db.all(
@@ -357,12 +363,7 @@ router.get('/pipeline', (req, res) => {
     recentRuns,
     pipelineStats,
     schedulerStatus,
-    hasAnthropicKey,
-    hasKimiKey,
-    hasGeminiKey,
-    hasImageKey,
-    imageProvider,
-    textProvider,
+    localStatus,
     masterPrompt,
     themePrompts,
     pendingReviews,
@@ -446,10 +447,10 @@ router.post('/pipeline/template/:slug/delete', (req, res) => {
   res.redirect('/admin/pipeline');
 });
 
-// Manual trigger: run pipeline for specific theme(s)
+// Manual trigger: run pipeline for specific theme(s) — Local-only.
 router.post('/pipeline/run', async (req, res) => {
   const db = getDb();
-  const { theme_slugs, report_mode, text_provider, custom_topic_1, custom_topic_2, custom_topic_3, custom_topic_4 } = req.body;
+  const { theme_slugs, report_mode, custom_topic_1, custom_topic_2, custom_topic_3, custom_topic_4 } = req.body;
   const mode = report_mode === 'big' ? 'big' : 'daily';
 
   // Collect custom topics (filter empty)
@@ -462,11 +463,6 @@ router.post('/pipeline/run', async (req, res) => {
     process.env.CUSTOM_TOPICS = JSON.stringify(customTopics);
   } else {
     delete process.env.CUSTOM_TOPICS;
-  }
-
-  // Temporarily set text provider if specified
-  if (text_provider && ['claude', 'kimi'].includes(text_provider)) {
-    process.env.TEXT_PROVIDER = text_provider;
   }
 
   let selectedThemes;

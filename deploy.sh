@@ -64,11 +64,11 @@ SMTP_PORT=465
 SMTP_USER=info@macherpost.com
 SMTP_PASS=HIER_SMTP_PASSWORT_EINTRAGEN
 
-ANTHROPIC_API_KEY=
-KIMI_API_KEY=
-GEMINI_API_KEY=
-NANOBANANA_API_KEY=
-TEXT_PROVIDER=claude
+# ── Lokale KI-Endpunkte (vom PC via SSH Reverse Tunnel) ──
+LOCAL_TEXT_URL=http://localhost:5578
+LOCAL_TEXT_MODEL=gemma4:12b
+LOCAL_IMAGE_URL=http://localhost:5577
+LOCAL_IMAGE_TOKEN=mpost-img-2026
 ENVEOF
 echo '.env erstellt'"
 
@@ -88,5 +88,7 @@ echo "WICHTIG: Bearbeite .env auf dem Server:"
 echo "  ssh $SERVER"
 echo "  nano $REMOTE_DIR/.env"
 echo "  -> SMTP_PASS eintragen"
-echo "  -> API Keys eintragen (ANTHROPIC_API_KEY, GEMINI_API_KEY, etc.)"
+echo "  -> Lokale Endpunkte ggf. anpassen (LOCAL_TEXT_URL, LOCAL_IMAGE_URL, LOCAL_IMAGE_TOKEN)"
+echo "  -> SSH Reverse Tunnel vom PC starten:"
+echo "     ssh -N -R 5577:localhost:5577 -R 5578:localhost:5578 root@macherpost.com"
 echo "  pm2 restart macherpost"

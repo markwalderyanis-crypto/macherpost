@@ -1,15 +1,17 @@
-// Pipeline configuration
+// Pipeline configuration — Local-only setup.
+// Alle Cloud-Provider entfernt. Text- und Bildgenerierung laufen ueber lokale
+// Server auf dem PC, erreichbar vom VPS via SSH Reverse Tunnel:
+//   localhost:5578 -> text_server.py (Ollama-Wrapper)
+//   localhost:5577 -> image_server.py (SDXL)
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 
 const { THEMES } = require('../config/themes');
 
-// Text generation provider: 'claude' or 'kimi'
-// Use function so runtime changes to process.env.TEXT_PROVIDER take effect
-function getTextProvider() { return process.env.TEXT_PROVIDER || 'claude'; }
-const TEXT_PROVIDER = getTextProvider(); // initial value for backward compat
-
-// Image generation provider: 'openai' (DALL-E 3) or 'stability' (Stable Diffusion)
-const IMAGE_PROVIDER = process.env.IMAGE_PROVIDER || 'openai';
+// Backward-compat-Stubs: einige Module importieren noch TEXT_PROVIDER/IMAGE_PROVIDER.
+// In der lokalen Variante gibt es nur noch den Wert 'local'.
+function getTextProvider() { return 'local'; }
+const TEXT_PROVIDER = 'local';
+const IMAGE_PROVIDER = 'local';
 
 // Report modes
 const REPORT_MODES = {
@@ -35,40 +37,24 @@ const REPORT_CONFIG = {
   language: 'de-CH',
 };
 
-// Provider configs
+// Lokale Endpunkte (vom VPS via SSH Reverse Tunnel auf den PC).
+// Konfiguration via .env — Defaults passen zum Standard-Tunnel-Setup.
+const LOCAL = {
+  // Text-Server (text_server.py auf dem PC, Wrapper um Ollama)
+  textBaseUrl: process.env.LOCAL_TEXT_URL || 'http://localhost:5578',
+  textModel: process.env.LOCAL_TEXT_MODEL || 'gemma4:12b',
+  textMaxTokens: parseInt(process.env.LOCAL_TEXT_MAX_TOKENS || '8192', 10),
+
+  // Bild-Server (image_server.py auf dem PC, SDXL)
+  imageBaseUrl: process.env.LOCAL_IMAGE_URL || 'http://localhost:5577',
+  imageToken: process.env.LOCAL_IMAGE_TOKEN || '',
+};
+
+// Backward-compat-Stub: Code-Pfade ausserhalb von providers/ fragen vereinzelt
+// noch PROVIDERS.<x>.apiKey ab. Mit local-only sind diese Felder leer; das
+// signalisiert "kein Cloud-Key vorhanden" — der lokale Pfad uebernimmt.
 const PROVIDERS = {
-  claude: {
-    apiKey: process.env.ANTHROPIC_API_KEY || '',
-    model: 'claude-sonnet-4-6',
-    baseUrl: 'https://api.anthropic.com/v1',
-    maxTokens: 8192,
-  },
-  kimi: {
-    apiKey: process.env.KIMI_API_KEY || '',
-    model: process.env.KIMI_MODEL || 'kimi-k2.5',
-    baseUrl: process.env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1',
-    maxTokens: 8192,
-  },
-  gemini: {
-    apiKey: process.env.GEMINI_API_KEY || '',
-    model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
-    baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-    maxTokens: 8192,
-  },
-  // Image provider — supports: 'openai' (DALL-E 3), 'stability' (Stable Diffusion)
-  // Set IMAGE_PROVIDER and the matching API key in .env
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY || '',
-    baseUrl: 'https://api.openai.com/v1',
-    model: 'dall-e-3',
-    imageSize: '1792x1024',  // 16:9 landscape
-    quality: 'standard',     // 'standard' ($0.04) or 'hd' ($0.08)
-  },
-  stability: {
-    apiKey: process.env.STABILITY_API_KEY || '',
-    baseUrl: 'https://api.stability.ai/v2beta',
-    model: 'core',  // Stable Image Core — best value ($0.03/image)
-  },
+  local: LOCAL,
 };
 
 // ============================================================
@@ -239,7 +225,7 @@ function getThemePrompt(theme, date, db, researchData, mode = 'daily') {
   }
 
   const researchSection = researchData
-    ? `\n\nRECHERCHE-ERGEBNISSE (Gemini-Recherche als Basis):\n"""\n${researchData}\n"""\n\nNutze diese Recherche als Grundlage. Verifiziere die Fakten und schreibe in deinem eigenen Stil.`
+    ? `\n\nRECHERCHE-ERGEBNISSE (lokale Vorab-Analyse — enthaelt KEINE Echtzeit-Webdaten):\n"""\n${researchData}\n"""\n\nNutze diese Recherche als Grundlage. Verifiziere die Fakten und schreibe in deinem eigenen Stil.`
     : '';
 
   // Custom topics from admin UI (manual run only)
@@ -270,7 +256,7 @@ WICHTIG — AKTUALITÄT:
 - Wenn du keine brandaktuellen Informationen zu einem Thema hast, schreibe über den aktuellen STAND und die aktuelle LAGE — nicht über alte Nachrichten als wären sie neu.
 - Wenn du auf ältere Entwicklungen verweist, kennzeichne dies klar: "Seit [Monat/Jahr]...", "Rückblick: Im [Zeitraum] geschah..."
 - Verkaufe NIEMALS alte Nachrichten als neue Entwicklungen. Lieber weniger aber korrekt datierte Informationen.
-${researchData ? '- Nutze primär die Gemini-Recherche-Ergebnisse oben — diese enthalten aktuelle Informationen.' : '- ACHTUNG: Keine aktuelle Recherche verfügbar. Fokussiere auf den aktuellen Stand/die aktuelle Lage statt auf spezifische Nachrichten. Vermeide konkrete Datumsangaben wenn du dir nicht sicher bist.'}
+${researchData ? '- Die Recherche oben ist eine lokale Vorab-Analyse OHNE Live-Webdaten — verwende die Struktur und das Hintergrundwissen, aber erfinde keine tagesaktuellen Schlagzeilen.' : '- ACHTUNG: Keine aktuelle Recherche verfügbar. Fokussiere auf den aktuellen Stand/die aktuelle Lage statt auf spezifische Nachrichten. Vermeide konkrete Datumsangaben wenn du dir nicht sicher bist.'}
 
 METHODE:
 - ${mode === 'daily' ? 'Behandle 2-4 kritische Fragen zum Thema' : 'Behandle 5-8 kritische Fragen zum Thema — tiefgehend mit mehr Fachexperten'}
@@ -407,6 +393,7 @@ module.exports = {
   IMAGE_PROVIDER,
   REPORT_CONFIG,
   REPORT_MODES,
+  LOCAL,
   PROVIDERS,
   THEMES,
   getThemePrompt,
