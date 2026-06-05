@@ -1,0 +1,106 @@
+{
+  "info": "20 Social-Media Video-Prompts fuer HunyuanVideo 1.5 Test. Lade sie in ComfyUI, setze steps=30, width=1280, height=720, frames=81 (ca. 10s bei 8fps).",
+  "negative_prompt": "text, watermark, logo, blurry, low quality, static, frozen, glitch, distorted faces",
+  "prompts": [
+    {
+      "id": 1,
+      "category": "Nature",
+      "prompt": "Aerial drone shot slowly flying through a misty Swiss alpine valley at sunrise, golden light piercing through clouds, pine forests below, snow-capped peaks in the distance, cinematic color grading"
+    },
+    {
+      "id": 2,
+      "category": "Food",
+      "prompt": "Close-up of melted Swiss cheese being poured over crispy roesti potatoes, steam rising, warm kitchen lighting, shallow depth of field, slow motion cheese pull, food photography style"
+    },
+    {
+      "id": 3,
+      "category": "Tech",
+      "prompt": "Futuristic holographic data visualization floating above a dark desk, blue and orange glowing particles forming charts and graphs, cyberpunk aesthetic, camera slowly orbiting"
+    },
+    {
+      "id": 4,
+      "category": "Urban",
+      "prompt": "Timelapse of Zurich Bahnhofstrasse transitioning from golden hour to blue hour to night, city lights flickering on, tram passing by, reflections on wet cobblestones"
+    },
+    {
+      "id": 5,
+      "category": "Abstract",
+      "prompt": "Liquid gold and deep blue ink swirling together in water, macro photography, mesmerizing fluid dynamics, slow motion, studio lighting creating metallic reflections"
+    },
+    {
+      "id": 6,
+      "category": "Nature",
+      "prompt": "Underwater camera following a school of colorful tropical fish through a vibrant coral reef, sunlight rays penetrating crystal clear water, natural colors, documentary style"
+    },
+    {
+      "id": 7,
+      "category": "Satisfying",
+      "prompt": "Perfectly symmetrical domino chain reaction in a spiral pattern, thousands of colorful dominoes falling in sequence, bird's eye view, satisfying cascade, clean white background"
+    },
+    {
+      "id": 8,
+      "category": "Animals",
+      "prompt": "Majestic eagle soaring above mountain peaks with spread wings, dramatic clouds, camera tracking alongside the bird, golden sunlight backlighting feathers, National Geographic quality"
+    },
+    {
+      "id": 9,
+      "category": "Lifestyle",
+      "prompt": "Hands of a craftsman carefully carving wood with traditional tools in a warm workshop, wood shavings curling, close-up detail shots, natural window light, artisan documentary"
+    },
+    {
+      "id": 10,
+      "category": "Space",
+      "prompt": "Camera slowly drifting past Earth from space station perspective, aurora borealis glowing green below, stars in background, International Space Station solar panels visible, photorealistic"
+    },
+    {
+      "id": 11,
+      "category": "Weather",
+      "prompt": "Dramatic thunderstorm over a lake at night, multiple lightning bolts illuminating dark clouds and water surface, rain visible in flashes, moody atmosphere, 4K quality"
+    },
+    {
+      "id": 12,
+      "category": "Architecture",
+      "prompt": "Camera smoothly gliding through a modern minimalist house with floor-to-ceiling windows overlooking mountains, morning light flooding white interior, architectural visualization quality"
+    },
+    {
+      "id": 13,
+      "category": "Macro",
+      "prompt": "Extreme macro shot of a butterfly emerging from its chrysalis, wings slowly unfolding revealing intricate colorful patterns, dewdrops on wings, soft natural bokeh background"
+    },
+    {
+      "id": 14,
+      "category": "Sports",
+      "prompt": "Slow motion tracking shot of a trail runner sprinting along a narrow mountain ridge, dramatic drop on both sides, dust particles in golden backlight, epic landscape"
+    },
+    {
+      "id": 15,
+      "category": "Coffee",
+      "prompt": "Barista creating intricate latte art in slow motion, milk swirling into espresso forming a perfect rosetta pattern, warm cafe lighting, steam rising, close-up top-down view"
+    },
+    {
+      "id": 16,
+      "category": "Seasons",
+      "prompt": "Single tree in a field transitioning through all four seasons in one continuous shot, leaves growing, turning colors, falling, snow covering branches, then spring blossoms again"
+    },
+    {
+      "id": 17,
+      "category": "Ocean",
+      "prompt": "Giant wave breaking in slow motion captured from water level, turquoise water curling into barrel shape, sunlight refracting through the wave, surfing photography style"
+    },
+    {
+      "id": 18,
+      "category": "City",
+      "prompt": "Neon-lit Tokyo street at night in the rain, reflections on wet pavement, people with umbrellas walking past, Japanese signs glowing, cinematic Blade Runner atmosphere"
+    },
+    {
+      "id": 19,
+      "category": "Fire",
+      "prompt": "Close-up of a blacksmith hammering glowing orange-hot metal on an anvil, sparks flying in all directions, dark forge background, dramatic contrast lighting, slow motion sparks"
+    },
+    {
+      "id": 20,
+      "category": "Flowers",
+      "prompt": "Timelapse of a field of wildflowers blooming, buds opening one by one in sequence, bees arriving, morning dew evaporating in sunlight, vivid natural colors, macro to wide transition"
+    }
+  ]
+}
