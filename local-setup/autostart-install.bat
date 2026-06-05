@@ -1,6 +1,30 @@
 @echo off
-REM MacherPost — richtet 4 Tasks in der Aufgabenplanung ein (Trigger: bei Anmeldung).
-REM Doppelklick als Admin.
+REM MacherPost — Autostart via Aufgabenplanung.
+REM
+REM ACHTUNG: Dieses Script wird NUR ausgefuehrt wenn du es EXPLIZIT
+REM per Doppelklick startest. Es richtet Tasks ein die beim PC-Start
+REM automatisch starten. Wenn du das NICHT willst: NICHT ausfuehren.
+REM
+REM Zum Entfernen: autostart-uninstall.ps1 oder diesen Befehl in PowerShell:
+REM   Get-ScheduledTask | Where-Object {$_.TaskName -like "MacherPost-*"} | Unregister-ScheduledTask -Confirm:$false
+REM
+REM STANDARD-EMPFEHLUNG: Benutze start-all.bat fuer manuellen Start statt Autostart.
+
+echo ============================================================
+echo   WARNUNG: Autostart einrichten?
+echo.
+echo   Dies richtet 4 Tasks ein die bei JEDEM PC-Start automatisch
+echo   Ollama, Text-Server, Bild-Server und SSH-Tunnel starten.
+echo.
+echo   Willst du das WIRKLICH? Wenn nicht: schliesse dieses Fenster.
+echo ============================================================
+echo.
+set /p CONFIRM="Tippe JA und Enter zum Fortfahren: "
+if /i not "%CONFIRM%"=="JA" (
+    echo Abgebrochen.
+    pause
+    exit /b 0
+)
 
 setlocal
 set DIR=%~dp0
@@ -15,40 +39,26 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo ============================================================
-echo   Installiere MacherPost Autostart-Tasks
-echo ============================================================
-
-REM 1) Ollama — 10s Delay nach Anmeldung
 schtasks /Create /F /TN "MacherPost-Ollama" ^
     /TR "cmd /c start /min ollama serve" ^
     /SC ONLOGON /RU %USR% /DELAY 0000:10 /RL HIGHEST
 
-REM 2) Text-Server — 30s Delay (Ollama muss oben sein)
 schtasks /Create /F /TN "MacherPost-TextServer" ^
     /TR "cmd /c start /min python \"%DIR%text_server.py\"" ^
     /SC ONLOGON /RU %USR% /DELAY 0000:30 /RL HIGHEST
 
-REM 3) Bild-Server — 30s Delay
 schtasks /Create /F /TN "MacherPost-ImageServer" ^
     /TR "cmd /c start /min python \"%DIR%image_server.py\"" ^
     /SC ONLOGON /RU %USR% /DELAY 0000:30 /RL HIGHEST
 
-REM 4) SSH Tunnel — 60s Delay (Server muessen lauschen)
 schtasks /Create /F /TN "MacherPost-SSHTunnel" ^
     /TR "cmd /c start /min ssh -N -R 5577:localhost:5577 -R 5578:localhost:5578 root@76.13.8.194" ^
     /SC ONLOGON /RU %USR% /DELAY 0001:00 /RL HIGHEST
 
 echo.
 echo ============================================================
-echo   Fertig. 4 Tasks eingerichtet:
-echo     MacherPost-Ollama       (Delay 10s)
-echo     MacherPost-TextServer   (Delay 30s)
-echo     MacherPost-ImageServer  (Delay 30s)
-echo     MacherPost-SSHTunnel    (Delay 60s)
-echo.
-echo   Status pruefen: check-status.bat
-echo   Deinstallieren: autostart-uninstall.ps1
+echo   4 Autostart-Tasks eingerichtet.
+echo   Entfernen: autostart-uninstall.ps1
 echo ============================================================
 pause
 endlocal
